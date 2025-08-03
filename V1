@@ -1,0 +1,513 @@
+--[[
+    Somtank UI Library
+    Version: 0.1.2a
+    Created by: Your Name
+    
+    Usage Example:
+    local Library = loadstring(game:HttpGet("your-raw-url-here"))()
+    local GUI = Library:CreateWindow({
+        Title = "My Script",
+        Version = "1.0.0"
+    })
+    
+    local PlayerTab = GUI:CreateTab("Player", "👤")
+    PlayerTab:CreateSlider("Walk Speed", 16, 16, 150, function(value)
+        -- Your code here
+    end)
+]]
+
+local Library = {}
+Library.__index = Library
+
+-- Services
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UIS = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+
+local player = Players.LocalPlayer
+local plrGui = player.PlayerGui
+
+-- Utility Functions
+local function MakeDraggableButton(button, MoveFrame)
+	local dragging = false
+	local dragStart, startPos, firstPos
+
+	button.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+			dragging = true
+			dragStart = input.Position
+			startPos = MoveFrame.Position
+			if not firstPos then
+				firstPos = MoveFrame.Position
+			end
+		end
+	end)
+
+	UIS.InputChanged:Connect(function(input)
+		if dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
+			local delta = input.Position - dragStart
+			MoveFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+		end
+	end)
+
+	UIS.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+			dragging = false
+		end
+	end)
+end
+
+local function createSlider(sliderTrack, sliderThumb, onSlide, MaxValue)
+	local dragging = false
+	MaxValue = MaxValue or 100
+
+	local function getSliderRange()
+		return sliderTrack.AbsoluteSize.X - sliderThumb.AbsoluteSize.X
+	end
+
+	local function tweenSliderTo(xPos)
+		local maxX = getSliderRange()
+		xPos = math.clamp(xPos, 0, maxX)
+		local goal = {Position = UDim2.new(0, xPos, sliderThumb.Position.Y.Scale, sliderThumb.Position.Y.Offset)}
+		local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+		TweenService:Create(sliderThumb, tweenInfo, goal):Play()
+		if typeof(onSlide) == "function" then
+			local percent = xPos / maxX
+			local value = math.floor(percent * MaxValue + 0.5)
+			onSlide(value)
+		end
+	end
+
+	sliderTrack.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			dragging = true
+			local relativeX = input.Position.X - sliderTrack.AbsolutePosition.X - sliderThumb.AbsoluteSize.X / 2
+			tweenSliderTo(relativeX)
+		end
+	end)
+
+	UIS.InputChanged:Connect(function(input)
+		if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+			local relativeX = input.Position.X - sliderTrack.AbsolutePosition.X - sliderThumb.AbsoluteSize.X / 2
+			tweenSliderTo(relativeX)
+		end
+	end)
+
+	UIS.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			dragging = false
+		end
+	end)
+
+	local function setSliderByValue(value)
+		value = math.clamp(value, 0, MaxValue)
+		local maxX = getSliderRange()
+		local xPos = (value / MaxValue) * maxX
+		sliderThumb.Position = UDim2.new(0, xPos, sliderThumb.Position.Y.Scale, sliderThumb.Position.Y.Offset)
+	end
+
+	return {SetValue = setSliderByValue}
+end
+
+local function tweenButtonColor(button, color, time, Image)
+	local tweenInfo = TweenInfo.new(time or 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+	local goal
+	if Image and Image == true then
+		goal = {ImageColor3 = color}
+	else
+		goal = {BackgroundColor3 = color}
+	end
+	TweenService:Create(button, tweenInfo, goal):Play()
+end
+
+local function tweenFrameSize(frame, newSize, time)
+	local tweenInfo = TweenInfo.new(time or 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+	local goal = {Size = newSize}
+	TweenService:Create(frame, tweenInfo, goal):Play()
+end
+
+local function tweenFramePosition(frame, newPosition, time)
+	local tweenInfo = TweenInfo.new(time or 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+	local goal = {Position = newPosition}
+	TweenService:Create(frame, tweenInfo, goal):Play()
+end
+
+-- Create UI Elements Functions
+local function MakeFrame(Parent, Size, Posi, BGtran, Color, Visible, UiCorner)
+	local NewFrame = Instance.new("Frame", Parent)
+	NewFrame.Position = Posi
+	NewFrame.Size = Size
+	NewFrame.BackgroundColor3 = Color
+	NewFrame.BackgroundTransparency = BGtran
+	NewFrame.Visible = Visible
+	if UiCorner and UiCorner == true then
+		local NewUiCorner = Instance.new("UICorner", NewFrame)
+		NewUiCorner.CornerRadius = UDim.new(0, 7)
+	end
+	return NewFrame
+end
+
+local function MakeText(Parent, Size, Posi, BGtran, Color, Visible, Text)
+	local NewFrame = Instance.new("TextLabel", Parent)
+	NewFrame.Position = Posi
+	NewFrame.Size = Size
+	NewFrame.TextColor3 = Color
+	NewFrame.BackgroundTransparency = BGtran
+	NewFrame.Visible = Visible
+	NewFrame.Text = Text
+	NewFrame.TextScaled = true
+	NewFrame.Font = Enum.Font.Highway
+	return NewFrame
+end
+
+local function MakeImageButton(Parent, Size, Posi, BGtran, Color, Imtran, imageID)
+	local NewFrame = Instance.new("ImageButton", Parent)
+	local UICorner = Instance.new("UICorner", NewFrame)
+	NewFrame.Position = Posi
+	NewFrame.Size = Size
+	NewFrame.BackgroundTransparency = BGtran
+	NewFrame.Image = imageID or ""
+	NewFrame.ImageTransparency = Imtran
+	NewFrame.BackgroundColor3 = Color
+	NewFrame.ImageColor3 = Color
+	NewFrame.ZIndex = 2
+	return NewFrame
+end
+
+local function MakeScrolling(Parent, Size, Posi, BGtran, Color, Visible)
+	local NewFrame = Instance.new("ScrollingFrame", Parent)
+	local UIListLayout = Instance.new("UIListLayout", NewFrame)
+	NewFrame.Position = Posi
+	NewFrame.Size = Size
+	NewFrame.BackgroundColor3 = Color
+	NewFrame.BackgroundTransparency = BGtran
+	NewFrame.Visible = Visible
+	NewFrame.ScrollBarThickness = 0
+	UIListLayout.Padding = UDim.new(0, 7)
+	return NewFrame
+end
+
+local function MakeTextBox(Parent, Size, Posi, BGtran, Color, Text)
+	local NewFrame = Instance.new("TextBox", Parent)
+	local UICorner = Instance.new("UICorner", NewFrame)
+	NewFrame.Position = Posi
+	NewFrame.Size = Size
+	NewFrame.BackgroundTransparency = BGtran
+	NewFrame.PlaceholderText = Text
+	NewFrame.PlaceholderColor3 = Color
+	NewFrame.TextColor3 = Color
+	NewFrame.TextScaled = true
+	NewFrame.Text = ""
+	NewFrame.Font = Enum.Font.Highway
+	return NewFrame
+end
+
+local function MakeImageLabel(Parent, Size, Posi, BGtran, Color, Imtran, ImageID)
+	local NewFrame = Instance.new("ImageLabel", Parent)
+	NewFrame.Position = Posi
+	NewFrame.Size = Size
+	NewFrame.BackgroundTransparency = BGtran
+	NewFrame.Image = ImageID
+	NewFrame.ImageTransparency = Imtran
+	NewFrame.ImageColor3 = Color
+	return NewFrame
+end
+
+local function MakeTextButton(Parent, Size, Posi, BGtran, Color, Text)
+	local NewFrame = Instance.new("TextButton", Parent)
+	NewFrame.Position = Posi
+	NewFrame.Size = Size
+	NewFrame.BackgroundTransparency = BGtran
+	NewFrame.Text = Text
+	NewFrame.TextScaled = true
+	NewFrame.TextColor3 = Color
+	NewFrame.Font = Enum.Font.Highway
+	return NewFrame
+end
+
+-- Main Library Functions
+function Library:CreateWindow(options)
+	options = options or {}
+	local title = options.Title or "Somtank"
+	local version = options.Version or "V0.1.2a"
+
+	local Window = {}
+	Window.Tabs = {}
+	Window.CurrentTab = nil
+
+	-- Create ScreenGui
+	local ScreenGui = Instance.new("ScreenGui", plrGui)
+	ScreenGui.Name = "SOMTANK-Script"
+
+	-- Main Frame
+	local MainFrame = MakeFrame(ScreenGui, UDim2.new(0, 417, 0, 299), UDim2.new(0.246, 0, 0.100, 0), 0.1, Color3.new(0.0980392, 0.0745098, 0.219608), true, true)
+	local MovePad = MakeImageLabel(MainFrame, UDim2.new(0, 344, 0, 43), UDim2.new(0, 0, 0, 0), 1, Color3.new(1, 1, 1), 0, "")
+	local SelectMode = MakeScrolling(MainFrame, UDim2.new(0, 193, 0, 247), UDim2.new(-0.101, 0, 0.144, 0), 1, Color3.new(0.0980392, 0.0745098, 0.219608), true)
+	SelectMode.Name = "SelectMode"
+
+	local Line = MakeFrame(MainFrame, UDim2.new(0, 3, 0, 247), UDim2.new(0.37, 0, 0.144, 0), 0, Color3.new(1, 1, 1), true, true)
+	local Close_EYE = MakeTextButton(MainFrame, UDim2.new(0, 26, 0, 24), UDim2.new(0.825, 0, 0.013, 0), 1, Color3.new(0.466667, 0.113725, 1), "-")
+	local Close_Panel = MakeTextButton(MainFrame, UDim2.new(0, 26, 0, 24), UDim2.new(0.921, 0, 0.013, 0), 1, Color3.new(0.466667, 0.113725, 1), "X")
+
+	-- Title and Icon
+	local IconFrame = MakeImageLabel(MainFrame, UDim2.new(0, 32, 0, 31), UDim2.new(0.017, 0, 0.013, 0), 1, Color3.new(0.435294, 0.109804, 1), 0, "rbxassetid://80019916158199")
+	local TitleText = MakeText(MainFrame, UDim2.new(0, 112, 0, 32), UDim2.new(0.118, 0, 0.013, 0), 1, Color3.new(0.466667, 0.286275, 1), true, title)
+	local VersionText = MakeText(MainFrame, UDim2.new(0, 163, 0, 20), UDim2.new(0.41, 0, 0.054, 0), 1, Color3.new(0.466667, 0.286275, 1), true, version)
+
+	TitleText.TextXAlignment = Enum.TextXAlignment.Left
+	VersionText.TextXAlignment = Enum.TextXAlignment.Left
+	VersionText.TextTransparency = 0.4
+
+	-- Move Icon
+	local MoveIcon = MakeImageButton(ScreenGui, UDim2.new(0, 53, 0, 51), UDim2.new(0.100, 0, 0.447, 0), 1, Color3.new(1, 1, 1), 0, "rbxassetid://81129676934693")
+	MakeDraggableButton(MoveIcon, MoveIcon)
+	MakeDraggableButton(MovePad, MainFrame)
+
+	-- Close Functions
+	Close_EYE.Activated:Connect(function()
+		MainFrame.Visible = false
+	end)
+
+	Close_Panel.Activated:Connect(function()
+		ScreenGui:Destroy()
+	end)
+
+	-- Toggle Visibility
+	local Icon_Position = MoveIcon.Position
+	MoveIcon.Activated:Connect(function()
+		if Icon_Position == MoveIcon.Position then
+			MainFrame.Visible = not MainFrame.Visible
+		end
+	end)
+
+	-- Hover Effects
+	MoveIcon.MouseEnter:Connect(function()
+		MoveIcon.ImageColor3 = Color3.new(0.745098, 0.745098, 0.745098)
+	end)
+
+	MoveIcon.MouseLeave:Connect(function()
+		MoveIcon.ImageColor3 = Color3.new(1, 1, 1)
+	end)
+
+	-- Create Tab Function
+	function Window:CreateTab(name, icon)
+		local Tab = {}
+		Tab.Name = name
+		Tab.Elements = {}
+
+		-- Create Tab Button
+		local TabButton = MakeFrame(ScreenGui, UDim2.new(0, 191, 0, 36), UDim2.new(0, 0, 0, 0), 1, Color3.new(0.141176, 0.12549, 0.368627), true, true)
+		local BackgroundMain = MakeFrame(TabButton, UDim2.new(0, 142, 0, 36), UDim2.new(0.257, 0, 0, 0), 0, Color3.new(0.141176, 0.12549, 0.368627), true, true)
+		local TextTabButton = MakeText(TabButton, UDim2.new(0, 118, 0, 28), UDim2.new(0.338, 0, 0.104, 0), 1, Color3.new(0.529412, 0.313725, 1), true, " " .. name .. " " .. (icon or ""))
+		local ColorTabButton = MakeFrame(TabButton, UDim2.new(0, 7, 0, 36), UDim2.new(0.257, 0, 0, 0), 0, Color3.new(0.145098, 0.133333, 0.392157), true, true)
+		local Button = MakeImageButton(TabButton, UDim2.new(1, 0, 1, 0), UDim2.new(0, 0, 0, 0), 1, Color3.new(1, 1, 1), 1)
+
+		ColorTabButton.Name = "ColorFrame"
+		TabButton.Visible = true
+		TabButton.Parent = SelectMode
+
+		-- Create Tab Content
+		local TabContent = MakeScrolling(MainFrame, UDim2.new(0, 249, 0, 247), UDim2.new(0.387, 0, 0.144, 0), 1, Color3.new(0.0980392, 0.0745098, 0.219608), false)
+		TabContent.Name = "TabContent_" .. name
+		TabContent.CanvasSize = UDim2.new(0, 0, 10, 0)
+
+		-- Tab Button Click
+		Button.Activated:Connect(function()
+			-- Hide all tabs
+			for _, tab in pairs(Window.Tabs) do
+				tab.Content.Visible = false
+				tab.ColorFrame.BackgroundColor3 = Color3.new(0.145098, 0.133333, 0.392157)
+			end
+
+			-- Show current tab
+			TabContent.Visible = true
+			ColorTabButton.BackgroundColor3 = Color3.new(0.45098, 0, 1)
+			Window.CurrentTab = Tab
+		end)
+
+		-- Hover Effects
+		Button.MouseEnter:Connect(function()
+			tweenFrameSize(TabButton, UDim2.new(0, 191, 0, 41), 0.3)
+			tweenFrameSize(ColorTabButton, UDim2.new(0, 7, 0, 41), 0.5)
+			tweenButtonColor(ColorTabButton, Color3.new(0.364706, 0, 0.807843), 0.25)
+		end)
+
+		Button.MouseLeave:Connect(function()
+			tweenFrameSize(TabButton, UDim2.new(0, 144, 0, 36), 0.3)
+			tweenFrameSize(ColorTabButton, UDim2.new(0, 8, 0, 36), 0.3)
+			if Window.CurrentTab ~= Tab then
+				tweenButtonColor(ColorTabButton, Color3.new(0.145098, 0.133333, 0.392157), 0.17)
+			end
+		end)
+
+		Tab.Content = TabContent
+		Tab.ColorFrame = ColorTabButton
+		Window.Tabs[name] = Tab
+
+		-- Auto-select first tab
+		if #Window.Tabs == 1 then
+			Button:GetPropertyChangedSignal("Parent"):Wait()
+			wait(0.1)
+			Button.Activated:Fire()
+		end
+
+		-- Tab Functions
+		function Tab:CreateSlider(name, default, min, max, callback)
+			callback = callback or function() end
+
+			local SliderFrame = MakeFrame(ScreenGui, UDim2.new(0, 248, 0, 114), UDim2.new(0, 0, 0, 0), 0, Color3.new(0.141176, 0.12549, 0.368627), true, true)
+			local TextLabel = MakeText(SliderFrame, UDim2.new(0, 131, 0, 28), UDim2.new(0.055, 0, 0.076, 0), 1, Color3.new(0.529412, 0.313725, 1), true, name)
+			local TextBox = MakeTextBox(SliderFrame, UDim2.new(0, 158, 0, 29), UDim2.new(0.055, 0, 0.673, 0), 0.9, Color3.new(0.596078, 0.32549, 1), "Enter value...")
+			local ColorFrame = MakeFrame(SliderFrame, UDim2.new(0, 8, 0, 114), UDim2.new(0, 0, 0, 0), 0, Color3.new(0.145098, 0.133333, 0.392157), true, true)
+			local ShowValue = MakeText(SliderFrame, UDim2.new(0, 59, 0, 25), UDim2.new(0.734, 0, 0.687, 0), 1, Color3.new(0.466667, 0.286275, 1), true, tostring(default))
+			local SlideBar = MakeFrame(SliderFrame, UDim2.new(0, 222, 0, 8), UDim2.new(0.065, 0, 0.439, 0), 0, Color3.new(0.494118, 0.258824, 1), true, true)
+			local Bar = MakeFrame(SlideBar, UDim2.new(0, 13, 0, 22), UDim2.new(0, 0, -1, 0), 0, Color3.new(0.407843, 0.113725, 1), true, true)
+
+			SliderFrame.Parent = TabContent
+			SliderFrame.Visible = true
+
+			local currentValue = default
+
+			local slider = createSlider(SlideBar, Bar, function(value)
+				local scaledValue = min + (value / 100) * (max - min)
+				scaledValue = math.floor(scaledValue + 0.5)
+				currentValue = scaledValue
+				ShowValue.Text = tostring(scaledValue)
+				callback(scaledValue)
+			end, 100)
+
+			-- Set initial position
+			local initialPercent = ((default - min) / (max - min)) * 100
+			slider.SetValue(initialPercent)
+
+			TextBox.FocusLost:Connect(function()
+				local text = TextBox.Text
+				local number = tonumber(text)
+				if number and number >= min and number <= max then
+					currentValue = number
+					local percent = ((number - min) / (max - min)) * 100
+					slider.SetValue(percent)
+					ShowValue.Text = tostring(number)
+					callback(number)
+				end
+				TextBox.Text = ""
+			end)
+
+			return {
+				SetValue = function(value)
+					if value >= min and value <= max then
+						currentValue = value
+						local percent = ((value - min) / (max - min)) * 100
+						slider.SetValue(percent)
+						ShowValue.Text = tostring(value)
+						callback(value)
+					end
+				end,
+				GetValue = function()
+					return currentValue
+				end
+			}
+		end
+
+		function Tab:CreateToggle(name, default, callback)
+			callback = callback or function() end
+
+			local ToggleFrame = MakeFrame(ScreenGui, UDim2.new(0, 248, 0, 36), UDim2.new(0, 0, 0, 0), 0, Color3.new(0.141176, 0.12549, 0.368627), true, true)
+			local TextLabel = MakeText(ToggleFrame, UDim2.new(0, 131, 0, 28), UDim2.new(0.055, 0, 0.076, 0), 1, Color3.new(0.529412, 0.313725, 1), true, name)
+			local ColorFrame = MakeFrame(ToggleFrame, UDim2.new(0, 8, 0, 36), UDim2.new(0, 0, 0, 0), 0, Color3.new(0.145098, 0.133333, 0.392157), true, true)
+			local Button = MakeImageButton(ToggleFrame, UDim2.new(0, 28, 0, 29), UDim2.new(0.86, 0, 0.082, 0), 0, Color3.new(0.270588, 0.196078, 0.443137), 1)
+
+			ToggleFrame.Parent = TabContent
+			ToggleFrame.Visible = true
+
+			local toggled = default or false
+
+			if toggled then
+				ColorFrame.BackgroundColor3 = Color3.new(0.45098, 0, 1)
+				Button.BackgroundColor3 = Color3.new(0.45098, 0, 1)
+			end
+
+			Button.Activated:Connect(function()
+				toggled = not toggled
+
+				if toggled then
+					tweenButtonColor(ColorFrame, Color3.new(0.45098, 0, 1), 0.17)
+					tweenButtonColor(Button, Color3.new(0.45098, 0, 1), 0.17)
+				else
+					tweenButtonColor(ColorFrame, Color3.new(0.145098, 0.133333, 0.392157), 0.17)
+					tweenButtonColor(Button, Color3.new(0.270588, 0.196078, 0.443137), 0.17)
+				end
+
+				callback(toggled)
+			end)
+
+			return {
+				SetValue = function(value)
+					toggled = value
+					if toggled then
+						ColorFrame.BackgroundColor3 = Color3.new(0.45098, 0, 1)
+						Button.BackgroundColor3 = Color3.new(0.45098, 0, 1)
+					else
+						ColorFrame.BackgroundColor3 = Color3.new(0.145098, 0.133333, 0.392157)
+						Button.BackgroundColor3 = Color3.new(0.270588, 0.196078, 0.443137)
+					end
+					callback(toggled)
+				end,
+				GetValue = function()
+					return toggled
+				end
+			}
+		end
+
+		function Tab:CreateButton(name, callback)
+			callback = callback or function() end
+
+			local ButtonFrame = MakeFrame(ScreenGui, UDim2.new(0, 248, 0, 36), UDim2.new(0, 0, 0, 0), 0, Color3.new(0.141176, 0.12549, 0.368627), true, true)
+			local TextLabel = MakeText(ButtonFrame, UDim2.new(0, 131, 0, 28), UDim2.new(0.055, 0, 0.076, 0), 1, Color3.new(0.529412, 0.313725, 1), true, name)
+			local ColorFrame = MakeFrame(ButtonFrame, UDim2.new(0, 8, 0, 36), UDim2.new(0, 0, 0, 0), 0, Color3.new(0.145098, 0.133333, 0.392157), true, true)
+			local Button = MakeImageButton(ButtonFrame, UDim2.new(0, 28, 0, 29), UDim2.new(0.86, 0, 0.082, 0), 0, Color3.new(0.270588, 0.196078, 0.443137), 1)
+
+			ButtonFrame.Parent = TabContent
+			ButtonFrame.Visible = true
+
+			Button.Activated:Connect(function()
+				ColorFrame.BackgroundColor3 = Color3.new(0.45098, 0, 1)
+				Button.BackgroundColor3 = Color3.new(0.45098, 0, 1)
+
+				tweenButtonColor(ColorFrame, Color3.new(0.145098, 0.133333, 0.392157), 0.4)
+				tweenButtonColor(Button, Color3.new(0.270588, 0.196078, 0.443137), 0.4)
+
+				callback()
+			end)
+
+			return Button
+		end
+
+		function Tab:CreateLabel(text)
+			local LabelFrame = MakeFrame(ScreenGui, UDim2.new(0, 248, 0, 24), UDim2.new(0, 0, 0, 0), 1, Color3.new(0.141176, 0.12549, 0.368627), true, true)
+			local TextLabel = MakeText(LabelFrame, UDim2.new(0.916, 0, 1, 0), UDim2.new(0.095, 0, -0.007, 0), 1, Color3.new(0.529412, 0.313725, 1), true, "<b> " .. text .. " </b>")
+			local ColorLine = MakeFrame(LabelFrame, UDim2.new(0, 16, 0, 6), UDim2.new(0, 0, 0.375, 0), 0, Color3.new(0.45098, 0, 1), true, true)
+
+			TextLabel.RichText = true
+			TextLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+			LabelFrame.Parent = TabContent
+			LabelFrame.Visible = true
+
+			return {
+				SetText = function(newText)
+					TextLabel.Text = "<b> " .. newText .. " </b>"
+				end
+			}
+		end
+
+		return Tab
+	end
+
+	return Window
+end
+
+return Library
