@@ -326,7 +326,7 @@ function Library:CreateWindow(options)
 			Window.CurrentTab = Tab
 		end)
 		
-		
+		print("Somtank 1")
 		local NewHoldSize = 5
 		-- Hover Effects
 		Button.MouseEnter:Connect(function()
