@@ -30,7 +30,6 @@ local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local plrGui = player.PlayerGui
 
--- Utility Functions
 local function MakeDraggableButton(button, MoveFrame)
 	local dragging = false
 	local dragStart, startPos, firstPos
@@ -321,23 +320,24 @@ function Library:CreateWindow(options)
 				tab.Content.Visible = false
 				tab.ColorFrame.BackgroundColor3 = Color3.new(0.145098, 0.133333, 0.392157)
 			end
-
-			-- Show current tab
+			
 			TabContent.Visible = true
 			ColorTabButton.BackgroundColor3 = Color3.new(0.45098, 0, 1)
 			Window.CurrentTab = Tab
 		end)
-
+		
+		
+		local NewHoldSize = 5
 		-- Hover Effects
 		Button.MouseEnter:Connect(function()
-			tweenFrameSize(TabButton, UDim2.new(0, 191, 0, 41), 0.3)
-			tweenFrameSize(ColorTabButton, UDim2.new(0, 7, 0, 41), 0.5)
+			tweenFrameSize(TabButton, UDim2.new(0, 191,0, 36 + NewHoldSize), 0.3)
+			tweenFrameSize(ColorTabButton, UDim2.new(0, 7,0, 36 + NewHoldSize), 0.5)
 			tweenButtonColor(ColorTabButton, Color3.new(0.364706, 0, 0.807843), 0.25)
 		end)
 
 		Button.MouseLeave:Connect(function()
-			tweenFrameSize(TabButton, UDim2.new(0, 144, 0, 36), 0.3)
-			tweenFrameSize(ColorTabButton, UDim2.new(0, 8, 0, 36), 0.3)
+			tweenFrameSize(TabButton, UDim2.new(0, 144,0, 36), 0.3)
+			tweenFrameSize(ColorTabButton, UDim2.new(0, 8,0, 36), 0.3)
 			if Window.CurrentTab ~= Tab then
 				tweenButtonColor(ColorTabButton, Color3.new(0.145098, 0.133333, 0.392157), 0.17)
 			end
