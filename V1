@@ -308,19 +308,15 @@ function Library:CreateWindow(options)
 		TabButton.Visible = true
 		TabButton.Parent = SelectMode
 
-		-- Create Tab Content
 		local TabContent = MakeScrolling(MainFrame, UDim2.new(0, 249, 0, 247), UDim2.new(0.387, 0, 0.144, 0), 1, Color3.new(0.0980392, 0.0745098, 0.219608), false)
 		TabContent.Name = "TabContent_" .. name
 		TabContent.CanvasSize = UDim2.new(0, 0, 10, 0)
 
-		-- Tab Button Click
 		Button.Activated:Connect(function()
-			-- Hide all tabs
 			for _, tab in pairs(Window.Tabs) do
 				tab.Content.Visible = false
 				tab.ColorFrame.BackgroundColor3 = Color3.new(0.145098, 0.133333, 0.392157)
 			end
-			
 			TabContent.Visible = true
 			ColorTabButton.BackgroundColor3 = Color3.new(0.45098, 0, 1)
 			Window.CurrentTab = Tab
@@ -328,16 +324,41 @@ function Library:CreateWindow(options)
 		
 		print("Somtank 1")
 		local NewHoldSize = 5
+		
 		-- Hover Effects
-		Button.MouseEnter:Connect(function()
+		--Button.MouseEnter:Connect(function()
+		--	tweenFrameSize(TabButton, UDim2.new(0, 191,0, 36 + NewHoldSize), 0.3)
+		--	tweenFrameSize(ColorTabButton, UDim2.new(0, 7,0, 36 + NewHoldSize), 0.5)
+		--	tweenButtonColor(ColorTabButton, Color3.new(0.364706, 0, 0.807843), 0.25)
+		--end)
+
+        Button.MouseEnter:Connect(function()
 			tweenFrameSize(TabButton, UDim2.new(0, 191,0, 36 + NewHoldSize), 0.3)
 			tweenFrameSize(ColorTabButton, UDim2.new(0, 7,0, 36 + NewHoldSize), 0.5)
-			tweenButtonColor(ColorTabButton, Color3.new(0.364706, 0, 0.807843), 0.25)
+	        tweenFrameSize(TextTabButton, UDim2.new(0, 131,0, 28 + NewHoldSize), 0.3)
+			tweenButtonColor(ColorTabButton, Color3.new(0.364706, 0, 0.807843), 0.25)			
+         	tweenFrameSize(BackgroundMain, UDim2.new(0, 191,0, 36 + NewHoldSize), 0.3)
+			tweenFramePosition(BackgroundMain, UDim2.new(0, 0,0, 0), 0.3)
+	        tweenFramePosition(ColorTabButton, UDim2.new(0.18, 0,0.104, 0), 0.3)
+			tweenFramePosition(TextTabButton, UDim2.new(0.18, 0,0.104, 0), 0.3)
 		end)
+
+		--Button.MouseLeave:Connect(function()
+		--	tweenFrameSize(TabButton, UDim2.new(0, 144,0, 36), 0.3)
+	    -- 	tweenFrameSize(ColorTabButton, UDim2.new(0, 8,0, 36), 0.3)
+		--	if Window.CurrentTab ~= Tab then
+		--		tweenButtonColor(ColorTabButton, Color3.new(0.145098, 0.133333, 0.392157), 0.17)
+		--	end
+		--end)
 
 		Button.MouseLeave:Connect(function()
 			tweenFrameSize(TabButton, UDim2.new(0, 144,0, 36), 0.3)
-			tweenFrameSize(ColorTabButton, UDim2.new(0, 8,0, 36), 0.3)
+			tweenFrameSize(ColorMainButton1, UDim2.new(0, 8,0, 36), 0.3)
+			tweenFrameSize(TextMainButton1, UDim2.new(0, 131,0, 28), 0.3)
+			tweenFrameSize(BackgroundMain, UDim2.new(0, 142,0, 36), 0.3)
+			tweenFramePosition(BackgroundMain, UDim2.new(0, 50,0, 0), 0.3)
+			tweenFramePosition(ColorMainButton1, UDim2.new(0.32, 0,0, 0), 0.3)
+			tweenFramePosition(TextMainButton1, UDim2.new(0.38, 0,0.104, 0), 0.3)
 			if Window.CurrentTab ~= Tab then
 				tweenButtonColor(ColorTabButton, Color3.new(0.145098, 0.133333, 0.392157), 0.17)
 			end
