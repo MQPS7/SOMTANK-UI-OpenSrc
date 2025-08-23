@@ -2,8 +2,6 @@
 
 local a a={cache={}, load=function(b)if not a.cache[b]then a.cache[b]={c=a[b]()}end return a.cache[b].c end}do function a.a()
 
-
-
 		local b=game:GetService"RunService"local c=
 			b.Heartbeat
 		local d=game:GetService"UserInputService"
@@ -860,14 +858,13 @@ local a a={cache={}, load=function(b)if not a.cache[b]then a.cache[b]={c=a[b]()}
 					task.spawn(function()
 						task.wait(.1)
 						h.UIElements.FullScreen.Visible=false
-                        print("DesTroy Iaskdmosd")
+						if getgenv().MainButton677 then
+							getgenv().MainButton677:Destroy()
+						end
 					end)
 				end
 				h.UIElements.Main.Visible=false
-
 				e(h.UIElements.MainContainer,0.1,{ImageTransparency=1}):Play()
-
-
 
 				task.spawn(function()
 					task.wait(.1)
@@ -7727,20 +7724,7 @@ function aa.CreateWindow(j,k)
 
 	aa.Transparent=k.Transparent
 	aa.Window=r
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	
 	return r
 end
 
