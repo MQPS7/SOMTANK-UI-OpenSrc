@@ -860,6 +860,7 @@ local a a={cache={}, load=function(b)if not a.cache[b]then a.cache[b]={c=a[b]()}
 					task.spawn(function()
 						task.wait(.1)
 						h.UIElements.FullScreen.Visible=false
+                        print("DesTroy Iaskdmosd")
 					end)
 				end
 				h.UIElements.Main.Visible=false
