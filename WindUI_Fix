@@ -3481,7 +3481,9 @@ end end function a.u()
 local aa={}
 
 local ab=a.load'b'
-local ac=ab.New local ad = ab.Tween
+local ac=ab.New local ad=
+ab.Tween
+
 
 function aa.New(ae,af,ag,ah,ai)
 local aj=ai or 10
@@ -3920,127 +3922,239 @@ end
 
 
 return aa end function a.x()
-local aa=(cloneref or clonereference or function(aa)return aa end)
+    local aa = (cloneref or clonereference or function(aa) return aa end)
+    local ab = aa(game:GetService "HttpService")
+    
+    local ac
+    local ad = {
+        Folder = nil,
+        Path = nil,
+        Configs = {},
+        -- Parser: ตัวจัดการแปลงค่า UI
+        Parser = {
+            Colorpicker = {
+                Save = function(ae) return { __type = ae.__type, value = ae.Default:ToHex(), transparency = ae.Transparency or nil } end,
+                Load = function(ae, af) if ae and ae.Update then ae:Update(Color3.fromHex(af.value), af.transparency or nil) end end
+            },
+            Dropdown = {
+                Save = function(ae) return { __type = ae.__type, value = ae.Value } end,
+                Load = function(ae, af) if ae and ae.Select then ae:Select(af.value) end end
+            },
+            Input = {
+                Save = function(ae) return { __type = ae.__type, value = ae.Value } end,
+                Load = function(ae, af) if ae and ae.Set then ae:Set(af.value) end end
+            },
+            Keybind = {
+                Save = function(ae) return { __type = ae.__type, value = ae.Value } end,
+                Load = function(ae, af) if ae and ae.Set then ae:Set(af.value) end end
+            },
+            Slider = {
+                Save = function(ae) return { __type = ae.__type, value = ae.Value.Default } end,
+                Load = function(ae, af) if ae and ae.Set then ae:Set(tonumber(af.value)) end end
+            },
+            Toggle = {
+                Save = function(ae) return { __type = ae.__type, value = ae.Value } end,
+                Load = function(ae, af) if ae and ae.Set then ae:Set(af.value) end end
+            },
+        }
+    }
 
+    function ad.Init(ae, af)
+        if not af.Folder then
+            warn("[ WindUI.ConfigManager ] Window.Folder is not specified.")
+            return false
+        end
 
-local ab=aa(game:GetService"HttpService")
+        ac = af
+        ad.Folder = ac.Folder
+        ad.Path = "WindUI/" .. tostring(ad.Folder) .. "/config/"
 
-local ac
+        if not isfolder("WindUI/" .. ad.Folder) then
+            makefolder("WindUI/" .. ad.Folder)
+            if not isfolder("WindUI/" .. ad.Folder .. "/config/") then
+                makefolder("WindUI/" .. ad.Folder .. "/config/")
+            end
+        end
 
-local ad
-ad={
-Folder=nil,
-Path=nil,
-Configs={},
-Parser={
-Colorpicker={
-Save=function(ae)
-return{
-__type=ae.__type,
-value=ae.Default:ToHex(),
-transparency=ae.Transparency or nil,
-}
-end,
-Load=function(ae,af)
-if ae and ae.Update then
-ae:Update(Color3.fromHex(af.value),af.transparency or nil)
-end
-end
-},
-Dropdown={
-Save=function(ae)
-return{
-__type=ae.__type,
-value=ae.Value,
-}
-end,
-Load=function(ae,af)
-if ae and ae.Select then
-ae:Select(af.value)
-end
-end
-},
-Input={
-Save=function(ae)
-return{
-__type=ae.__type,
-value=ae.Value,
-}
-end,
-Load=function(ae,af)
-if ae and ae.Set then
-ae:Set(af.value)
-end
-end
-},
-Keybind={
-Save=function(ae)
-return{
-__type=ae.__type,
-value=ae.Value,
-}
-end,
-Load=function(ae,af)
-if ae and ae.Set then
-ae:Set(af.value)
-end
-end
-},
-Slider={
-Save=function(ae)
-return{
-__type=ae.__type,
-value=ae.Value.Default,
-}
-end,
-Load=function(ae,af)
-if ae and ae.Set then
-ae:Set(tonumber(af.value))
-end
-end
-},
-Toggle={
-Save=function(ae)
-return{
-__type=ae.__type,
-value=ae.Value,
-}
-end,
-Load=function(ae,af)
-if ae and ae.Set then
-ae:Set(af.value)
-end
-end
-},
-}
-}
+        local ag = ad:AllConfigs()
+        for ah, ai in next, ag do
+            if isfile and readfile and isfile(ai .. ".json") then
+                pcall(function() 
+                    ad.Configs[ai] = readfile(ai .. ".json")
+                end)
+            end
+        end
+        return ad
+    end
 
-function ad.Init(ae,af)
-if not af.Folder then
-warn"[ WindUI.ConfigManager ] Window.Folder is not specified."
-return false
-end
+    function ad.CreateConfig(ae, af, ag)
+        local ah = {
+            Path = ad.Path .. af .. ".json",
+            Elements = {},
+            CustomData = {},
+            AutoLoad = ag or false,
+            Version = 1.2,
+            LastSaveTime = 0, -- เพิ่มตัวจับเวลาเซฟ
+        }
 
-ac=af
-ad.Folder=ac.Folder
-ad.Path="WindUI/"..tostring(ad.Folder).."/config/"
+        if not af then return false, "No config file is selected" end
 
-if not isfolder("WindUI/"..ad.Folder)then
-makefolder("WindUI/"..ad.Folder)
-if not isfolder("WindUI/"..ad.Folder.."/config/")then
-makefolder("WindUI/"..ad.Folder.."/config/")
-end
-end
+        function ah.SetAsCurrent(ai) ac:SetCurrentConfig(ah) end
+        function ah.Register(ai, aj, ak) ah.Elements[aj] = ak end
+        function ah.Set(ai, aj, ak) ah.CustomData[aj] = ak end
+        function ah.Get(ai, aj) return ah.CustomData[aj] end
+        function ah.SetAutoLoad(ai, aj) ah.AutoLoad = aj end
 
-local ag=ad:AllConfigs()
+        function ah.Save(ai)
+            -- [FIX] ป้องกันการ Save รัวเกินไป (Debounce 1 วินาที)
+            if tick() - ah.LastSaveTime < 1 then return end
+            ah.LastSaveTime = tick()
 
-for ah,ai in next,ag do
-if isfile and readfile and isfile(ai..".json")then
-ad.Configs[ai]=readfile(ai..".json")
-end
-end
+            if ac.PendingFlags then
+                for aj, ak in next, ac.PendingFlags do
+                    ah:Register(aj, ak)
+                end
+            end
 
-return ad
+            local aj = {
+                __version = ah.Version,
+                __elements = {},
+                __autoload = ah.AutoLoad,
+                __custom = ah.CustomData
+            }
+
+            for ak, al in next, ah.Elements do
+                if ad.Parser[al.__type] then
+                    aj.__elements[tostring(ak)] = ad.Parser[al.__type].Save(al)
+                end
+            end
+
+            -- [FIX] ใช้ pcall เพื่อไม่ให้สคริปต์พังถ้าเซฟไม่ผ่าน
+            local success, err = pcall(function()
+                local am = ab:JSONEncode(aj)
+                if writefile then writefile(ah.Path, am) end
+            end)
+            
+            if not success then warn("[WindUI] Save Error: " .. tostring(err)) end
+            return aj
+        end
+
+        function ah.Load(ai)
+            if isfile and not isfile(ah.Path) then return false, "Config file does not exist" end
+
+            local aj, ak = pcall(function()
+                local content = readfile(ah.Path)
+                return ab:JSONDecode(content)
+            end)
+
+            if not aj then return false, "Failed to parse config file" end
+
+            if not ak.__version then
+                local al = { __version = ah.Version, __elements = ak, __custom = {} }
+                ak = al
+            end
+
+            if ac.PendingFlags then
+                for al, am in next, ac.PendingFlags do ah:Register(al, am) end
+            end
+
+            -- [FIX] Batch Loading: ทยอยโหลดทีละนิดเพื่อแก้แลค
+            task.spawn(function()
+                local count = 0
+                for al, am in next, (ak.__elements or {}) do
+                    if ah.Elements[al] and ad.Parser[am.__type] then
+                        pcall(function()
+                            ad.Parser[am.__type].Load(ah.Elements[al], am)
+                        end)
+                        
+                        count = count + 1
+                        -- ทุกๆ 20 ตัว ให้หยุดพัก 1 เฟรม เพื่อให้เกมหายใจ (แก้จอค้าง)
+                        if count % 20 == 0 then 
+                            task.wait() 
+                        end
+                    end
+                end
+            end)
+
+            ah.CustomData = ak.__custom or {}
+            return ah.CustomData
+        end
+
+        function ah.Delete(ai)
+            if not delfile then return false, "delfile function is not available" end
+            if not isfile(ah.Path) then return false, "Config file does not exist" end
+            
+            local aj, ak = pcall(function() delfile(ah.Path) end)
+            if not aj then return false, "Failed to delete: " .. tostring(ak) end
+            
+            ad.Configs[af] = nil
+            if ac.CurrentConfig == ah then ac.CurrentConfig = nil end
+            return true, "Config deleted successfully"
+        end
+
+        function ah.GetData(ai)
+            return { elements = ah.Elements, custom = ah.CustomData, autoload = ah.AutoLoad }
+        end
+
+        if isfile(ah.Path) then
+            local ai, aj = pcall(function() return ab:JSONDecode(readfile(ah.Path)) end)
+            if ai and aj and aj.__autoload then
+                ah.AutoLoad = true
+                task.spawn(function()
+                    task.wait(0.5)
+                    local ak, al = pcall(function() return ah:Load() end)
+                    if ak then
+                        if ac.Debug then print("[ WindUI.ConfigManager ] AutoLoaded config: " .. af) end
+                    else
+                        warn("[ WindUI.ConfigManager ] Failed to AutoLoad: " .. af .. " - " .. tostring(al))
+                    end
+                end)
+            end
+        end
+
+        ah:SetAsCurrent()
+        ad.Configs[af] = ah
+        return ah
+    end
+
+    function ad.Config(ae, af, ag) return ad:CreateConfig(af, ag) end
+
+    function ad.GetAutoLoadConfigs(ae)
+        local af = {}
+        for ag, ah in pairs(ad.Configs) do
+            if ah.AutoLoad then table.insert(af, ag) end
+        end
+        return af
+    end
+
+    function ad.DeleteConfig(ae, af)
+        if not delfile then return false, "delfile N/A" end
+        local ag = ad.Path .. af .. ".json"
+        if not isfile(ag) then return false, "File not found" end
+        
+        local ah, ai = pcall(function() delfile(ag) end)
+        if not ah then return false, "Error: " .. tostring(ai) end
+        
+        ad.Configs[af] = nil
+        if ac.CurrentConfig and ac.CurrentConfig.Path == ag then ac.CurrentConfig = nil end
+        return true, "Deleted"
+    end
+
+    function ad.AllConfigs(ae)
+        if not listfiles then return {} end
+        local af = {}
+        if not isfolder(ad.Path) then makefolder(ad.Path) return af end
+        
+        for ag, ah in next, listfiles(ad.Path) do
+            local ai = ah:match("([^\\/]+)%.json$")
+            if ai then table.insert(af, ai) end
+        end
+        return af
+    end
+
+    function ad.GetConfig(ae, af) return ad.Configs[af] end
+
+    return ad 
 end
 
 function ad.CreateConfig(ae,af,ag)
@@ -4096,57 +4210,38 @@ aj.__elements[tostring(ak)]=ad.Parser[al.__type].Save(al)
 end
 end
 
--- ✅ เพิ่ม coroutine เพื่อไม่ให้ค้าง
-task.spawn(function()
-    local am=ab:JSONEncode(aj)
-    task.wait(0.1) -- ⭐ เพิ่ม delay 0.1 วินาที
-    if writefile then
-        writefile(ah.Path, am)
-    end
-end)
+local am=ab:JSONEncode(aj)
+if writefile then
+writefile(ah.Path,am)
+end
 
 return aj
 end
 
 function ah.Load(ai)
-    if isfile and not isfile(ah.Path) then
-        return false,"Config file does not exist"
-    end
+if isfile and not isfile(ah.Path)then
+return false,"Config file does not exist"
+end
 
-    -- ✅ ใช้ coroutine เพื่อไม่ให้ค้าง
-    local loadedData = nil
-    local isLoaded = false
-    
-    task.spawn(function()
-        local aj,ak=pcall(function()
-            local aj=readfile or function()
-                warn"[ WindUI.ConfigManager ] The config system doesn't work in the studio."
-                return nil
-            end
-            task.wait(0.05) -- ⭐ เพิ่ม delay ตอนอ่าน
-            return ab:JSONDecode(aj(ah.Path))
-        end)
+local aj,ak=pcall(function()
+local aj=readfile or function()
+warn"[ WindUI.ConfigManager ] The config system doesn't work in the studio."
+return nil
+end
+return ab:JSONDecode(aj(ah.Path))
+end)
 
-        if not aj then
-            loadedData = {false,"Failed to parse config file"}
-        else
-            loadedData = ak
-        end
-        isLoaded = true
-    end)
+if not aj then
+return false,"Failed to parse config file"
+end
 
-    -- รอจนกว่าโหลดเสร็จ
-    while not isLoaded do
-        task.wait(0.05)
-    end
-
-    if not loadedData then
-        return false,"Failed to parse config file"
-    end
-
-    -- ... (โหลดข้อมูลต่อ)
-    
-    return ah.CustomData
+if not ak.__version then
+local al={
+__version=ah.Version,
+__elements=ak,
+__custom={}
+}
+ak=al
 end
 
 if ac.PendingFlags then
