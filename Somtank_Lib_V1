@@ -15,18 +15,22 @@ getgenv().PanelObjectTag = {
 	Dropdown_Connection = {},
 }
 
-local GetIcons = nil
-pcall(function()
-	GetIcons = loadstring(game:HttpGet('https://raw.githubusercontent.com/HJSIWN/SomtankLib/refs/heads/main/Icon.lua'))()
-end)
+local GetIcons = loadstring(game:HttpGet('https://raw.githubusercontent.com/HJSIWN/SomtankLib/refs/heads/main/Icon.lua'))()
 if GetIcons then print("✅ Icon loaded!") else print("❌ Icon failed to load!") end
 local function SetIcon(Name, Parent, Color31, ZIndex)
-	local icon = GetIcons.Image({Icon = Name})
-	icon.IconFrame.Parent = Parent or nil
-	icon.IconFrame.Size = UDim2.new(1,0,1,0)
-	icon.IconFrame.Position = UDim2.new(0,0,0,0)
-	icon.IconFrame.ImageColor3 = Color31
-	icon.IconFrame.ZIndex = ZIndex
+	if GetIcons and GetIcons.Image and Name then
+		local success, icon = pcall(function()
+			return GetIcons.Image({Icon = Name})
+		end)
+		if success and icon and icon.IconFrame then
+			icon.IconFrame.Parent = Parent or nil
+			icon.IconFrame.Size = UDim2.new(1,0,1,0)
+			icon.IconFrame.Position = UDim2.new(0,0,0,0)
+			icon.IconFrame.ImageColor3 = Color31
+			icon.IconFrame.ZIndex = ZIndex
+			return
+		end
+	end
 end
 
 getgenv().ValueAdd_U_H = 0
@@ -183,7 +187,7 @@ function Library:CreateWindow(Config)
 	-- 1. Main ScreenGui
 	local SomtankLib = Instance.new("ScreenGui")
 	SomtankLib.Name = "SomtankLib"
-	SomtankLib.Parent = LocalPlayer.PlayerGui-- gethui() or game.CoreGui or LocalPlayer.PlayerGui
+	SomtankLib.Parent = gethui() or game.CoreGui or LocalPlayer.PlayerGui
 	SomtankLib.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	
 	local SomtankLib2 = Instance.new("ScreenGui")
@@ -1515,115 +1519,5 @@ function Library:CreateWindow(Config)
 	
 	return Window_Tab
 end
-
---[[
-
-local Window = Library:CreateWindow({
-	Title = "Somtank",
-	Description = "v0.1 - Just Test version",
-	Folder = "Somtank",
-	ConfigName = "The Forge",
-})
-
-Tab1 = Window:Tab({Icon = "lucide:user",Title = "เมนูหลัก"})
-Tab2 = Window:Tab({Icon = "lucide:wallet",Title = "ฟาร์ม"})
-Tab3 = Window:Tab({Icon = "lucide:settings-2",Title = "ตั้งค่า"})
-
-Window:SelectTap("เมนูหลัก")
-
-toggle1 = Tab1:CreateGroup({Icon = "lucide:user",Title = "เคลื่อนไหว"})
-toggle2 = Tab1:CreateGroup({Title = "การมองเห็น"})
-toggle4 = Tab1:CreateGroup({Icon = "lucide:chart-no-axes-combined",Title = "ส้มตำอร่อยจัด"})
-toggle3 = Tab2:CreateGroup({Icon = "lucide:chess-queen",Title = "ราชา Somtank"})
-
-Click1 = toggle1:Click({
-	Title = "Click1",
-	Callback = function()
-		print("Click")
-	end,
-})
-
-Input1 = toggle1:Input({
-	Flag = "Input_Somatnk1",
-	Title = "Input1",
-	Placeholder = "ใส่ค่าตรงนี้",
-	Value = "Zombie1",
-	Callback = function(value)
-		print("Input "..tostring(value))
-	end
-})
-
-toggle2:Slide({
-	Flag = "Slide_Somatnk1",
-	Title = "Slider",
-	Value = {
-		Step = 1,
-		Min = 0,
-		Max = 100,
-		Default = 50,
-	},
-	Callback = function(value)
-		print("Slide "..tostring(value))
-	end
-})
-
-toggle2:Drop({
-	Flag = "Drop_Somatnk1",
-	Title = "Input1",
-	Values = {"Zombie A", "Zombie B", "Zombie C", "Zombie D", "Zombie E", "Zombie F", "Zombie G"},
-	Value = {"Zombie C"},
-	Multi = true,
-	AllowNone = true,
-	Callback = function(value)
-		print("Drop "..tostring(table.concat(value, ", ")))
-	end
-})
-
-Drop1 = toggle2:Drop({
-	Flag = "Drop_Somatnk2",
-	Title = "Multi = false",
-	Values = {"Zombie A", "Zombie B", "Zombie C", "Zombie D", "Zombie E", "Zombie F", "Zombie G"},
-	Value = {"Zombie C"},
-	Multi = false,
-	AllowNone = true,
-	Callback = function(value)
-		print("Drop "..tostring(table.concat(value, ", ")))
-	end
-})
-
-Comm1 = toggle1:Comm({Title = "💥 เท่ระเบิด"})
-
-toggle1:Toggle({
-	Flag = "Toggle_Somatnk1",
-	Title = "Input1",
-	Value = false,
-	Callback = function(value)
-		print("Toggle "..tostring(value))
-	end
-})
-
-toggle4:Toggle({
-	Flag = "Toggle_Somatnk2",
-	Title = "Input1",
-	Value = false,
-	Callback = function(value)
-		print("Toggle "..tostring(value))
-	end
-})
-
-toggle4:Toggle({
-	Flag = "Toggle_Somatnk3",
-	Title = "Input1",
-	Value = false,
-	Callback = function(value)
-		print("Toggle "..tostring(value))
-	end
-})
-
-CodeBox1 = toggle1:CodeBox({Code = "Hello World"})
-
-Window:LoadConfig()
-
-]]
 
 return Library
