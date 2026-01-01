@@ -214,33 +214,51 @@ function Library:CreateWindow(Config)
 	local UICorner_Main = Instance.new("UICorner")
 	UICorner_Main.CornerRadius = UDim.new(0, 8)
 	UICorner_Main.Parent = MainFrame
+	
+	pcall(function()
+		ScreenGui_MoveIcon = Instance.new("ScreenGui")
+		ScreenGui_MoveIcon.Parent = gethui() or game.CoreGui or LocalPlayer.PlayerGui
+		dragging, dragStart, startPos, OpenMainFrame = false, nil, nil, false
 
-	local dragging = false
-	local dragStart, startPos, dragConnection, inputConnection
+		MakeDraggableButton = function(button: ImageButton, MoveFrame) button.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then	dragging = true;dragStart = input.Position;	Icon_Position = button.Position;startPos = MoveFrame.Position end end);	UserInputService.InputChanged:Connect(function(input) if dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then local delta = input.Position - dragStart;MoveFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end);	UserInputService.InputEnded:Connect(function(input)	if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end	end); end
+		MakeImageButton = function(Parent, Size, Posi, BGtran, Color, Imtran, imageID)	local NewFrame = Instance.new("ImageButton", Parent);Instance.new("UICorner", NewFrame);	NewFrame.Position = Posi;NewFrame.Size = Size;NewFrame.BackgroundTransparency = BGtran;NewFrame.Image = imageID or "";	NewFrame.ImageTransparency = Imtran;NewFrame.BackgroundColor3 = Color;NewFrame.ImageColor3 = Color;NewFrame.ZIndex = 2;	return NewFrame end
+		MoveIcon = MakeImageButton(ScreenGui_MoveIcon, UDim2.new(0, 51,0, 51), UDim2.new(0.100, 0,0.447, 0), 1, Color3.new(1, 1, 1), 0, "rbxassetid://84408196679900");Instance.new("UIAspectRatioConstraint", MoveIcon);MakeDraggableButton(MoveIcon, MoveIcon)
 
-	MainFrame.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-			dragging = true
-			dragStart = input.Position
-			startPos = MainFrame.Position
-			dragConnection = UserInputService.InputChanged:Connect(function(moveInput)
-				if dragging and (moveInput.UserInputType == Enum.UserInputType.MouseMovement or moveInput.UserInputType == Enum.UserInputType.Touch) then
-					local currentScale = 1
-					if UIScale_Main then
-						currentScale = UIScale_Main.Scale
+		MoveIcon.Activated:Connect(function()
+			if Icon_Position == MoveIcon.Position then
+				OpenMainFrame = not OpenMainFrame
+				MainFrame.Visible = OpenMainFrame
+			end
+		end)
+	end)
+	
+	pcall(function()
+		local dragging = false
+		local dragStart, startPos, dragConnection, inputConnection
+		MainFrame.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				dragging = true
+				dragStart = input.Position
+				startPos = MainFrame.Position
+				dragConnection = UserInputService.InputChanged:Connect(function(moveInput)
+					if dragging and (moveInput.UserInputType == Enum.UserInputType.MouseMovement or moveInput.UserInputType == Enum.UserInputType.Touch) then
+						local currentScale = 1
+						if UIScale_Main then
+							currentScale = UIScale_Main.Scale
+						end
+						local delta = moveInput.Position - dragStart
+						MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + (delta.X / currentScale),startPos.Y.Scale, startPos.Y.Offset + (delta.Y / currentScale))
 					end
-					local delta = moveInput.Position - dragStart
-					MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + (delta.X / currentScale),startPos.Y.Scale, startPos.Y.Offset + (delta.Y / currentScale))
-				end
-			end)
-			inputConnection = input.Changed:Connect(function()
-				if input.UserInputState == Enum.UserInputState.End then
-					dragging = false
-					if dragConnection then dragConnection:Disconnect() end
-					if inputConnection then inputConnection:Disconnect() end
-				end
-			end)
-		end
+				end)
+				inputConnection = input.Changed:Connect(function()
+					if input.UserInputState == Enum.UserInputState.End then
+						dragging = false
+						if dragConnection then dragConnection:Disconnect() end
+						if inputConnection then inputConnection:Disconnect() end
+					end
+				end)
+			end
+		end)
 	end)
 
 	-- 3. Modes_Box (Right)
