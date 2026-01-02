@@ -43,14 +43,11 @@ local function update_handleAutoResize(frame, layout)
 		local mainScreen = frame:FindFirstAncestor("SomtankLib")
 		uiScale = mainScreen and mainScreen:FindFirstChildOfClass("UIScale")
 	end
-
 	if uiScale then currentScale = uiScale.Scale end
 	local contentSize = layout.AbsoluteContentSize
-
 	-- สูตรสำคัญ: ขนาดที่จะตั้งค่า = ขนาดที่วัดได้บนจอ / Scale ปัจจุบัน
 	-- ใช้ LaTeX: $Size.Y.Offset = \frac{AbsoluteContentSize.Y}{Scale}$
 	local correctHeight = contentSize.Y / currentScale
-
 	frame.Size = UDim2.new(frame.Size.X.Scale, frame.Size.X.Offset, 0, correctHeight + 5) -- +5 คือ Padding กันขอบล่าง
 end
 
@@ -179,6 +176,8 @@ end
 
 function Library:CreateWindow(Config)
 	
+	local Window_Tab, DestroyCallback, HideCallback, OpenCallback = {}, function() end, function() end, function() end
+	
 	if Config.Folder == "" then
 		Config.Folder = "Somtank_Configs"
 	end	
@@ -232,6 +231,11 @@ function Library:CreateWindow(Config)
 			if Icon_Position == MoveIcon.Position then
 				OpenMainFrame = not OpenMainFrame
 				MainFrame.Visible = OpenMainFrame
+				
+				if OpenCallback and MainFrame.Visible then
+					pcall(OpenCallback)
+				end
+				
 			end
 		end)
 	end)
@@ -386,17 +390,26 @@ function Library:CreateWindow(Config)
 	ConnerButton.Position = UDim2.new(0.972, 0,0.955, 0)
 	ConnerButton.Image = ""
 	Instance.new("UIAspectRatioConstraint", ConnerButton)
-	
+		
 	DesButton.Activated:Connect(function()
 		SomtankLib:Destroy()
 		SomtankLib2:Destroy()
 		ScreenGui_MoveIcon:Destroy()
+		
+		if DestroyCallback then
+			pcall(DestroyCallback)
+		end
 		
 		getgenv().PanelObjectTag.Loading_All_ConfIg_End_Som = false		
 	end)
 	
 	EyeButton.Activated:Connect(function()
 		MainFrame.Visible = not MainFrame.Visible
+		
+		if HideCallback and not MainFrame.Visible then
+			pcall(HideCallback)
+		end
+		
 	end)
 	
 	SetupResize(MainFrame, UIScale_Main, ConnerButton)
@@ -420,8 +433,6 @@ function Library:CreateWindow(Config)
 		end
 	end
 	
-	local Window_Tab = {}
-	
 	function Window_Tab:LoadConfig()
 		ResetAllSizeGroup()
 		getgenv().PanelObjectTag.Loading_All_ConfIg_End_Som = true
@@ -442,6 +453,24 @@ function Library:CreateWindow(Config)
 					end)
 				end
 			end
+		end
+	end
+
+	function Window_Tab:OnDestroy(func)
+		if typeof(func) == "function" then
+			DestroyCallback = func
+		end
+	end
+	
+	function Window_Tab:OnHide(func)
+		if typeof(func) == "function" then
+			HideCallback = func
+		end
+	end
+	
+	function Window_Tab:OnOpen(func)
+		if typeof(func) == "function" then
+			OpenCallback = func
 		end
 	end
 
@@ -1113,7 +1142,6 @@ function Library:CreateWindow(Config)
 									break
 								end
 								task.wait(0.01)
-								print(tostring(math.random(1,2)))
 								Drop_Down_Frame.Position = UDim2.fromOffset(SelectDropFrame.AbsolutePosition.X, SelectDropFrame.AbsolutePosition.Y + SelectDropFrame.Size.Y.Offset)
 							end
 						end)
