@@ -217,15 +217,13 @@ function Library:CreateWindow(Config)
 	UICorner_Main.CornerRadius = UDim.new(0, 8)
 	UICorner_Main.Parent = MainFrame
 	
-	ScreenGui_MoveIcon = Instance.new("ScreenGui")
 	
-	pcall(function()		
-		ScreenGui_MoveIcon.Parent = gethui() or game.CoreGui or LocalPlayer.PlayerGui
+	pcall(function()
 		dragging, dragStart, startPos, OpenMainFrame = false, nil, nil, false
 
 		MakeDraggableButton = function(button: ImageButton, MoveFrame) button.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then	dragging = true;dragStart = input.Position;	Icon_Position = button.Position;startPos = MoveFrame.Position end end);	UserInputService.InputChanged:Connect(function(input) if dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then local delta = input.Position - dragStart;MoveFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end);	UserInputService.InputEnded:Connect(function(input)	if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end	end); end
 		MakeImageButton = function(Parent, Size, Posi, BGtran, Color, Imtran, imageID)	local NewFrame = Instance.new("ImageButton", Parent);Instance.new("UICorner", NewFrame);	NewFrame.Position = Posi;NewFrame.Size = Size;NewFrame.BackgroundTransparency = BGtran;NewFrame.Image = imageID or "";	NewFrame.ImageTransparency = Imtran;NewFrame.BackgroundColor3 = Color;NewFrame.ImageColor3 = Color;NewFrame.ZIndex = 2;	return NewFrame end
-		MoveIcon = MakeImageButton(ScreenGui_MoveIcon, UDim2.new(0, 51,0, 51), UDim2.new(0.100, 0,0.447, 0), 1, Color3.new(1, 1, 1), 0, "rbxassetid://84408196679900");Instance.new("UIAspectRatioConstraint", MoveIcon);MakeDraggableButton(MoveIcon, MoveIcon)
+		MoveIcon = MakeImageButton(SomtankLib2, UDim2.new(0, 51,0, 51), UDim2.new(0.100, 0,0.447, 0), 1, Color3.new(1, 1, 1), 0, "rbxassetid://84408196679900");Instance.new("UIAspectRatioConstraint", MoveIcon);MakeDraggableButton(MoveIcon, MoveIcon)
 
 		MoveIcon.Activated:Connect(function()
 			if Icon_Position == MoveIcon.Position then
@@ -1297,7 +1295,7 @@ function Library:CreateWindow(Config)
 						UICorner_DropChild.CornerRadius = UDim.new(0, 8)
 						
 						local DropButton = Instance.new("ImageButton", DropChild)
-						DropButton.Size = UDim2.new(0, 20,0, 22)
+						DropButton.Size = UDim2.new(0, 22,0, 22)
 						DropButton.Position = UDim2.new(0.866, 0,0.133, 0)
 						DropButton.BackgroundTransparency = 1
 						DropButton.ImageColor3 = Color3.new(0.227451, 0.176471, 0.317647)
@@ -1307,6 +1305,13 @@ function Library:CreateWindow(Config)
 						
 						local UICorner_DropButton = Instance.new("UICorner", DropButton)
 						UICorner_DropButton.CornerRadius = UDim.new(0, 8)
+						
+						local RealDropButton = Instance.new("ImageButton", DropChild)
+						RealDropButton.Size = UDim2.new(1, 0,1, 0)
+						RealDropButton.BackgroundTransparency = 1
+						RealDropButton.Image = ""
+						RealDropButton.Name = "RealButton"
+						RealDropButton.ZIndex = 5
 						
 						local Title = Instance.new("TextLabel", DropChild)
 						Title.Size = UDim2.new(0, 148,0, 21)
@@ -1321,7 +1326,8 @@ function Library:CreateWindow(Config)
 						Title.TextWrapped = true
 						Add_UITextSizeConstraint(Title)
 						
-						DropButton.Activated:Connect(function()
+						RealDropButton.Activated:Connect(function()
+							print(DropChild.Name)
 							local isSelected = DropButton:GetAttribute("IsSelected") or false
 							if not isSelected then
 								if options.Multi == false then
