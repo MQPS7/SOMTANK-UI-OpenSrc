@@ -616,7 +616,7 @@ function Library:CreateWindow(Config)
 			
 			local UIListLayout_Group_Frame = Instance.new("UIListLayout", Group_Frame)
 			UIListLayout_Group_Frame.SortOrder = Enum.SortOrder.LayoutOrder
-			UIListLayout_Group_Frame.Padding = UDim.new(0, -7)
+			UIListLayout_Group_Frame.Padding = UDim.new(0, -5)
 			
 			local Title_Frame = Instance.new("Frame", Group_Frame)
 			Title_Frame.Name = "Title_Frame"
