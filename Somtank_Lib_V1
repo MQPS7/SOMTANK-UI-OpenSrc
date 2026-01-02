@@ -27,7 +27,7 @@ local function SetIcon(Name, Parent, Color31, ZIndex)
 			icon.IconFrame.Parent = Parent or nil
 			icon.IconFrame.Size = UDim2.new(1,0,1,0)
 			icon.IconFrame.Position = UDim2.new(0,0,0,0)
-			icon.IconFrame.ImageColor3 = Color31
+			icon.IconFrame.ImageColor3 = Color3.new(0.658824, 0.6, 1)
 			icon.IconFrame.ZIndex = ZIndex
 			return
 		end
@@ -616,6 +616,7 @@ function Library:CreateWindow(Config)
 			
 			local UIListLayout_Group_Frame = Instance.new("UIListLayout", Group_Frame)
 			UIListLayout_Group_Frame.SortOrder = Enum.SortOrder.LayoutOrder
+			UIListLayout_Group_Frame.Padding = UDim.new(0, -7)
 			
 			local Title_Frame = Instance.new("Frame", Group_Frame)
 			Title_Frame.Name = "Title_Frame"
