@@ -177,6 +177,8 @@ end
 function Library:CreateWindow(Config)
 	
 	local Window_Tab, DestroyCallback, HideCallback, OpenCallback = {}, function() end, function() end, function() end
+	-- Enum.Font.FredokaOne
+	local Font_Main = Enum.Font.Highway
 	
 	if Config.Folder == "" then
 		Config.Folder = "Somtank_Configs"
@@ -320,7 +322,7 @@ function Library:CreateWindow(Config)
 	TextLabel_UserFrame.Size = UDim2.new(0, 116,0, 36)
 	TextLabel_UserFrame.Position = UDim2.new(0.255, 3,0.071, 0)
 	TextLabel_UserFrame.Text = LocalPlayer.Name or LocalPlayer.DisplayName or "Unknow User!"
-	TextLabel_UserFrame.Font = Enum.Font.FredokaOne
+	TextLabel_UserFrame.Font = Font_Main
 	TextLabel_UserFrame.TextColor3 = Color3.fromRGB(255, 255, 255)
 	TextLabel_UserFrame.TextXAlignment = Enum.TextXAlignment.Left
 	TextLabel_UserFrame.TextSize = 20
@@ -333,7 +335,7 @@ function Library:CreateWindow(Config)
 	DesButton.Size = UDim2.new(0, 32,0, 31)
 	DesButton.Position = UDim2.new(0.937, 0,0.016, 0)
 	DesButton.Text = "X"
-	DesButton.Font = Enum.Font.FredokaOne
+	DesButton.Font = Font_Main
 	DesButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 	DesButton.TextSize = 14
 	Instance.new("UIAspectRatioConstraint", DesButton)
@@ -344,7 +346,7 @@ function Library:CreateWindow(Config)
 	EyeButton.Size = UDim2.new(0, 32,0, 31)
 	EyeButton.Position = UDim2.new(0.873, 0,0.013, 0)
 	EyeButton.Text = "-"
-	EyeButton.Font = Enum.Font.FredokaOne
+	EyeButton.Font = Font_Main
 	EyeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 	EyeButton.TextSize = 14
 	Instance.new("UIAspectRatioConstraint", EyeButton)
@@ -355,7 +357,7 @@ function Library:CreateWindow(Config)
 	PanelTitle.Size = UDim2.new(0, 335,0, 23)
 	PanelTitle.Position = UDim2.new(0.078, 0,-0, 3)
 	PanelTitle.Text = Config.Title or "Exploits Menu"
-	PanelTitle.Font = Enum.Font.FredokaOne
+	PanelTitle.Font = Font_Main
 	PanelTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
 	PanelTitle.TextXAlignment = Enum.TextXAlignment.Left
 	PanelTitle.TextSize = 20
@@ -367,7 +369,7 @@ function Library:CreateWindow(Config)
 	PanelDescription.Size = UDim2.new(0, 335,0, 14)
 	PanelDescription.Position = UDim2.new(0.078, 0,0.058, 3)
 	PanelDescription.Text = Config.Description or "version - 0.1"
-	PanelDescription.Font = Enum.Font.FredokaOne
+	PanelDescription.Font = Font_Main
 	PanelDescription.TextColor3 = Color3.fromRGB(255, 255, 255)
 	PanelDescription.TextXAlignment = Enum.TextXAlignment.Left
 	PanelDescription.TextSize = 20
@@ -496,7 +498,7 @@ function Library:CreateWindow(Config)
 		PanelTitle.Name = "Title_Panel"
 		PanelTitle.BackgroundTransparency = 1
 		PanelTitle.Text = Tab_Set.Title or "Unknow"
-		PanelTitle.Font = Enum.Font.FredokaOne
+		PanelTitle.Font = Font_Main
 		PanelTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
 		PanelTitle.TextXAlignment = Enum.TextXAlignment.Left
 		PanelTitle.TextSize = 20
@@ -627,7 +629,7 @@ function Library:CreateWindow(Config)
 			TitleTap.Name = "TitleTap"
 			TitleTap.BackgroundTransparency = 1
 			TitleTap.Text = Group_Info.Title or "Unknow"
-			TitleTap.Font = Enum.Font.FredokaOne
+			TitleTap.Font = Font_Main
 			TitleTap.TextColor3 = Color3.fromRGB(255, 255, 255)
 			TitleTap.TextXAlignment = Enum.TextXAlignment.Left
 			TitleTap.TextSize = 20
@@ -697,7 +699,7 @@ function Library:CreateWindow(Config)
 				Title_Func.Position = UDim2.new(0.069, 0,0.003, 3)
 				Title_Func.BackgroundTransparency = 1
 				Title_Func.Text = options.Title or "Click_Frame"
-				Title_Func.Font = Enum.Font.FredokaOne
+				Title_Func.Font = Font_Main
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
 				Title_Func.TextSize = 20
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
@@ -778,7 +780,7 @@ function Library:CreateWindow(Config)
 				Title_Func.Position = UDim2.new(0.065, 0,0.05, 3)
 				Title_Func.BackgroundTransparency = 1
 				Title_Func.Text = options.Title or "Click_Frame"
-				Title_Func.Font = Enum.Font.FredokaOne
+				Title_Func.Font = Font_Main
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
 				Title_Func.TextSize = 20
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
@@ -810,7 +812,7 @@ function Library:CreateWindow(Config)
 				TextBox.Position = UDim2.new(0.031, 0,0.073, 0)
 				TextBox.BackgroundTransparency = 1
 				TextBox.Name = "TextBox"
-				TextBox.Font = Enum.Font.FredokaOne
+				TextBox.Font = Font_Main
 				TextBox.TextColor3 = Color3.new(1, 1, 1)
 				TextBox.PlaceholderColor3 = Color3.new(1, 1, 1)
 				TextBox.TextSize = 14
@@ -900,7 +902,7 @@ function Library:CreateWindow(Config)
 				Title_Func.Position = UDim2.new(0.065, 0, 0.084, 3)
 				Title_Func.BackgroundTransparency = 1
 				Title_Func.Text = options.Title or "Click_Frame"
-				Title_Func.Font = Enum.Font.FredokaOne
+				Title_Func.Font = Font_Main
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
 				Title_Func.TextSize = 20
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
@@ -913,7 +915,7 @@ function Library:CreateWindow(Config)
 				Value_Func.Position = UDim2.new(0.865, 0, 0.085, 3)
 				Value_Func.BackgroundTransparency = 1
 				Value_Func.Text = options.Default_Value or 0
-				Value_Func.Font = Enum.Font.FredokaOne
+				Value_Func.Font = Font_Main
 				Value_Func.TextColor3 = Color3.new(1, 1, 1)
 				Value_Func.TextSize = 20
 				Value_Func.TextXAlignment = Enum.TextXAlignment.Left
@@ -1039,7 +1041,7 @@ function Library:CreateWindow(Config)
 				Title_Func.Position = UDim2.new(0.065, 0, 0.05, 3)
 				Title_Func.BackgroundTransparency = 1
 				Title_Func.Text = options.Title or "Click_Frame"
-				Title_Func.Font = Enum.Font.FredokaOne
+				Title_Func.Font = Font_Main
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
 				Title_Func.TextSize = 20
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
@@ -1068,7 +1070,7 @@ function Library:CreateWindow(Config)
 				DropText.Position = UDim2.new(0.031, 0, 0.073, 0)
 				DropText.BackgroundTransparency = 1
 				DropText.Text = "..."
-				DropText.Font = Enum.Font.FredokaOne
+				DropText.Font = Font_Main
 				DropText.TextColor3 = Color3.new(1, 1, 1)
 				DropText.TextSize = 20
 				DropText.TextXAlignment = Enum.TextXAlignment.Left
@@ -1175,7 +1177,7 @@ function Library:CreateWindow(Config)
 				SearchBox.Position = UDim2.new(0, 5,0, 4)
 				SearchBox.BackgroundTransparency = 1
 				SearchBox.Name = "SearchBox"
-				SearchBox.Font = Enum.Font.FredokaOne
+				SearchBox.Font = Font_Main
 				SearchBox.TextColor3 = Color3.new(1, 1, 1)
 				SearchBox.PlaceholderColor3 = Color3.new(1, 1, 1)
 				SearchBox.TextSize = 14
@@ -1337,7 +1339,7 @@ function Library:CreateWindow(Config)
 						Title.Position = UDim2.new(0.03, 0,0.107, 0)
 						Title.BackgroundTransparency = 1
 						Title.Text = Name or "Unknow"
-						Title.Font = Enum.Font.FredokaOne
+						Title.Font = Font_Main
 						Title.TextColor3 = Color3.new(1, 1, 1)
 						Title.TextSize = 20
 						Title.Name = "Title"
@@ -1456,7 +1458,7 @@ function Library:CreateWindow(Config)
 				Title_Func.Position = UDim2.new(0.069, 0,0.003, 3)
 				Title_Func.BackgroundTransparency = 1
 				Title_Func.Text = options.Title or "Click_Frame"
-				Title_Func.Font = Enum.Font.FredokaOne
+				Title_Func.Font = Font_Main
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
 				Title_Func.TextSize = 20
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
@@ -1549,7 +1551,7 @@ function Library:CreateWindow(Config)
 				TextLabel.Position = UDim2.new(0.037, 0,0.128, 0)
 				TextLabel.BackgroundTransparency = 1
 				TextLabel.Text = options.Title or "Unknow"
-				TextLabel.Font = Enum.Font.FredokaOne
+				TextLabel.Font = Font_Main
 				TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 				TextLabel.TextXAlignment = Enum.TextXAlignment.Left
 				TextLabel.TextSize = 20
@@ -1613,7 +1615,7 @@ function Library:CreateWindow(Config)
 				TextLabel.BackgroundTransparency = 1
 				TextLabel.Size = UDim2.new(1, -10, 0, 0)
 				TextLabel.Position = UDim2.new(0, 5, 0, 0)
-				TextLabel.Font = Enum.Font.FredokaOne
+				TextLabel.Font = Font_Main
 				TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 				TextLabel.TextSize = 12
 				TextLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -1672,7 +1674,7 @@ function Library:CreateWindow(Config)
 				Title_Label.Position = UDim2.new(0.065, 0, 0.12, 0)
 				Title_Label.BackgroundTransparency = 1
 				Title_Label.Text = options.Title or "Color Picker"
-				Title_Label.Font = Enum.Font.FredokaOne
+				Title_Label.Font = Font_Main
 				Title_Label.TextColor3 = Color3.new(1, 1, 1)
 				Title_Label.TextSize = 16
 				Title_Label.TextXAlignment = Enum.TextXAlignment.Left
@@ -1828,7 +1830,7 @@ function Library:CreateWindow(Config)
 				Title_Func.Position = UDim2.new(0.065, 0, 0.02, 0)
 				Title_Func.BackgroundTransparency = 1
 				Title_Func.Text = options.Title or "3D View Port"
-				Title_Func.Font = Enum.Font.FredokaOne
+				Title_Func.Font = Font_Main
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
 				Title_Func.TextSize = 16
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
