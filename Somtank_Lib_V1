@@ -1078,7 +1078,7 @@ function Library:CreateWindow(Config)
 				local function CloseDropDown(Drop_Down_FrameC)					
 					Drop_Down_FrameC.Position = UDim2.fromOffset(SelectDropFrame.AbsolutePosition.X, SelectDropFrame.AbsolutePosition.Y + SelectDropFrame.Size.Y.Offset)
 					Drop_Down_FrameC.Visible = true
-					local Tween = TweenFrame(Drop_Down_FrameC, {Position = UDim2.fromOffset(SelectDropFrame.AbsolutePosition.X, SelectDropFrame.AbsolutePosition.Y + 500)}, 0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+					local Tween = TweenFrame(Drop_Down_FrameC, {Position = UDim2.fromOffset(SelectDropFrame.AbsolutePosition.X, SelectDropFrame.AbsolutePosition.Y + 500)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.In)
 					Tween.Completed:Connect(function()
 						task.wait(0.1)
 						Drop_Down_FrameC.Visible = false
@@ -1105,7 +1105,7 @@ function Library:CreateWindow(Config)
 						getgenv().PanelObjectTag.Dropdown_Connection = Drop_Down_Frame
 						Drop_Down_Frame.Position = UDim2.fromOffset(SelectDropFrame.AbsolutePosition.X, SelectDropFrame.AbsolutePosition.Y + 500)
 						Drop_Down_Frame.Visible = true
-						local Tween = TweenFrame(Drop_Down_Frame, {Position = UDim2.fromOffset(SelectDropFrame.AbsolutePosition.X, SelectDropFrame.AbsolutePosition.Y + SelectDropFrame.Size.Y.Offset)}, 0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+						local Tween = TweenFrame(Drop_Down_Frame, {Position = UDim2.fromOffset(SelectDropFrame.AbsolutePosition.X, SelectDropFrame.AbsolutePosition.Y + SelectDropFrame.Size.Y.Offset)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 						Tween.Completed:Connect(function()
 							Button.Active = true
 							while Drop_Down_Frame:GetAttribute("IsOpen") do
@@ -1656,6 +1656,11 @@ function Library:CreateWindow(Config)
 				local PopupStroke = Instance.new("UIStroke", ColorPopup)
 				PopupStroke.Color = Color3.new(0.5, 0.5, 0.5)
 				PopupStroke.Thickness = 1
+				
+				local UIScale_ColorPopup = Instance.new("UIScale", ColorPopup)
+				UIScale_ColorPopup.Name = "UIScale"
+				UIScale_ColorPopup.Scale = 1
+				table.insert(getgenv().PanelObjectTag.UIScale, UIScale_ColorPopup)
 
 				local GridContainer = Instance.new("ScrollingFrame", ColorPopup)
 				GridContainer.Size = UDim2.new(0, 171,0, 100)
@@ -1693,7 +1698,8 @@ function Library:CreateWindow(Config)
 						end)
 					end
 				end
-
+				
+				ColorPopup:SetAttribute("IsOpen", false)
 				-- ระบบเปิด/ปิด Popup และจัดการตำแหน่ง
 				Button.Activated:Connect(function()
 					local isVisible = not ColorPopup.Visible
@@ -1704,6 +1710,16 @@ function Library:CreateWindow(Config)
 
 					ColorPopup.Visible = isVisible
 					if isVisible then
+						
+						if getgenv().PanelObjectTag.Dropdown_Connection and getgenv().PanelObjectTag.Dropdown_Connection ~= ColorPopup then
+							pcall(function()
+								getgenv().PanelObjectTag.Dropdown_Connection:SetAttribute("IsOpen", false)
+								getgenv().PanelObjectTag.Dropdown_Connection.Visible = false
+							end)
+							getgenv().PanelObjectTag.Dropdown_Connection = nil
+						end
+						getgenv().PanelObjectTag.Dropdown_Connection = ColorPopup
+						
 						while isVisible do
 							if not isVisible then
 								break
@@ -1777,7 +1793,7 @@ function Library:CreateWindow(Config)
 				ViewportFrame.Position = UDim2.new(0.05, 0, 0.2, 0)
 				ViewportFrame.BackgroundTransparency = 1
 				ViewportFrame.LightColor = Color3.fromRGB(255, 255, 255)
-				ViewportFrame.Ambient = Color3.fromRGB(150, 150, 150)
+				ViewportFrame.Ambient = Color3.fromRGB(255, 255, 255)
 
 				local ViewportCamera = Instance.new("Camera")
 				ViewportFrame.CurrentCamera = ViewportCamera
