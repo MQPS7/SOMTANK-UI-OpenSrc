@@ -374,6 +374,7 @@ function Library:CreateWindow(Config)
 	PanelDescription.TextXAlignment = Enum.TextXAlignment.Left
 	PanelDescription.TextSize = 20
 	PanelDescription.TextScaled = true
+	PanelDescription.TextTransparency = 0.3
 	
 	local Logo_Panel = Instance.new("ImageLabel", MainFrame)
 	Logo_Panel.Name = "Icon"
