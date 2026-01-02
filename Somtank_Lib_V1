@@ -45,7 +45,6 @@ local function update_handleAutoResize(frame, layout)
 	end
 
 	if uiScale then currentScale = uiScale.Scale end
-
 	local contentSize = layout.AbsoluteContentSize
 
 	-- สูตรสำคัญ: ขนาดที่จะตั้งค่า = ขนาดที่วัดได้บนจอ / Scale ปัจจุบัน
@@ -104,7 +103,13 @@ end
 local function getCurrentConfigTable()
 	local config = {}
 	for flag, data in pairs(getgenv().PanelObjectTag.All_Func) do
-		config[flag] = data.Value
+		local val = data.Value
+		if typeof(val) == "Color3" then
+			-- แปลง Color3 เป็น Table เพื่อให้เซฟลง JSON ได้
+			config[flag] = {R = val.R, G = val.G, B = val.B}
+		else
+			config[flag] = val
+		end
 	end
 	return config
 end
@@ -126,7 +131,7 @@ local Library = {}
 local function Add_UITextSizeConstraint(Parent)
 	local New_UITextSizeConstraint = Instance.new("UITextSizeConstraint", Parent)
 	New_UITextSizeConstraint.MaxTextSize = 20
-	New_UITextSizeConstraint.MinTextSize = 15
+	New_UITextSizeConstraint.MinTextSize = 10
 	return New_UITextSizeConstraint
 end
 
@@ -317,6 +322,7 @@ function Library:CreateWindow(Config)
 	TextLabel_UserFrame.TextColor3 = Color3.fromRGB(255, 255, 255)
 	TextLabel_UserFrame.TextXAlignment = Enum.TextXAlignment.Left
 	TextLabel_UserFrame.TextSize = 20
+	TextLabel_UserFrame.TextWrapped = true
 	Add_UITextSizeConstraint(TextLabel_UserFrame)
 	
 	local DesButton = Instance.new("TextButton", MainFrame)
@@ -468,6 +474,7 @@ function Library:CreateWindow(Config)
 		PanelTitle.TextXAlignment = Enum.TextXAlignment.Left
 		PanelTitle.TextSize = 20
 		PanelTitle.TextScaled = true
+		PanelTitle.TextWrapped = true
 		Add_UITextSizeConstraint(PanelTitle)
 		
 		if Tab_Set and Tab_Set.Icon then
@@ -519,6 +526,7 @@ function Library:CreateWindow(Config)
 		Mode_Main.Name = Tab_Set.Title or "Unknow"
 		Mode_Main.BackgroundTransparency = 1
 		Mode_Main.Size = UDim2.new(1, 0,1, 0)
+		Mode_Main.Visible = false
 		
 		local Scrolling_Func1 = Instance.new("ScrollingFrame", Mode_Main)
 		Scrolling_Func1.Name = "Scrolling_Func1"
@@ -595,6 +603,7 @@ function Library:CreateWindow(Config)
 			TitleTap.TextColor3 = Color3.fromRGB(255, 255, 255)
 			TitleTap.TextXAlignment = Enum.TextXAlignment.Left
 			TitleTap.TextSize = 20
+			TitleTap.TextWrapped = true
 			Add_UITextSizeConstraint(TitleTap)
 						
 			if Group_Info and Group_Info.Icon then
@@ -621,6 +630,10 @@ function Library:CreateWindow(Config)
 
 			function Create_Function:SetTitle(TapName)
 				TitleTap.Text = TapName or "Unknow"
+			end
+			
+			function Create_Function:Visible(Visible)
+				Group_Frame.Visible = Visible
 			end
 
 			function Create_Function:Click(options)
@@ -660,6 +673,7 @@ function Library:CreateWindow(Config)
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
 				Title_Func.TextSize = 20
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
+				Title_Func.TextWrapped = true
 				Add_UITextSizeConstraint(Title_Func)
 								
 				local Button = Instance.new("ImageButton", BGFrame)
@@ -687,6 +701,10 @@ function Library:CreateWindow(Config)
 
 				function Function:SetTitle(TapName)
 					Title_Func.Text = TapName or "Unknow"
+				end
+				
+				function Function:Visible(Visible)
+					Click_Frame.Visible = Visible
 				end
 
 				return Function
@@ -736,6 +754,7 @@ function Library:CreateWindow(Config)
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
 				Title_Func.TextSize = 20
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
+				Title_Func.TextWrapped = true
 				Add_UITextSizeConstraint(Title_Func)
 				getgenv().PanelObjectTag.All_Func[tostring(options.Flag)].Title_Label = Title_Func
 								
@@ -770,6 +789,7 @@ function Library:CreateWindow(Config)
 				TextBox.Text = options.Value or ""
 				TextBox.PlaceholderText = options.Placeholder or "..."
 				TextBox.TextXAlignment = Enum.TextXAlignment.Left
+				TextBox.TextWrapped = true
 				Add_UITextSizeConstraint(TextBox)
 				
 				TextBox.FocusLost:Connect(function(enterPressed)
@@ -807,6 +827,10 @@ function Library:CreateWindow(Config)
 
 				function Function:SetTitle(TapName)
 					Title_Func.Text = TapName or "Unknow"
+				end
+				
+				function Function:Visible(Visible)
+					Click_Frame.Visible = Visible
 				end
 
 				return Function
@@ -852,6 +876,7 @@ function Library:CreateWindow(Config)
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
 				Title_Func.TextSize = 20
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
+				Title_Func.TextWrapped = true
 				Add_UITextSizeConstraint(Title_Func)
 				getgenv().PanelObjectTag.All_Func[tostring(options.Flag)].Title_Label = Title_Func
 
@@ -864,6 +889,7 @@ function Library:CreateWindow(Config)
 				Value_Func.TextColor3 = Color3.new(1, 1, 1)
 				Value_Func.TextSize = 20
 				Value_Func.TextXAlignment = Enum.TextXAlignment.Left
+				Value_Func.TextWrapped = true
 				Add_UITextSizeConstraint(Value_Func)
 
 				local MainSlideFrame = Instance.new("Frame", BGFrame)
@@ -939,8 +965,15 @@ function Library:CreateWindow(Config)
 					updateSlide(Value)
 				end
 				local Function = {}
+				
 				function Function:SetTitle(TapName) Title_Func.Text = TapName or "Unknow" end
+				
 				function Function:SetValue(Value) updateSlide(Value) end
+				
+				function Function:Visible(Visible)
+					Click_Frame.Visible = Visible
+				end
+				
 				return Function
 			end
 			
@@ -982,6 +1015,7 @@ function Library:CreateWindow(Config)
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
 				Title_Func.TextSize = 20
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
+				Title_Func.TextWrapped = true
 				Add_UITextSizeConstraint(Title_Func)
 				getgenv().PanelObjectTag.All_Func[tostring(options.Flag)].Title_Label = Title_Func
 
@@ -1011,6 +1045,7 @@ function Library:CreateWindow(Config)
 				DropText.TextSize = 20
 				DropText.TextXAlignment = Enum.TextXAlignment.Left
 				DropText.TextScaled = true
+				DropText.TextWrapped = true
 				Add_UITextSizeConstraint(DropText)
 
 				local Button = Instance.new("ImageButton", BGFrame)
@@ -1120,6 +1155,7 @@ function Library:CreateWindow(Config)
 				SearchBox.Text = ""
 				SearchBox.PlaceholderText = "..."
 				SearchBox.TextXAlignment = Enum.TextXAlignment.Left
+				SearchBox.TextWrapped = true
 				Add_UITextSizeConstraint(SearchBox)
 
 				local Scrolling_Drop = Instance.new("ScrollingFrame", Drop_Down_Frame)
@@ -1254,6 +1290,7 @@ function Library:CreateWindow(Config)
 						Title.TextSize = 20
 						Title.Name = "Title"
 						Title.TextXAlignment = Enum.TextXAlignment.Left
+						Title.TextWrapped = true
 						Add_UITextSizeConstraint(Title)
 						
 						DropButton.Activated:Connect(function()
@@ -1326,6 +1363,10 @@ function Library:CreateWindow(Config)
 				function Function:SetValue(Value)
 					getgenv().PanelObjectTag.All_Func[options.Flag].Refresh_Func(Value)
 				end
+				
+				function Function:Visible(Visible)
+					Click_Frame.Visible = Visible
+				end
 
 				return Function
 				
@@ -1374,6 +1415,7 @@ function Library:CreateWindow(Config)
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
 				Title_Func.TextSize = 20
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
+				Title_Func.TextWrapped = true
 				Add_UITextSizeConstraint(Title_Func)
 				getgenv().PanelObjectTag.All_Func[tostring(options.Flag)].Title_Label = Title_Func
 								
@@ -1466,12 +1508,17 @@ function Library:CreateWindow(Config)
 				TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 				TextLabel.TextXAlignment = Enum.TextXAlignment.Left
 				TextLabel.TextSize = 20
+				TextLabel.TextWrapped = true
 				Add_UITextSizeConstraint(TextLabel)
 				
 				local Function = {}
 				
 				function Function:SetTitle(TapName)
 					TextLabel.Text = TapName or "Unknow"
+				end
+				
+				function Function:Visible(Visible)
+					Comment_Frame.Visible = Visible
 				end
 				
 				return Function
@@ -1542,6 +1589,260 @@ function Library:CreateWindow(Config)
 				end
 
 				return Function
+			end
+			
+			function Create_Function:ColorPicker(options)
+				
+				local Flag = tostring(options.Flag)
+				
+				getgenv().PanelObjectTag.All_Func[Flag] = {
+					Value = options.Default or Color3.fromRGB(255, 255, 255),
+					Refresh_Func = function() end,
+				}
+
+				-- 1. สร้างปุ่มหลัก (เหมือนปุ่ม Click)
+				local Click_Frame = Instance.new("Frame", Group_Frame)
+				Click_Frame.Size = UDim2.new(0, 208, 0, 35)
+				Click_Frame.BackgroundTransparency = 1
+				Click_Frame.Name = options.Title or "ColorPicker_Button"
+
+				local Button = Instance.new("TextButton", Click_Frame)
+				Button.BackgroundColor3 = Color3.new(1, 1, 1)
+				Button.Size = UDim2.new(0.96, 0, 0.9, 0)
+				Button.Position = UDim2.new(0.019, 0, 0.05, 0)
+				Button.BackgroundTransparency = 0.9
+				Button.Text = ""
+				Button.AutoButtonColor = false
+				Instance.new("UICorner", Button).CornerRadius = UDim.new(0, 8)
+
+				-- แถบสีด้านซ้าย (บ่งบอกสถานะ)
+				local ColorFrame = Instance.new("Frame", Button)
+				ColorFrame.BackgroundColor3 = Color3.new(0.560784, 0.305882, 1)
+				ColorFrame.Size = UDim2.new(0, 5, 0, 22)
+				ColorFrame.Position = UDim2.new(0, 0, 0.15, 0)
+				Instance.new("UICorner", ColorFrame).CornerRadius = UDim.new(0, 8)
+
+				local Title_Label = Instance.new("TextLabel", Button)
+				Title_Label.Size = UDim2.new(0, 140, 0, 25)
+				Title_Label.Position = UDim2.new(0.065, 0, 0.12, 0)
+				Title_Label.BackgroundTransparency = 1
+				Title_Label.Text = options.Title or "Color Picker"
+				Title_Label.Font = Enum.Font.FredokaOne
+				Title_Label.TextColor3 = Color3.new(1, 1, 1)
+				Title_Label.TextSize = 16
+				Title_Label.TextXAlignment = Enum.TextXAlignment.Left
+
+				-- ช่องแสดงสีที่เลือก (ปุ่มสี)
+				local ColorDisplay = Instance.new("Frame", Button)
+				ColorDisplay.Size = UDim2.new(0, 35, 0, 18)
+				ColorDisplay.Position = UDim2.new(0.78, 0, 0.2, 0)
+				ColorDisplay.BackgroundColor3 = getgenv().PanelObjectTag.All_Func[Flag].Value
+				
+				Instance.new("UICorner", ColorDisplay).CornerRadius = UDim.new(0, 4)
+				local DisplayStroke = Instance.new("UIStroke", ColorDisplay)
+				DisplayStroke.Color = Color3.new(1,1,1)
+				DisplayStroke.Thickness = 1
+				DisplayStroke.Transparency = 0.8
+
+				-- 2. สร้าง Popup Frame (ใส่ไว้ใน SomtankLib2 เพื่อให้อยู่เลเยอร์บนสุด)
+				local ColorPopup = Instance.new("Frame", SomtankLib2)
+				ColorPopup.Size = UDim2.new(0, 180, 0, 110)
+				ColorPopup.BackgroundColor3 = Color3.fromRGB(77, 51, 122)
+				ColorPopup.Visible = false
+				ColorPopup.ZIndex = 10
+				ColorPopup.BackgroundTransparency = 0.1
+				
+				Instance.new("UICorner", ColorPopup).CornerRadius = UDim.new(0, 8)
+				local PopupStroke = Instance.new("UIStroke", ColorPopup)
+				PopupStroke.Color = Color3.new(0.5, 0.5, 0.5)
+				PopupStroke.Thickness = 1
+
+				local GridContainer = Instance.new("ScrollingFrame", ColorPopup)
+				GridContainer.Size = UDim2.new(0, 171,0, 100)
+				GridContainer.Position = UDim2.new(0.023, 0,0.035, 0)
+				GridContainer.BackgroundTransparency = 1
+				GridContainer.ScrollBarThickness = 0
+				GridContainer.CanvasSize = UDim2.new(0,0,0,0)
+				GridContainer.AutomaticCanvasSize = Enum.AutomaticSize.Y
+
+				local UIGridLayout = Instance.new("UIGridLayout", GridContainer)
+				UIGridLayout.CellSize = UDim2.new(0, 20, 0, 20)
+				UIGridLayout.CellPadding = UDim2.new(0, 5, 0, 5)
+
+				-- ฟังก์ชันอัปเดตสี
+				local function UpdateColor(color, noSave)
+					getgenv().PanelObjectTag.All_Func[Flag].Value = color
+					ColorDisplay.BackgroundColor3 = color
+					if options.Callback then options.Callback(color) end
+					if not noSave then SaveConfig() end
+				end
+
+				-- วนลูปสร้างช่องสีใน Popup
+				local Hues = {0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1}
+				local Brightness = {1, 0.7, 0.4}
+				for _, b in ipairs(Brightness) do
+					for _, h in ipairs(Hues) do
+						local TargetColor = Color3.fromHSV(h, 0.8, b)
+						local ColorBtn = Instance.new("TextButton", GridContainer)
+						ColorBtn.Text = ""
+						ColorBtn.BackgroundColor3 = TargetColor
+						Instance.new("UICorner", ColorBtn).CornerRadius = UDim.new(0, 4)
+						ColorBtn.Activated:Connect(function()
+							UpdateColor(TargetColor)
+							ColorPopup.Visible = false -- เลือกเสร็จแล้วปิด Popup
+						end)
+					end
+				end
+
+				-- ระบบเปิด/ปิด Popup และจัดการตำแหน่ง
+				Button.Activated:Connect(function()
+					local isVisible = not ColorPopup.Visible
+					-- ปิดอันอื่นก่อนถ้ามี (Centralized Cleanup)
+					for _, v in pairs(SomtankLib2:GetChildren()) do
+						if v:IsA("Frame") then v.Visible = false end
+					end
+
+					ColorPopup.Visible = isVisible
+					if isVisible then
+						while isVisible do
+							if not isVisible then
+								break
+							end
+							ColorPopup.Position = UDim2.fromOffset(
+								Button.AbsolutePosition.X + Button.AbsoluteSize.X + 10,
+								Button.AbsolutePosition.Y
+							)
+							task.wait(0.015)
+						end
+					end
+				end)
+
+				-- ระบบโหลด Config
+				getgenv().PanelObjectTag.All_Func[Flag].Refresh_Func = function(Value)
+					if typeof(Value) == "table" and Value.R then
+						UpdateColor(Color3.new(Value.R, Value.G, Value.B), true)
+					end
+				end
+				
+				local Funcs = {}
+
+				function Funcs:SetTitle(Name)
+					Title_Label.Text = Name
+				end
+
+				function Funcs:SetColor(Color)
+					getgenv().PanelObjectTag.All_Func[Flag].Refresh_Func(Color)
+				end
+
+				function Funcs:Visible(Visible)
+					Click_Frame.Visible = Visible
+				end
+
+				return Funcs
+				
+			end
+			
+			function Create_Function:Model_Viwer(options)
+				
+				local Click_Frame = Instance.new("Frame", Group_Frame)
+				Click_Frame.Size = UDim2.new(0, 208, 0, 180)
+				Click_Frame.BackgroundTransparency = 1
+				Click_Frame.Name = options.Title or "ModelViewer_Frame"
+
+				local BGFrame = Instance.new("Frame", Click_Frame)
+				BGFrame.BackgroundColor3 = Color3.new(1, 1, 1)
+				BGFrame.Size = UDim2.new(0.96, 0, 0.95, 0)
+				BGFrame.Position = UDim2.new(0.019, 0, 0.02, 0)
+				BGFrame.BackgroundTransparency = 0.9
+				Instance.new("UICorner", BGFrame).CornerRadius = UDim.new(0, 8)
+
+				local ColorFrame = Instance.new("Frame", BGFrame)
+				ColorFrame.BackgroundColor3 = Color3.new(0.560784, 0.305882, 1)
+				ColorFrame.Size = UDim2.new(0, 5, 0, 160)
+				ColorFrame.Position = UDim2.new(0, 0, 0.03, 0)
+				Instance.new("UICorner", ColorFrame).CornerRadius = UDim.new(0, 8)
+
+				local Title_Func = Instance.new("TextLabel", BGFrame)
+				Title_Func.Size = UDim2.new(0, 140, 0, 25)
+				Title_Func.Position = UDim2.new(0.065, 0, 0.02, 0)
+				Title_Func.BackgroundTransparency = 1
+				Title_Func.Text = options.Title or "3D View Port"
+				Title_Func.Font = Enum.Font.FredokaOne
+				Title_Func.TextColor3 = Color3.new(1, 1, 1)
+				Title_Func.TextSize = 16
+				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
+
+				local ViewportFrame = Instance.new("ViewportFrame", BGFrame)
+				ViewportFrame.Size = UDim2.new(0.9, 0, 0.75, 0)
+				ViewportFrame.Position = UDim2.new(0.05, 0, 0.2, 0)
+				ViewportFrame.BackgroundTransparency = 1
+				ViewportFrame.LightColor = Color3.fromRGB(255, 255, 255)
+				ViewportFrame.Ambient = Color3.fromRGB(150, 150, 150)
+
+				local ViewportCamera = Instance.new("Camera")
+				ViewportFrame.CurrentCamera = ViewportCamera
+				ViewportCamera.Parent = ViewportFrame
+
+				local WorldModel, CurrentModel, SpinConn = Instance.new("WorldModel", ViewportFrame), nil, nil
+				
+				local function SetModel(model)
+					if not model then return end
+					if CurrentModel then CurrentModel:Destroy() end
+					-- สร้าง Model ใหม่ใน WorldModel และดึงข้อมูลชิ้นส่วนมา
+					CurrentModel = Instance.new("Model", WorldModel) -- แก้ไข: ไม่ใช้ local ซ้ำ
+					local success, err = pcall(function()
+						for _, Item in ipairs(model:GetChildren()) do
+							local NewClonePart = Item:Clone()
+							NewClonePart.Parent = CurrentModel
+							if NewClonePart:IsA("BasePart") then
+								NewClonePart.Anchored = true
+							end
+						end
+					end)
+					-- จัดระเบียบ Model ให้อยู่จุด 0,0,0
+					local boundingBoxCFrame, modelSize = CurrentModel:GetBoundingBox()
+					CurrentModel:PivotTo(CFrame.new(Vector3.new(0, 0, 0)))
+					ViewportCamera.CFrame = CFrame.new(Vector3.new(0, 1, modelSize.Magnitude * (options.Setting.ZoomFactor or 1)), Vector3.new(0, 0, 0))
+				end
+
+				local function HandleSpin()
+					if SpinConn then SpinConn:Disconnect() end
+					if options.Setting and options.Setting.Spining then
+						local angle = 0
+						SpinConn = RunService.Heartbeat:Connect(function(dt)
+							if CurrentModel and CurrentModel.Parent and Mode_Main.Visible then
+								angle = angle + (options.Setting.SpinSpeed or 5) * dt
+								local _, modelSize = CurrentModel:GetBoundingBox()
+								local dist = modelSize.Magnitude * (options.Setting.ZoomFactor or 1)
+								local cos, sin = math.cos(angle) * dist, math.sin(angle) * dist
+								ViewportCamera.CFrame = CFrame.new(Vector3.new(cos, 1, sin), Vector3.new(0, 0, 0))
+							end
+						end)
+					end
+				end
+
+				SetModel(options.Model)
+				HandleSpin()
+
+				local Funcs = {}
+				
+				function Funcs:SetTitle(Name)
+					Title_Func.Text = Name
+				end
+				
+				function Funcs:SetNewModel(newModel) SetModel(newModel) end
+				
+				function Funcs:SetSpin(bool, speed)
+					options.Setting.Spining = bool
+					options.Setting.SpinSpeed = speed or options.Setting.SpinSpeed
+					HandleSpin()
+				end
+				
+				function Funcs:Visible(Visible)
+					Click_Frame.Visible = Visible
+				end
+
+				return Funcs
 			end
 			
 			return Create_Function
