@@ -338,6 +338,7 @@ function Library:CreateWindow(Config)
 	DesButton.Font = Font_Main
 	DesButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 	DesButton.TextSize = 14
+	DesButton.TextScaled = true
 	Instance.new("UIAspectRatioConstraint", DesButton)
 	
 	local EyeButton = Instance.new("TextButton", MainFrame)
@@ -349,6 +350,7 @@ function Library:CreateWindow(Config)
 	EyeButton.Font = Font_Main
 	EyeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 	EyeButton.TextSize = 14
+	EyeButton.TextScaled = true
 	Instance.new("UIAspectRatioConstraint", EyeButton)
 	
 	local PanelTitle = Instance.new("TextLabel", MainFrame)
