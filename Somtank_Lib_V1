@@ -127,7 +127,7 @@ local Library = {}
 
 local function Add_UITextSizeConstraint(Parent)
 	local New_UITextSizeConstraint = Instance.new("UITextSizeConstraint", Parent)
-	New_UITextSizeConstraint.MaxTextSize = 10
+	New_UITextSizeConstraint.MaxTextSize = 55
 	New_UITextSizeConstraint.MinTextSize = 5
 	table.insert(getgenv().PanelObjectTag.All_TextLabel, Parent)
 	return New_UITextSizeConstraint
@@ -178,9 +178,11 @@ end
 function Library:CreateWindow(Config)
 
 	local Window_Tab, DestroyCallback, HideCallback, OpenCallback = {}, function() end, function() end, function() end
+	
 	-- Enum.Font.FredokaOne
+	
 	local Font_Main = Config.Font or Enum.Font.Highway
-	local TextSize = Config.TextSize or 15
+	local TextSize = Config.TextSize or 17
 
 	if Config.Folder == "" then
 		Config.Folder = "Somtank_Configs"
@@ -188,6 +190,7 @@ function Library:CreateWindow(Config)
 	if Config.ConfigName == "" then
 		Config.ConfigName = "Somtank_Config_Example"
 	end	
+	
 	ConfigFolderName, defaultFileName = Config.Folder or "Somtank_Configs", Config.ConfigName or "Somtank_Config_Example"
 
 	-- 1. Main ScreenGui
@@ -220,7 +223,6 @@ function Library:CreateWindow(Config)
 	local UICorner_Main = Instance.new("UICorner")
 	UICorner_Main.CornerRadius = UDim.new(0, 8)
 	UICorner_Main.Parent = MainFrame
-
 
 	pcall(function()
 		dragging, dragStart, startPos, OpenMainFrame = false, nil, nil, false
@@ -327,7 +329,7 @@ function Library:CreateWindow(Config)
 	TextLabel_UserFrame.Font = Font_Main
 	TextLabel_UserFrame.TextColor3 = Color3.fromRGB(255, 255, 255)
 	TextLabel_UserFrame.TextXAlignment = Enum.TextXAlignment.Left
-	TextLabel_UserFrame.TextSize = 20
+	TextLabel_UserFrame.TextSize = TextSize
 	TextLabel_UserFrame.TextWrapped = true
 	Add_UITextSizeConstraint(TextLabel_UserFrame)
 
@@ -479,18 +481,22 @@ function Library:CreateWindow(Config)
 	end
 	
 	function Window_Tab:Window_TextSize(Value)
+		print(" * Window_TextSize")
 		for _, TextLabel in ipairs(getgenv().PanelObjectTag.All_TextLabel) do
-			if TextLabel.ClassName == "TextLabel" then
+			pcall(function()
 				TextLabel.TextSize = Value
-			end
+				print("Set TextSize ", TextLabel.Parent.Name)
+			end)
 		end
 	end
 	
 	function Window_Tab:Window_Font(Value)
+		print(" * Window_Font")
 		for _, TextLabel in ipairs(getgenv().PanelObjectTag.All_TextLabel) do
-			if TextLabel.ClassName == "TextLabel" then
+			pcall(function()
 				TextLabel.Font = Value
-			end
+				print("Set Font ", TextLabel.Parent.Name)
+			end)
 		end
 	end
 	
@@ -521,7 +527,7 @@ function Library:CreateWindow(Config)
 		PanelTitle.Font = Font_Main
 		PanelTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
 		PanelTitle.TextXAlignment = Enum.TextXAlignment.Left
-		PanelTitle.TextSize = 20
+		PanelTitle.TextSize = TextSize
 		PanelTitle.TextScaled = true
 		PanelTitle.TextWrapped = true
 		Add_UITextSizeConstraint(PanelTitle)
@@ -657,7 +663,7 @@ function Library:CreateWindow(Config)
 			TitleTap.Font = Font_Main
 			TitleTap.TextColor3 = Color3.fromRGB(255, 255, 255)
 			TitleTap.TextXAlignment = Enum.TextXAlignment.Left
-			TitleTap.TextSize = 20
+			TitleTap.TextSize = TextSize
 			TitleTap.TextWrapped = true
 			Add_UITextSizeConstraint(TitleTap)
 
@@ -750,7 +756,7 @@ function Library:CreateWindow(Config)
 						end
 						task.spawn(function()
 							TweenFrame(ColorFrame, {BackgroundColor3 = Color3.new(0.560784, 0.305882, 1)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
-							task.wait(0.5)
+							task.wait(0.25)
 							TweenFrame(ColorFrame, {BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 						end)
 					end)
