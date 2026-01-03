@@ -134,7 +134,7 @@ end
 
 local function SetupResize(MainFrame, ScaleObject, ConnerButton)
 	local dragging, dragStartPos, startScale, minScale, maxScale = false, nil, ScaleObject.Scale, 0.5, 1.5
-	
+
 	local function update(input)
 		local delta = input.Position - dragStartPos
 		local newScale = startScale + (delta.X + delta.Y) / 500
@@ -147,7 +147,7 @@ local function SetupResize(MainFrame, ScaleObject, ConnerButton)
 			end
 		end)		
 	end
-	
+
 	ConnerButton.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 			dragging = true
@@ -171,15 +171,15 @@ local function SetupResize(MainFrame, ScaleObject, ConnerButton)
 			end
 		end
 	end)
-	
+
 end
 
 function Library:CreateWindow(Config)
-	
+
 	local Window_Tab, DestroyCallback, HideCallback, OpenCallback = {}, function() end, function() end, function() end
 	-- Enum.Font.FredokaOne
 	local Font_Main = Enum.Font.Highway
-	
+
 	if Config.Folder == "" then
 		Config.Folder = "Somtank_Configs"
 	end	
@@ -187,24 +187,24 @@ function Library:CreateWindow(Config)
 		Config.ConfigName = "Somtank_Config_Example"
 	end	
 	ConfigFolderName, defaultFileName = Config.Folder or "Somtank_Configs", Config.ConfigName or "Somtank_Config_Example"
-	
+
 	-- 1. Main ScreenGui
 	local SomtankLib = Instance.new("ScreenGui")
 	SomtankLib.Name = "SomtankLib"
 	SomtankLib.Parent = gethui() or game.CoreGui or LocalPlayer.PlayerGui
 	SomtankLib.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-	
+
 	local SomtankLib2 = Instance.new("ScreenGui")
 	SomtankLib2.Name = "SomtankLib2"
 	SomtankLib2.Parent = gethui() or game.CoreGui or LocalPlayer.PlayerGui
 	SomtankLib2.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-		
+
 	local UIScale_Main = Instance.new("UIScale", SomtankLib)
 	UIScale_Main.Name = "UIScale"
 	UIScale_Main.Scale = 1
-	
+
 	getgenv().MainUIScale_Som = UIScale_Main
-	
+
 	-- 2. Main Frame (Window)
 	local MainFrame = Instance.new("Frame")
 	MainFrame.Name = "MainFrame"
@@ -218,8 +218,8 @@ function Library:CreateWindow(Config)
 	local UICorner_Main = Instance.new("UICorner")
 	UICorner_Main.CornerRadius = UDim.new(0, 8)
 	UICorner_Main.Parent = MainFrame
-	
-	
+
+
 	pcall(function()
 		dragging, dragStart, startPos, OpenMainFrame = false, nil, nil, false
 
@@ -231,15 +231,15 @@ function Library:CreateWindow(Config)
 			if Icon_Position == MoveIcon.Position then
 				OpenMainFrame = not OpenMainFrame
 				MainFrame.Visible = OpenMainFrame
-				
+
 				if OpenCallback and MainFrame.Visible then
 					pcall(OpenCallback)
 				end
-				
+
 			end
 		end)
 	end)
-	
+
 	pcall(function()
 		local dragging = false
 		local dragStart, startPos, dragConnection, inputConnection
@@ -275,7 +275,7 @@ function Library:CreateWindow(Config)
 	Modes_Box.BackgroundTransparency = 1
 	Modes_Box.Size = UDim2.new(0, 421,0, 326)
 	Modes_Box.Position = UDim2.new(0.29, 0,0.112, 0)
-	
+
 	-- 4. Sidebar Modes (Left)
 	local ModeTaps = Instance.new("ScrollingFrame", MainFrame)
 	ModeTaps.Name = "ModeTaps"
@@ -288,11 +288,11 @@ function Library:CreateWindow(Config)
 	ModeTaps.ScrollBarThickness = 0
 	ModeTaps.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	ModeTaps.BorderSizePixel = 0
-	
+
 	local UIListLayout_ModeTaps = Instance.new("UIListLayout", ModeTaps)
 	UIListLayout_ModeTaps.SortOrder = Enum.SortOrder.LayoutOrder
 	UIListLayout_ModeTaps.Padding = UDim.new(0, 5)
-	
+
 	-- 3. Modes_Box (Right)
 	local UserFrame = Instance.new("Frame")
 	UserFrame.Name = "UserFrame"
@@ -300,22 +300,22 @@ function Library:CreateWindow(Config)
 	UserFrame.BackgroundTransparency = 0.9
 	UserFrame.Size = UDim2.new(0, 165,0, 42)
 	UserFrame.Position = UDim2.new(0.007, 0,0.872, 0)
-	
+
 	local UICorner_UserFrame = Instance.new("UICorner", UserFrame)
 	UICorner_UserFrame.CornerRadius = UDim.new(0, 8)
-	
+
 	local UserImageLabel = Instance.new("ImageLabel", UserFrame)
 	UserImageLabel.Name = "Icon"
 	UserImageLabel.BackgroundTransparency = 1
 	UserImageLabel.Size = UDim2.new(0, 39,0, 36)
 	UserImageLabel.Position = UDim2.new(0, 3,-0.001, 3)
 	UserImageLabel.Image = Players:GetUserThumbnailAsync(LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48) or "rbxassetid://9659905343"
-	
+
 	local UICorner_UserImageLabel = Instance.new("UICorner", UserImageLabel)
 	UICorner_UserImageLabel.CornerRadius = UDim.new(0, 8)
-	
+
 	Instance.new("UIAspectRatioConstraint", UserImageLabel)
-	
+
 	local TextLabel_UserFrame = Instance.new("TextLabel", UserFrame)
 	TextLabel_UserFrame.Name = "UserName_Label"
 	TextLabel_UserFrame.BackgroundTransparency = 1
@@ -328,7 +328,7 @@ function Library:CreateWindow(Config)
 	TextLabel_UserFrame.TextSize = 20
 	TextLabel_UserFrame.TextWrapped = true
 	Add_UITextSizeConstraint(TextLabel_UserFrame)
-	
+
 	local DesButton = Instance.new("TextButton", MainFrame)
 	DesButton.Name = "DeButton"
 	DesButton.BackgroundTransparency = 1
@@ -340,7 +340,7 @@ function Library:CreateWindow(Config)
 	DesButton.TextSize = 14
 	DesButton.TextScaled = true
 	Instance.new("UIAspectRatioConstraint", DesButton)
-	
+
 	local EyeButton = Instance.new("TextButton", MainFrame)
 	EyeButton.Name = "EyeButton"
 	EyeButton.BackgroundTransparency = 1
@@ -352,7 +352,7 @@ function Library:CreateWindow(Config)
 	EyeButton.TextSize = 14
 	EyeButton.TextScaled = true
 	Instance.new("UIAspectRatioConstraint", EyeButton)
-	
+
 	local PanelTitle = Instance.new("TextLabel", MainFrame)
 	PanelTitle.Name = "Title_Panel"
 	PanelTitle.BackgroundTransparency = 1
@@ -364,7 +364,7 @@ function Library:CreateWindow(Config)
 	PanelTitle.TextXAlignment = Enum.TextXAlignment.Left
 	PanelTitle.TextSize = 20
 	PanelTitle.TextScaled = true
-	
+
 	local PanelDescription = Instance.new("TextLabel", MainFrame)
 	PanelDescription.Name = "Des_Panel"
 	PanelDescription.BackgroundTransparency = 1
@@ -377,7 +377,7 @@ function Library:CreateWindow(Config)
 	PanelDescription.TextSize = 20
 	PanelDescription.TextScaled = true
 	PanelDescription.TextTransparency = 0.3
-	
+
 	local Logo_Panel = Instance.new("ImageLabel", MainFrame)
 	Logo_Panel.Name = "Icon"
 	Logo_Panel.BackgroundTransparency = 1
@@ -385,7 +385,7 @@ function Library:CreateWindow(Config)
 	Logo_Panel.Position = UDim2.new(0.006, 0,-0.001, 3)
 	Logo_Panel.Image = "rbxassetid://108281745434228"
 	Instance.new("UIAspectRatioConstraint", Logo_Panel)
-	
+
 	local ConnerButton = Instance.new("ImageButton", MainFrame)
 	ConnerButton.Name = "ConnerButton"
 	ConnerButton.BackgroundTransparency = 1
@@ -393,30 +393,30 @@ function Library:CreateWindow(Config)
 	ConnerButton.Position = UDim2.new(0.972, 0,0.955, 0)
 	ConnerButton.Image = ""
 	Instance.new("UIAspectRatioConstraint", ConnerButton)
-		
+
 	DesButton.Activated:Connect(function()
 		SomtankLib:Destroy()
 		SomtankLib2:Destroy()
 		ScreenGui_MoveIcon:Destroy()
-		
+
 		if DestroyCallback then
 			pcall(DestroyCallback)
 		end
-		
+
 		getgenv().PanelObjectTag.Loading_All_ConfIg_End_Som = false		
 	end)
-	
+
 	EyeButton.Activated:Connect(function()
 		MainFrame.Visible = not MainFrame.Visible
-		
+
 		if HideCallback and not MainFrame.Visible then
 			pcall(HideCallback)
 		end
-		
+
 	end)
-	
+
 	SetupResize(MainFrame, UIScale_Main, ConnerButton)
-	
+
 	local function SelectTap(TabName)
 		if Modes_Box[TabName] and ModeTaps[TabName] then
 			for _, Frame in pairs(Modes_Box:GetChildren()) do
@@ -435,7 +435,7 @@ function Library:CreateWindow(Config)
 			Modes_Box[TabName].Visible = true
 		end
 	end
-	
+
 	function Window_Tab:LoadConfig()
 		ResetAllSizeGroup()
 		getgenv().PanelObjectTag.Loading_All_ConfIg_End_Som = true
@@ -464,13 +464,13 @@ function Library:CreateWindow(Config)
 			DestroyCallback = func
 		end
 	end
-	
+
 	function Window_Tab:OnHide(func)
 		if typeof(func) == "function" then
 			HideCallback = func
 		end
 	end
-	
+
 	function Window_Tab:OnOpen(func)
 		if typeof(func) == "function" then
 			OpenCallback = func
@@ -478,25 +478,25 @@ function Library:CreateWindow(Config)
 	end
 
 	function Window_Tab:Tab(Tab_Set)
-		
+
 		local Tab = Instance.new("Frame", ModeTaps)
 		Tab.Name = Tab_Set.Title
 		Tab.BackgroundTransparency = 0.95
 		Tab.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		Tab.Size = UDim2.new(0, 165,0, 39)
-		
+
 		local UICorner_Tab = Instance.new("UICorner", Tab)
 		UICorner_Tab.CornerRadius = UDim.new(0, 8)
-		
+
 		local ColorFrame = Instance.new("Frame", Tab)
 		ColorFrame.Name = "ColorFrame"
 		ColorFrame.BackgroundColor3 = Color3.fromRGB(83, 71, 95)
 		ColorFrame.Size = UDim2.new(0, 5,0, 21)
 		ColorFrame.Position = UDim2.new(0, 0,0.231, 0)
-		
+
 		local UICorner_ColorFrame = Instance.new("UICorner", ColorFrame)
 		UICorner_ColorFrame.CornerRadius = UDim.new(0, 8)
-		
+
 		local PanelTitle = Instance.new("TextLabel", Tab)
 		PanelTitle.Name = "Title_Panel"
 		PanelTitle.BackgroundTransparency = 1
@@ -508,9 +508,9 @@ function Library:CreateWindow(Config)
 		PanelTitle.TextScaled = true
 		PanelTitle.TextWrapped = true
 		Add_UITextSizeConstraint(PanelTitle)
-		
+
 		if Tab_Set and Tab_Set.Icon then
-			
+
 			local Logo_Tab = Instance.new("ImageLabel", Tab)
 			Logo_Tab.Name = "Tap_Icon"
 			Logo_Tab.BackgroundTransparency = 1
@@ -519,19 +519,19 @@ function Library:CreateWindow(Config)
 			Logo_Tab.Image = ""
 			Instance.new("UIAspectRatioConstraint", Logo_Tab)
 			SetIcon(Tab_Set.Icon, Logo_Tab, Color3.new(1, 1, 1), 1)
-			
+
 			PanelTitle.Size = UDim2.new(0, 110,0, 30)
 			PanelTitle.Position = UDim2.new(0.305, 0,0.103, 0)
 		else
 			PanelTitle.Size = UDim2.new(0, 145,0, 30)
 			PanelTitle.Position = UDim2.new(0.1, 0,0.103, 0)
 		end
-		
+
 		local Button_Tap = Instance.new("ImageButton", Tab)
 		Button_Tap.Name = "Button_Tap"
 		Button_Tap.BackgroundTransparency = 1
 		Button_Tap.Size = UDim2.new(1, 0,1, 0)
-		
+
 		Button_Tap.Activated:Connect(function()
 			SelectTap(Tab_Set.Title)
 			if getgenv().PanelObjectTag.TapSelectNow and getgenv().PanelObjectTag.TapSelectNow ~= Button_Tap then
@@ -545,7 +545,7 @@ function Library:CreateWindow(Config)
 			end
 			getgenv().PanelObjectTag.TapSelectNow = Button_Tap
 		end)
-		
+
 		function Window_Tab:SelectTap(TapName)
 			if not TapName then TapName = "Unknow" end
 			if ModeTaps[TapName] and Modes_Box[TapName] then
@@ -553,13 +553,13 @@ function Library:CreateWindow(Config)
 				getgenv().PanelObjectTag.TapSelectNow = Button_Tap
 			end
 		end
-		
+
 		local Mode_Main = Instance.new("Frame", Modes_Box)
 		Mode_Main.Name = Tab_Set.Title or "Unknow"
 		Mode_Main.BackgroundTransparency = 1
 		Mode_Main.Size = UDim2.new(1, 0,1, 0)
 		Mode_Main.Visible = false
-		
+
 		local Scrolling_Func1 = Instance.new("ScrollingFrame", Mode_Main)
 		Scrolling_Func1.Name = "Scrolling_Func1"
 		Scrolling_Func1.BackgroundTransparency = 1
@@ -570,13 +570,13 @@ function Library:CreateWindow(Config)
 		Scrolling_Func1.ScrollBarThickness = 0
 		Scrolling_Func1.AutomaticCanvasSize = Enum.AutomaticSize.Y
 		Scrolling_Func1.BorderSizePixel = 0
-		
+
 		local UIListLayout_Scrolling_Func1 = Instance.new("UIListLayout", Scrolling_Func1)
 		UIListLayout_Scrolling_Func1.SortOrder = Enum.SortOrder.LayoutOrder
 		UIListLayout_Scrolling_Func1.Padding = UDim.new(0, 10)
 		UIListLayout_Scrolling_Func1.HorizontalAlignment = Enum.HorizontalAlignment.Center
 		UIListLayout_Scrolling_Func1.VerticalAlignment = Enum.VerticalAlignment.Top
-		
+
 		local Scrolling_Func2 = Instance.new("ScrollingFrame", Mode_Main)
 		Scrolling_Func2.Name = "Scrolling_Func1"
 		Scrolling_Func2.BackgroundTransparency = 1
@@ -588,20 +588,20 @@ function Library:CreateWindow(Config)
 		Scrolling_Func2.ScrollBarThickness = 0
 		Scrolling_Func2.AutomaticCanvasSize = Enum.AutomaticSize.Y
 		Scrolling_Func2.BorderSizePixel = 0
-		
+
 		local UIListLayout_Scrolling_Func2 = Instance.new("UIListLayout", Scrolling_Func2)
 		UIListLayout_Scrolling_Func2.SortOrder = Enum.SortOrder.LayoutOrder
 		UIListLayout_Scrolling_Func2.Padding = UDim.new(0, 10)
 		UIListLayout_Scrolling_Func2.HorizontalAlignment = Enum.HorizontalAlignment.Center
 		UIListLayout_Scrolling_Func2.VerticalAlignment = Enum.VerticalAlignment.Top
-		
+
 		getgenv().PanelObjectTag.All_One_Or_Two_Func[tostring(Tab_Set.Title)] = 0
-		
+
 		local Group_Functions = {}
-		
+
 		function Group_Functions:CreateGroup(Group_Info)
 			local SetTo_Scrolling_Parent = Scrolling_Func1
-			
+
 			if getgenv().PanelObjectTag.All_One_Or_Two_Func[tostring(Tab_Set.Title)] == 0 then
 				getgenv().PanelObjectTag.All_One_Or_Two_Func[tostring(Tab_Set.Title)] = 1
 				SetTo_Scrolling_Parent = Scrolling_Func1
@@ -609,30 +609,30 @@ function Library:CreateWindow(Config)
 				getgenv().PanelObjectTag.All_One_Or_Two_Func[tostring(Tab_Set.Title)] = 0
 				SetTo_Scrolling_Parent = Scrolling_Func2
 			end
-			
+
 			local Group_Frame = Instance.new("Frame", SetTo_Scrolling_Parent)
 			Group_Frame.Name = Group_Info.Title or "Unknow"
 			Group_Frame.BackgroundTransparency = 0.95
 			Group_Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 			Group_Frame.Size = UDim2.new(0, 208,0, 295)
-			
+
 			local UICorner_Group_Frame = Instance.new("UICorner", Group_Frame)
 			UICorner_Group_Frame.CornerRadius = UDim.new(0, 8)
-			
+
 			local UIListLayout_Group_Frame = Instance.new("UIListLayout", Group_Frame)
 			UIListLayout_Group_Frame.SortOrder = Enum.SortOrder.LayoutOrder
-			UIListLayout_Group_Frame.Padding = UDim.new(0, -5)
-			
+			UIListLayout_Group_Frame.Padding = UDim.new(0, 0)
+
 			local UIStroke_Group_Frame = Instance.new("UIStroke", Group_Frame)
 			UIStroke_Group_Frame.Color = Color3.fromRGB(217, 190, 255)
 			UIStroke_Group_Frame.Thickness = 1
 			UIStroke_Group_Frame.Transparency = 0.68
-			
+
 			local Title_Frame = Instance.new("Frame", Group_Frame)
 			Title_Frame.Name = "Title_Frame"
 			Title_Frame.BackgroundTransparency = 1
 			Title_Frame.Size = UDim2.new(0, 208,0, 39)
-			
+
 			local TitleTap = Instance.new("TextLabel", Title_Frame)
 			TitleTap.Name = "TitleTap"
 			TitleTap.BackgroundTransparency = 1
@@ -643,9 +643,9 @@ function Library:CreateWindow(Config)
 			TitleTap.TextSize = 20
 			TitleTap.TextWrapped = true
 			Add_UITextSizeConstraint(TitleTap)
-						
+
 			if Group_Info and Group_Info.Icon then
-				
+
 				local IconTap = Instance.new("ImageLabel", Title_Frame)
 				IconTap.Name = "Icon"
 				IconTap.BackgroundTransparency = 1
@@ -654,74 +654,77 @@ function Library:CreateWindow(Config)
 				IconTap.Image = Group_Info.Icon or "rbxassetid://98100463355335"
 				Instance.new("UIAspectRatioConstraint", IconTap)
 				SetIcon(Group_Info.Icon, IconTap, Color3.new(1, 1, 1), 1)
-				
+
 				TitleTap.Size = UDim2.new(0, 157,0, 29)
 				TitleTap.Position = UDim2.new(0.223, 0,0.128, 0)
+				
 			else
+				
 				TitleTap.Size = UDim2.new(0, 192,0, 29)
 				TitleTap.Position = UDim2.new(0.05, 0,0.128, 0)
+				
 			end
-			
+
 			handleAutoResize(Group_Frame)
-			
+
 			local Create_Function = {}
 
 			function Create_Function:SetTitle(TapName)
 				TitleTap.Text = TapName or "Unknow"
 			end
-			
+
 			function Create_Function:Visible(Visible)
 				Group_Frame.Visible = Visible
 			end
 
 			function Create_Function:Click(options)
-				
+
 				task.wait()
 
 				local Click_Frame = Instance.new("Frame", Group_Frame)
-				Click_Frame.Size = UDim2.new(0, 208,0, 48)
+				-- [UPDATED] ย่อความสูงลงเหลือ 35 (จากเดิม 48)
+				Click_Frame.Size = UDim2.new(0, 208, 0, 35) 
 				Click_Frame.BackgroundTransparency = 1
 				Click_Frame.Name = options.Title or "Click_Frame"
-				
+
 				local BGFrame = Instance.new("Frame", Click_Frame)
 				BGFrame.BackgroundColor3 = Color3.new(1, 1, 1)
-				BGFrame.Size = UDim2.new(0.96, 0,0.83, 0)
-				BGFrame.Position = UDim2.new(0.019, 0,0.083, 0)
+				-- [UPDATED] ปรับ BG ให้เกือบเต็มพื้นที่ Frame
+				BGFrame.Size = UDim2.new(0.96, 0, 0.9, 0)
+				BGFrame.Position = UDim2.new(0.019, 0, 0.05, 0)
 				BGFrame.BackgroundTransparency = 0.9
 				BGFrame.Name = "BGFrame"
-				
-				local UICorner_BGFrame = Instance.new("UICorner", BGFrame)
-				UICorner_BGFrame.CornerRadius = UDim.new(0, 8)
-				
+				Instance.new("UICorner", BGFrame).CornerRadius = UDim.new(0, 6)
+
 				local ColorFrame = Instance.new("Frame", BGFrame)
 				ColorFrame.BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941)
-				ColorFrame.Size = UDim2.new(0, 5,0, 26)
-				ColorFrame.Position = UDim2.new(0, 0,0.153, 0)
+				-- [UPDATED] ย่อขนาดแถบสีข้างให้สัมพันธ์กับความสูงใหม่
+				ColorFrame.Size = UDim2.new(0, 4, 0, 20) 
+				ColorFrame.Position = UDim2.new(0, 0, 0.18, 0)
 				ColorFrame.Name = "ColorFrame"
-				
-				local UICorner_ColorFrame = Instance.new("UICorner", ColorFrame)
-				UICorner_ColorFrame.CornerRadius = UDim.new(0, 8)
-				
+				Instance.new("UICorner", ColorFrame).CornerRadius = UDim.new(0, 4)
+
 				local Title_Func = Instance.new("TextLabel", BGFrame)
-				Title_Func.Size = UDim2.new(0, 144,0, 32)
-				Title_Func.Position = UDim2.new(0.069, 0,0.003, 3)
+				-- [UPDATED] ปรับขนาดตัวอักษรและตำแหน่งให้กึ่งกลางมากขึ้น
+				Title_Func.Size = UDim2.new(0, 150, 0, 25)
+				Title_Func.Position = UDim2.new(0.069, 0, 0.05, 0)
 				Title_Func.BackgroundTransparency = 1
 				Title_Func.Text = options.Title or "Click_Frame"
-				Title_Func.Font = Font_Main
+				Title_Func.Font = Enum.Font.FredokaOne
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
-				Title_Func.TextSize = 20
+				Title_Func.TextSize = 16 -- ลดขนาดจาก 20 เพื่อความสมดุล
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
-				Title_Func.TextWrapped = true
 				Add_UITextSizeConstraint(Title_Func)
-								
+
 				local Button = Instance.new("ImageButton", BGFrame)
-				Button.Position = UDim2.new(0.827, 0,0.184, 0)
-				Button.Size = UDim2.new(0, 26,0, 27)	
+				-- [UPDATED] ย่อไอคอนมือให้เล็กลง
+				Button.Position = UDim2.new(0.85, 0, 0.15, 0)
+				Button.Size = UDim2.new(0, 20, 0, 20)	
 				Button.BackgroundTransparency = 1
 				Button.ImageColor3 = Color3.new(1, 1, 1)
 				Button.Image = "rbxassetid://9728118892"
 				Button.Name = "Button"
-				
+
 				Button.Activated:Connect(function()
 					pcall(function()
 						if options.Callback then
@@ -734,102 +737,82 @@ function Library:CreateWindow(Config)
 						end)
 					end)
 				end)
-				
+
 				local Function = {}
 
 				function Function:SetTitle(TapName)
 					Title_Func.Text = TapName or "Unknow"
 				end
-				
+
 				function Function:Visible(Visible)
 					Click_Frame.Visible = Visible
 				end
 
 				return Function
-				
+
 			end
-			
+
 			function Create_Function:Input(options)
-				
+
 				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Tit)] = {
 					Title_Label = nil,
 					Value = "",
 					Refresh_Func = function() end,
 				}
-				
+
 				task.wait()
 
 				local Click_Frame = Instance.new("Frame", Group_Frame)
-				Click_Frame.Size = UDim2.new(0, 208,0, 79)
+				-- [UPDATED] ย่อความสูงเหลือ 35 เท่ากับ Click 
+				Click_Frame.Size = UDim2.new(0, 208, 0, 35) 
 				Click_Frame.BackgroundTransparency = 1
-				Click_Frame.Name = options.Title or "Click_Frame"
+				Click_Frame.Name = options.Title or "Input_Frame"
 
 				local BGFrame = Instance.new("Frame", Click_Frame)
 				BGFrame.BackgroundColor3 = Color3.new(1, 1, 1)
-				BGFrame.Size = UDim2.new(0.96, 0,0.83, 0)
-				BGFrame.Position = UDim2.new(0.019, 0,0.083, 0)
+				BGFrame.Size = UDim2.new(0.96, 0, 0.9, 0)
+				BGFrame.Position = UDim2.new(0.019, 0, 0.05, 0)
 				BGFrame.BackgroundTransparency = 0.9
-				BGFrame.Name = "BGFrame"
-
-				local UICorner_BGFrame = Instance.new("UICorner", BGFrame)
-				UICorner_BGFrame.CornerRadius = UDim.new(0, 8)
+				Instance.new("UICorner", BGFrame).CornerRadius = UDim.new(0, 6)
 
 				local ColorFrame = Instance.new("Frame", BGFrame)
 				ColorFrame.BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941)
-				ColorFrame.Size = UDim2.new(0, 5,0, 49)
-				ColorFrame.Position = UDim2.new(0, 0,0.119, 0)
-				ColorFrame.Name = "ColorFrame"
-
-				local UICorner_ColorFrame = Instance.new("UICorner", ColorFrame)
-				UICorner_ColorFrame.CornerRadius = UDim.new(0, 8)
+				ColorFrame.Size = UDim2.new(0, 4, 0, 20)
+				ColorFrame.Position = UDim2.new(0, 0, 0.18, 0)
+				Instance.new("UICorner", ColorFrame).CornerRadius = UDim.new(0, 4)
 
 				local Title_Func = Instance.new("TextLabel", BGFrame)
-				Title_Func.Size = UDim2.new(0, 180,0, 25)
-				Title_Func.Position = UDim2.new(0.065, 0,0.05, 3)
+				Title_Func.Size = UDim2.new(0, 100, 0, 25) -- ปรับความกว้างให้เหลือที่ให้ช่อง Input 
+				Title_Func.Position = UDim2.new(0.065, 0, 0.05, 0)
 				Title_Func.BackgroundTransparency = 1
-				Title_Func.Text = options.Title or "Click_Frame"
-				Title_Func.Font = Font_Main
+				Title_Func.Text = options.Title or "Input"
+				Title_Func.Font = Enum.Font.FredokaOne
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
-				Title_Func.TextSize = 20
+				Title_Func.TextSize = 16
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
-				Title_Func.TextWrapped = true
 				Add_UITextSizeConstraint(Title_Func)
-				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Tit)].Title_Label = Title_Func
-								
-				local SelectDropFrame = Instance.new("Frame", BGFrame)
-				SelectDropFrame.BackgroundColor3 = Color3.new(0.0509804, 0.00784314, 0.101961)
-				SelectDropFrame.Size = UDim2.new(0, 180,0, 25)
-				SelectDropFrame.Position = UDim2.new(0.065, 0,0.445, 5)
-				SelectDropFrame.BackgroundTransparency = 0.5
-				SelectDropFrame.Name = "SelectDropFrame"
+				getgenv().PanelObjectTag.All_Func[tostring(options.Flag)].Title_Label = Title_Func
 
-				local UICorner_SelectDropFrame = Instance.new("UICorner", SelectDropFrame)
-				UICorner_SelectDropFrame.CornerRadius = UDim.new(0, 8)
-				
-				local Icon = Instance.new("ImageLabel", SelectDropFrame)
-				Icon.Name = "Icon"
-				Icon.BackgroundTransparency = 1
-				Icon.Size = UDim2.new(0, 15,0, 15)
-				Icon.Position = UDim2.new(0.878, 1,0.046, 3)
-				Icon.Image = "rbxassetid://15911231575"
-				Instance.new("UIAspectRatioConstraint", Icon)
-				
-				local TextBox = Instance.new("TextBox", SelectDropFrame)
-				TextBox.BackgroundColor3 = Color3.new(0.0509804, 0.00784314, 0.101961)
-				TextBox.Size = UDim2.new(0, 146,0, 21)
-				TextBox.Position = UDim2.new(0.031, 0,0.073, 0)
+				-- [UPDATED] ย้ายกล่อง TextBox มาไว้ฝั่งขวาแทนการอยู่บรรทัดใหม่ 
+				local InputBG = Instance.new("Frame", BGFrame)
+				InputBG.BackgroundColor3 = Color3.new(0.05, 0.01, 0.1)
+				InputBG.Size = UDim2.new(0, 80, 0, 20)
+				InputBG.Position = UDim2.new(0.55, 0, 0.18, 0)
+				InputBG.BackgroundTransparency = 0.5
+				Instance.new("UICorner", InputBG).CornerRadius = UDim.new(0, 4)
+
+				local TextBox = Instance.new("TextBox", InputBG)
+				TextBox.Size = UDim2.new(0.9, 0, 0.9, 0)
+				TextBox.Position = UDim2.new(0.05, 0, 0.05, 0)
 				TextBox.BackgroundTransparency = 1
-				TextBox.Name = "TextBox"
-				TextBox.Font = Font_Main
+				TextBox.Font = Enum.Font.FredokaOne
 				TextBox.TextColor3 = Color3.new(1, 1, 1)
-				TextBox.PlaceholderColor3 = Color3.new(1, 1, 1)
 				TextBox.TextSize = 14
 				TextBox.Text = options.Value or ""
 				TextBox.PlaceholderText = options.Placeholder or "..."
-				TextBox.TextXAlignment = Enum.TextXAlignment.Left
-				TextBox.TextWrapped = true
-				Add_UITextSizeConstraint(TextBox)
-				
+				TextBox.TextXAlignment = Enum.TextXAlignment.Center -- จัดกลางเพื่อให้ดู compact
+				TextBox.ClipsDescendants = true
+
 				TextBox.FocusLost:Connect(function(enterPressed)
 					pcall(function()
 						if enterPressed then
@@ -846,11 +829,11 @@ function Library:CreateWindow(Config)
 						end
 					end)
 				end)
-				
+
 				if options.Value then
 					TweenFrame(ColorFrame, {BackgroundColor3 = Color3.new(0.560784, 0.305882, 1)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 				end
-				
+
 				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Tit)].Refresh_Func = function(Value)
 					if Value == "" then
 						TextBox.Text = ""
@@ -860,23 +843,23 @@ function Library:CreateWindow(Config)
 						TweenFrame(ColorFrame, {BackgroundColor3 = Color3.new(0.560784, 0.305882, 1)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 					end					
 				end
-				
+
 				local Function = {}
 
 				function Function:SetTitle(TapName)
 					Title_Func.Text = TapName or "Unknow"
 				end
-				
+
 				function Function:Visible(Visible)
 					Click_Frame.Visible = Visible
 				end
 
 				return Function
-				
+
 			end
-			
+
 			function Create_Function:Slide(options)
-				
+
 				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Tit)] = {
 					Title_Label = nil,
 					Value = options.Default_Value or 0, -- แก้ให้มีค่าเริ่มต้นทันที
@@ -886,72 +869,65 @@ function Library:CreateWindow(Config)
 				task.wait()
 
 				local Click_Frame = Instance.new("Frame", Group_Frame)
-				Click_Frame.Size = UDim2.new(0, 208, 0, 79)
+				-- [UPDATED] ย่อความสูงเหลือ 35 units เท่ากับตัวอื่นๆ
+				Click_Frame.Size = UDim2.new(0, 208, 0, 35) 
 				Click_Frame.BackgroundTransparency = 1
-				Click_Frame.Name = options.Title or "Click_Frame"
+				Click_Frame.Name = options.Title or "Slide_Frame"
 
 				local BGFrame = Instance.new("Frame", Click_Frame)
 				BGFrame.BackgroundColor3 = Color3.new(1, 1, 1)
-				BGFrame.Size = UDim2.new(0.96, 0, 0.83, 0)
-				BGFrame.Position = UDim2.new(0.019, 0, 0.083, 0)
+				BGFrame.Size = UDim2.new(0.96, 0, 0.9, 0)
+				BGFrame.Position = UDim2.new(0.019, 0, 0.05, 0)
 				BGFrame.BackgroundTransparency = 0.9
-				BGFrame.Name = "BGFrame"
-				Instance.new("UICorner", BGFrame).CornerRadius = UDim.new(0, 8)
+				Instance.new("UICorner", BGFrame).CornerRadius = UDim.new(0, 6)
 
 				local ColorFrame = Instance.new("Frame", BGFrame)
 				ColorFrame.BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941)
-				ColorFrame.Size = UDim2.new(0, 5, 0, 49)
-				ColorFrame.Position = UDim2.new(0, 0, 0.119, 0)
-				ColorFrame.Name = "ColorFrame"
-				Instance.new("UICorner", ColorFrame).CornerRadius = UDim.new(0, 8)
+				ColorFrame.Size = UDim2.new(0, 4, 0, 20)
+				ColorFrame.Position = UDim2.new(0, 0, 0.18, 0)
+				Instance.new("UICorner", ColorFrame).CornerRadius = UDim.new(0, 4)
 
 				local Title_Func = Instance.new("TextLabel", BGFrame)
-				Title_Func.Size = UDim2.new(0, 141,0, 25)
-				Title_Func.Position = UDim2.new(0.065, 0,0.084, 3)
+				Title_Func.Size = UDim2.new(0, 80, 0, 25) -- ปรับความกว้างให้สั้นลง
+				Title_Func.Position = UDim2.new(0.065, 0, 0.05, 0)
 				Title_Func.BackgroundTransparency = 1
-				Title_Func.Text = options.Title or "Click_Frame"
-				Title_Func.Font = Font_Main
+				Title_Func.Text = options.Title or "Slider"
+				Title_Func.Font = Enum.Font.FredokaOne
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
-				Title_Func.TextSize = 20
+				Title_Func.TextSize = 14 -- ย่อตัวอักษรลงนิดหน่อย
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
-				Title_Func.TextWrapped = true
 				Add_UITextSizeConstraint(Title_Func)
-				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Tit)].Title_Label = Title_Func
 
-				local Value_Func = Instance.new("TextLabel", BGFrame)
-				Value_Func.Size = UDim2.new(0, 35,0, 25)
-				Value_Func.Position = UDim2.new(0.799, 0,0.059, 3)
-				Value_Func.BackgroundTransparency = 1
-				Value_Func.Text = options.Default_Value or 0
-				Value_Func.Font = Font_Main
-				Value_Func.TextColor3 = Color3.new(1, 1, 1)
-				Value_Func.TextSize = 20
-				Value_Func.TextXAlignment = Enum.TextXAlignment.Left
-				Value_Func.TextWrapped = true
-				Add_UITextSizeConstraint(Value_Func)
+				-- [UPDATED] แสดงค่าตัวเลขไว้ข้างๆ แถบเลื่อน
+				local Value_Label = Instance.new("TextLabel", BGFrame)
+				Value_Label.Size = UDim2.new(0, 30, 0, 25)
+				Value_Label.Position = UDim2.new(0.82, 0, 0.05, 0)
+				Value_Label.BackgroundTransparency = 1
+				Value_Label.Text = tostring(options.Value.Default)
+				Value_Label.Font = Enum.Font.FredokaOne
+				Value_Label.TextColor3 = Color3.new(1, 1, 1)
+				Value_Label.TextSize = 12
+				Value_Label.TextXAlignment = Enum.TextXAlignment.Right
 
+				-- [UPDATED] แถบเลื่อนแบบผอม (Slim Bar)
 				local MainSlideFrame = Instance.new("Frame", BGFrame)
-				MainSlideFrame.BackgroundColor3 = Color3.new(0.0509804, 0.00784314, 0.101961)
-				MainSlideFrame.Size = UDim2.new(0, 177, 0, 7)
-				MainSlideFrame.Position = UDim2.new(0.078, 0, 0.65, 0)
-				MainSlideFrame.Name = "MainSlideFrame"
+				MainSlideFrame.BackgroundColor3 = Color3.new(0.05, 0.01, 0.1)
+				MainSlideFrame.Size = UDim2.new(0, 75, 0, 4) -- ผอมลงเหลือ 4 units
+				MainSlideFrame.Position = UDim2.new(0.45, 0, 0.45, 0)
 				MainSlideFrame.BackgroundTransparency = 0.5
-				Instance.new("UICorner", MainSlideFrame).CornerRadius = UDim.new(0, 8)
+				Instance.new("UICorner", MainSlideFrame).CornerRadius = UDim.new(1, 0)
 
 				local ColorButton = Instance.new("Frame", MainSlideFrame)
-				ColorButton.BackgroundColor3 = Color3.new(0.556863, 0.333333, 1)
-				ColorButton.Size = UDim2.new(0, 13, 0, 17)
-				ColorButton.Position = UDim2.new(0.934, 0, -0.809, 0)
-				ColorButton.Name = "ColorButton"
-				Instance.new("UICorner", ColorButton).CornerRadius = UDim.new(0, 8)
+				ColorButton.BackgroundColor3 = Color3.new(0.56, 0.3, 1)
+				ColorButton.Size = UDim2.new(0, 10, 0, 10) -- จุดเลื่อนเล็กลง
+				ColorButton.Position = UDim2.new(0, 0, -0.75, 0)
+				Instance.new("UICorner", ColorButton).CornerRadius = UDim.new(1, 0)
 
 				local Slide_Button = Instance.new("ImageButton", MainSlideFrame)
-				Slide_Button.Position = UDim2.new(0, 0, -0.786, 0)
-				Slide_Button.Size = UDim2.new(0, 175, 0, 18)    
+				Slide_Button.Size = UDim2.new(1.2, 0, 5, 0) -- ขยายพื้นที่คลิกให้ใหญ่กว่าที่เห็นเพื่อให้กดง่าย
+				Slide_Button.Position = UDim2.new(-0.1, 0, -2, 0)
 				Slide_Button.BackgroundTransparency = 1
 				Slide_Button.Image = ""
-				Slide_Button.Name = "Button"
-				Slide_Button.ZIndex = 2
 
 				local dragging = false
 				local function positionToValue(x)
@@ -971,7 +947,7 @@ function Library:CreateWindow(Config)
 				local function updateSlide(value)
 					getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Tit)].Value = value
 					TweenFrame(ColorButton, {Position = valueToPosition(value)}, 0.1)
-					Value_Func.Text = tostring(formatNumber(value))
+					Value_Label.Text = tostring(formatNumber(value))
 					if options.Callback then
 						options.Callback(value)
 					end
@@ -1003,20 +979,20 @@ function Library:CreateWindow(Config)
 					updateSlide(Value)
 				end
 				local Function = {}
-				
+
 				function Function:SetTitle(TapName) Title_Func.Text = TapName or "Unknow" end
-				
+
 				function Function:SetValue(Value) updateSlide(Value) end
-				
+
 				function Function:Visible(Visible)
 					Click_Frame.Visible = Visible
 				end
-				
+
 				return Function
 			end
-			
+
 			function Create_Function:Drop(options)
-				
+
 				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)] = {
 					Title_Label = nil,
 					Value = {},
@@ -1024,74 +1000,73 @@ function Library:CreateWindow(Config)
 				}
 
 				task.wait()
-				
+
 				local Click_Frame = Instance.new("Frame", Group_Frame)
-				Click_Frame.Size = UDim2.new(0, 208, 0, 79)
+				-- [UPDATED] ย่อความสูงเหลือ 35 units 
+				Click_Frame.Size = UDim2.new(0, 208, 0, 35) 
 				Click_Frame.BackgroundTransparency = 1
-				Click_Frame.Name = options.Title or "Click_Frame"
+				Click_Frame.Name = options.Title or "Drop_Frame"
 
 				local BGFrame = Instance.new("Frame", Click_Frame)
 				BGFrame.BackgroundColor3 = Color3.new(1, 1, 1)
-				BGFrame.Size = UDim2.new(0.96, 0, 0.83, 0)
-				BGFrame.Position = UDim2.new(0.019, 0, 0.083, 0)
+				BGFrame.Size = UDim2.new(0.96, 0, 0.9, 0)
+				BGFrame.Position = UDim2.new(0.019, 0, 0.05, 0)
 				BGFrame.BackgroundTransparency = 0.9
-				BGFrame.Name = "BGFrame"
-				Instance.new("UICorner", BGFrame).CornerRadius = UDim.new(0, 8)
+				Instance.new("UICorner", BGFrame).CornerRadius = UDim.new(0, 6)
 
 				local ColorFrame = Instance.new("Frame", BGFrame)
 				ColorFrame.BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941)
-				ColorFrame.Size = UDim2.new(0, 5, 0, 49)
-				ColorFrame.Position = UDim2.new(0, 0, 0.119, 0)
-				Instance.new("UICorner", ColorFrame).CornerRadius = UDim.new(0, 8)
+				ColorFrame.Size = UDim2.new(0, 4, 0, 20)
+				ColorFrame.Position = UDim2.new(0, 0, 0.18, 0)
+				Instance.new("UICorner", ColorFrame).CornerRadius = UDim.new(0, 4)
 
 				local Title_Func = Instance.new("TextLabel", BGFrame)
-				Title_Func.Size = UDim2.new(0, 180, 0, 25)
-				Title_Func.Position = UDim2.new(0.065, 0, 0.05, 3)
+				Title_Func.Size = UDim2.new(0, 100, 0, 25)
+				Title_Func.Position = UDim2.new(0.065, 0, 0.05, 0)
 				Title_Func.BackgroundTransparency = 1
-				Title_Func.Text = options.Title or "Click_Frame"
-				Title_Func.Font = Font_Main
+				Title_Func.Text = options.Title or "Dropdown"
+				Title_Func.Font = Enum.Font.FredokaOne
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
-				Title_Func.TextSize = 20
+				Title_Func.TextSize = 14 -- ย่อลงนิดหน่อยเพื่อให้พอดีแถว [cite: 9]
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
-				Title_Func.TextWrapped = true
 				Add_UITextSizeConstraint(Title_Func)
-				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Tit)].Title_Label = Title_Func
 
+				-- [UPDATED] ช่องแสดงผลตัวเลือกที่เลือกไว้ (วางไว้ฝั่งขวา)
 				local SelectDropFrame = Instance.new("Frame", BGFrame)
-				SelectDropFrame.BackgroundColor3 = Color3.new(0.0509804, 0.00784314, 0.101961)
-				SelectDropFrame.Size = UDim2.new(0, 180, 0, 25)
-				SelectDropFrame.Position = UDim2.new(0.065, 0, 0.445, 5)
+				SelectDropFrame.BackgroundColor3 = Color3.new(0.05, 0.01, 0.1)
+				SelectDropFrame.Size = UDim2.new(0, 80, 0, 20)
+				SelectDropFrame.Position = UDim2.new(0.55, 0, 0.18, 0)
 				SelectDropFrame.BackgroundTransparency = 0.5
-				SelectDropFrame.Name = "SelectDropFrame"
-				Instance.new("UICorner", SelectDropFrame).CornerRadius = UDim.new(0, 8)
-
-				local Icon = Instance.new("ImageLabel", SelectDropFrame)
-				Icon.Name = "Icon"
-				Icon.BackgroundTransparency = 1
-				Icon.Size = UDim2.new(0, 15, 0, 15)
-				Icon.Position = UDim2.new(0.878, 1, 0.046, 3)
-				Icon.Image = "rbxassetid://16844850109"
-				Instance.new("UIAspectRatioConstraint", Icon)
+				Instance.new("UICorner", SelectDropFrame).CornerRadius = UDim.new(0, 4)
 
 				local DropText = Instance.new("TextLabel", SelectDropFrame)
-				DropText.Size = UDim2.new(0, 146, 0, 21)
-				DropText.Position = UDim2.new(0.031, 0, 0.073, 0)
+				DropText.Size = UDim2.new(0.85, 0, 1, 0)
+				DropText.Position = UDim2.new(0.05, 0, 0, 0)
 				DropText.BackgroundTransparency = 1
 				DropText.Text = "..."
-				DropText.Font = Font_Main
+				DropText.Font = Enum.Font.FredokaOne
 				DropText.TextColor3 = Color3.new(1, 1, 1)
-				DropText.TextSize = 20
-				DropText.TextXAlignment = Enum.TextXAlignment.Left
-				DropText.TextScaled = true
-				DropText.TextWrapped = true
-				Add_UITextSizeConstraint(DropText)
+				DropText.TextSize = 12
+				DropText.TextTruncate = Enum.TextTruncate.AtEnd -- ตัดคำถ้าชื่อยาวเกิน [cite: 24]
 
-				local Button = Instance.new("ImageButton", BGFrame)
+				local Icon = Instance.new("ImageLabel", SelectDropFrame)
+				Icon.Size = UDim2.new(0, 12, 0, 12)
+				Icon.Position = UDim2.new(0.85, 0, 0.2, 0)
+				Icon.BackgroundTransparency = 1
+				Icon.Image = "rbxassetid://16844850109" -- ไอคอนลูกศรลง [cite: 18, 25]
+
+				local Button = Instance.new("TextButton", BGFrame)
 				Button.Size = UDim2.new(1, 0, 1, 0)
 				Button.BackgroundTransparency = 1
-				Button.Image = ""
-				Button.Name = "Button"
-				Button.ZIndex = 2
+				Button.Text = ""
+
+				-- [Dropdown Popup Logic] ดึงมาจากสคริปต์เดิมของคุณ [cite: 25, 26]
+				local Drop_Down_Frame = Instance.new("Frame", SomtankLib2)
+				Drop_Down_Frame.Size = UDim2.new(0, 180, 0, 150)
+				Drop_Down_Frame.BackgroundColor3 = Color3.fromRGB(35, 25, 50)
+				Drop_Down_Frame.Visible = false
+				Instance.new("UICorner", Drop_Down_Frame).CornerRadius = UDim.new(0, 8)
+				Instance.new("UIStroke", Drop_Down_Frame).Color = Color3.new(0.5, 0.3, 1)
 
 				local Drop_Down_Frame = Instance.new("Frame", SomtankLib2)
 				Drop_Down_Frame.BackgroundColor3 = Color3.new(0.301961, 0.2, 0.478431)
@@ -1100,11 +1075,11 @@ function Library:CreateWindow(Config)
 				Drop_Down_Frame.Name = options.Title or "Drop_Down_Frame"..tostring(math.random(11111,99999))
 				Drop_Down_Frame.Visible = false
 				Instance.new("UICorner", Drop_Down_Frame).CornerRadius = UDim.new(0, 8)
-				
+
 				local UIScale_Drop_Down_Frame = Instance.new("UIScale", Drop_Down_Frame)
 				UIScale_Drop_Down_Frame.Name = "UIScale"
 				UIScale_Drop_Down_Frame.Scale = 1
-				
+
 				table.insert(getgenv().PanelObjectTag.UIScale, UIScale_Drop_Down_Frame)
 				local DropScale = Instance.new("UIScale", Drop_Down_Frame)
 
@@ -1112,7 +1087,7 @@ function Library:CreateWindow(Config)
 				UIListLayout_Drop.SortOrder = Enum.SortOrder.LayoutOrder
 				UIListLayout_Drop.Padding = UDim.new(0, 3)				
 				Instance.new("UIStroke", Drop_Down_Frame).Color = Color3.new(0.517647, 0.431373, 0.776471)
-				
+
 				local function CloseDropDown(Drop_Down_FrameC)					
 					Drop_Down_FrameC.Position = UDim2.fromOffset(SelectDropFrame.AbsolutePosition.X, SelectDropFrame.AbsolutePosition.Y + SelectDropFrame.Size.Y.Offset)
 					Drop_Down_FrameC.Visible = true
@@ -1122,7 +1097,7 @@ function Library:CreateWindow(Config)
 						Drop_Down_FrameC.Visible = false
 					end)
 				end
-				
+
 				Drop_Down_Frame:SetAttribute("IsOpen", false)
 				Button.Activated:Connect(function()
 					task.spawn(function()
@@ -1165,10 +1140,10 @@ function Library:CreateWindow(Config)
 				Search_Frame.BackgroundTransparency = 0.9
 				Search_Frame.Name = "Search_Frame"
 				Instance.new("UICorner", Search_Frame).CornerRadius = UDim.new(0, 8)
-				
+
 				local UICorner_Search_Frame = Instance.new("UICorner", Search_Frame)
 				UICorner_Search_Frame.CornerRadius = UDim.new(0, 8)
-				
+
 				local Search_Icon = Instance.new("ImageButton", Search_Frame)
 				Search_Icon.Size = UDim2.new(0, 16,0, 20)
 				Search_Icon.Position = UDim2.new(0.878, 0,0.213, 0)
@@ -1178,7 +1153,7 @@ function Library:CreateWindow(Config)
 				Search_Icon.Name = "Search_Icon"
 				Search_Icon.Active = false
 				Instance.new("UIAspectRatioConstraint", Search_Icon)
-				
+
 				local SearchBox = Instance.new("TextBox", Search_Frame)
 				SearchBox.BackgroundColor3 = Color3.new(0.0509804, 0.00784314, 0.101961)
 				SearchBox.Size = UDim2.new(0, 147,0, 21)
@@ -1205,12 +1180,12 @@ function Library:CreateWindow(Config)
 				Scrolling_Drop.ScrollBarThickness = 0
 				Scrolling_Drop.AutomaticCanvasSize = Enum.AutomaticSize.Y
 				Scrolling_Drop.BorderSizePixel = 0
-				
+
 				local UIListLayout_Scrolling_Drop = Instance.new("UIListLayout", Scrolling_Drop)
 				UIListLayout_Scrolling_Drop.SortOrder = Enum.SortOrder.LayoutOrder
 				UIListLayout_Scrolling_Drop.Padding = UDim.new(0, 3)
 				UIListLayout_Scrolling_Drop.Name = tostring(math.random(1111111,9999999)) or "asdas453das45dasdwf bfdg"
-				
+
 				local function ReFreshShow(Selected_Table)
 					if #Selected_Table == 0 then
 						DropText.Text = "..."
@@ -1222,7 +1197,7 @@ function Library:CreateWindow(Config)
 					options.Callback(Selected_Table)
 					SaveConfig()
 				end
-				
+
 				local function SearchBox_Function()
 					pcall(function()
 						local Found, Target_Name = false, tostring(SearchBox.Text)
@@ -1256,7 +1231,7 @@ function Library:CreateWindow(Config)
 						end
 					end)
 				end
-				
+
 				SearchBox:GetPropertyChangedSignal("Text"):Connect(SearchBox_Function)
 				SearchBox.FocusLost:Connect(function(enterPressed)
 					pcall(function()
@@ -1266,7 +1241,7 @@ function Library:CreateWindow(Config)
 						end
 					end)
 				end)
-				
+
 				local function SelectButton(DropButton, Title)
 					local selectedTable = getgenv().PanelObjectTag.All_Func[options.Flag or options.Tit].Value
 
@@ -1310,19 +1285,19 @@ function Library:CreateWindow(Config)
 					DropButton:SetAttribute("IsSelected", false)
 					TweenFrame(DropButton, {ImageColor3 = Color3.new(0.227451, 0.176471, 0.317647)}, 0.2)
 				end
-				
+
 				if options and options.Values then
 					for _, Name in ipairs(options.Values) do
-						
+
 						local DropChild = Instance.new("Frame", Scrolling_Drop)
 						DropChild.BackgroundColor3 = Color3.new(1, 1, 1)
 						DropChild.Size = UDim2.new(0, 181,0, 28)
 						DropChild.BackgroundTransparency = 0.9
 						DropChild.Name = Name or "Unknow"
-						
+
 						local UICorner_DropChild = Instance.new("UICorner", DropChild)
 						UICorner_DropChild.CornerRadius = UDim.new(0, 8)
-						
+
 						local DropButton = Instance.new("ImageButton", DropChild)
 						DropButton.Size = UDim2.new(0, 22,0, 22)
 						DropButton.Position = UDim2.new(0.866, 0,0.133, 0)
@@ -1331,17 +1306,17 @@ function Library:CreateWindow(Config)
 						DropButton.Image = "rbxassetid://15307205005"
 						DropButton.Name = "DropButton"
 						Instance.new("UIAspectRatioConstraint", DropButton)
-						
+
 						local UICorner_DropButton = Instance.new("UICorner", DropButton)
 						UICorner_DropButton.CornerRadius = UDim.new(0, 8)
-						
+
 						local RealDropButton = Instance.new("ImageButton", DropChild)
 						RealDropButton.Size = UDim2.new(1, 0,1, 0)
 						RealDropButton.BackgroundTransparency = 1
 						RealDropButton.Image = ""
 						RealDropButton.Name = "RealButton"
 						RealDropButton.ZIndex = 5
-						
+
 						local Title = Instance.new("TextLabel", DropChild)
 						Title.Size = UDim2.new(0, 148,0, 21)
 						Title.Position = UDim2.new(0.03, 0,0.107, 0)
@@ -1354,7 +1329,7 @@ function Library:CreateWindow(Config)
 						Title.TextXAlignment = Enum.TextXAlignment.Left
 						Title.TextWrapped = true
 						Add_UITextSizeConstraint(Title)
-						
+
 						RealDropButton.Activated:Connect(function()
 							local isSelected = DropButton:GetAttribute("IsSelected") or false
 
@@ -1371,7 +1346,7 @@ function Library:CreateWindow(Config)
 							task.wait(0.05)
 							ReFreshShow(getgenv().PanelObjectTag.All_Func[options.Flag or options.Tit].Value)
 						end)
-						
+
 						if options.Value then
 							for _, Name_Seleted in ipairs(options.Value) do
 								if Name_Seleted == Name then
@@ -1381,10 +1356,10 @@ function Library:CreateWindow(Config)
 							end
 							ReFreshShow(getgenv().PanelObjectTag.All_Func[options.Flag or options.Tit].Value)
 						end						
-						
+
 					end
 				end
-				
+
 				getgenv().PanelObjectTag.All_Func[options.Flag or options.Tit].Refresh_Func = function(Value)
 					if Value then
 						getgenv().PanelObjectTag.All_Func[options.Flag or options.Tit].Value = Value
@@ -1408,100 +1383,88 @@ function Library:CreateWindow(Config)
 						ReFreshShow(getgenv().PanelObjectTag.All_Func[options.Flag or options.Tit].Value)
 					end
 				end
-				
+
 				local Function = {}
 
 				function Function:SetTitle(TapName)
 					Title_Func.Text = TapName or "Unknow"
 				end
-				
+
 				function Function:SetValue(Value)
 					getgenv().PanelObjectTag.All_Func[options.Flag or options.Tit].Refresh_Func(Value)
 				end
-				
+
 				function Function:Visible(Visible)
 					Click_Frame.Visible = Visible
 				end
 
 				return Function
-				
+
 			end
-			
+
 			function Create_Function:Toggle(options)
-				
+
 				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Tit)] = {
 					Title_Label = nil,
 					Value = false,
 					Refresh_Func = function() end,
 				}
-				
+
 				task.wait()
 
 				local Click_Frame = Instance.new("Frame", Group_Frame)
-				Click_Frame.Size = UDim2.new(0, 208,0, 48)
+				-- [UPDATED] ย่อความสูงเหลือ 35 units
+				Click_Frame.Size = UDim2.new(0, 208, 0, 35) 
 				Click_Frame.BackgroundTransparency = 1
-				Click_Frame.Name = options.Title or "Click_Frame"
+				Click_Frame.Name = options.Title or "Toggle_Frame"
 
 				local BGFrame = Instance.new("Frame", Click_Frame)
 				BGFrame.BackgroundColor3 = Color3.new(1, 1, 1)
-				BGFrame.Size = UDim2.new(0.96, 0,0.83, 0)
-				BGFrame.Position = UDim2.new(0.019, 0,0.083, 0)
+				BGFrame.Size = UDim2.new(0.96, 0, 0.9, 0)
+				BGFrame.Position = UDim2.new(0.019, 0, 0.05, 0)
 				BGFrame.BackgroundTransparency = 0.9
-				BGFrame.Name = "BGFrame"
-
-				local UICorner_BGFrame = Instance.new("UICorner", BGFrame)
-				UICorner_BGFrame.CornerRadius = UDim.new(0, 8)
+				Instance.new("UICorner", BGFrame).CornerRadius = UDim.new(0, 6)
 
 				local ColorFrame = Instance.new("Frame", BGFrame)
 				ColorFrame.BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941)
-				ColorFrame.Size = UDim2.new(0, 5,0, 26)
-				ColorFrame.Position = UDim2.new(0, 0,0.153, 0)
-				ColorFrame.Name = "ColorFrame"
-
-				local UICorner_ColorFrame = Instance.new("UICorner", ColorFrame)
-				UICorner_ColorFrame.CornerRadius = UDim.new(0, 8)
+				ColorFrame.Size = UDim2.new(0, 4, 0, 20)
+				ColorFrame.Position = UDim2.new(0, 0, 0.18, 0)
+				Instance.new("UICorner", ColorFrame).CornerRadius = UDim.new(0, 4)
 
 				local Title_Func = Instance.new("TextLabel", BGFrame)
-				Title_Func.Size = UDim2.new(0, 144,0, 32)
-				Title_Func.Position = UDim2.new(0.069, 0,0.003, 3)
+				Title_Func.Size = UDim2.new(0, 140, 0, 25)
+				Title_Func.Position = UDim2.new(0.065, 0, 0.05, 0)
 				Title_Func.BackgroundTransparency = 1
-				Title_Func.Text = options.Title or "Click_Frame"
-				Title_Func.Font = Font_Main
+				Title_Func.Text = options.Title or "Toggle"
+				Title_Func.Font = Enum.Font.FredokaOne
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
-				Title_Func.TextSize = 20
+				Title_Func.TextSize = 16
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
-				Title_Func.TextWrapped = true
 				Add_UITextSizeConstraint(Title_Func)
-				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Tit)].Title_Label = Title_Func
-								
-				local Toggle_Frame = Instance.new("Frame", BGFrame)
-				Toggle_Frame.BackgroundColor3 = Color3.new(0.0509804, 0.00784314, 0.101961)
-				Toggle_Frame.Size = UDim2.new(0, 29,0, 12)
-				Toggle_Frame.Position = UDim2.new(0.822, 0,0.331, 0)
-				Toggle_Frame.BackgroundTransparency = 0.5
-				Toggle_Frame.Name = "Toggle_Frame"
-				
-				local UICorner_Toggle_Frame = Instance.new("UICorner", Toggle_Frame)
-				UICorner_Toggle_Frame.CornerRadius = UDim.new(0, 8)
-				
-				local ColorFrame_Toggle_Frame = Instance.new("Frame", Toggle_Frame)
-				ColorFrame_Toggle_Frame.BackgroundColor3 = Color3.new(0.556863, 0.333333, 1)
-				ColorFrame_Toggle_Frame.Size = UDim2.new(0, 13,0, 17)
-				ColorFrame_Toggle_Frame.Position = UDim2.new(-0.019, 0,-0.169, 0)
-				ColorFrame_Toggle_Frame.Name = "ColorFrame"
-				
-				local UICorner_ColorFrame_Toggle_Frame = Instance.new("UICorner", ColorFrame_Toggle_Frame)
-				UICorner_ColorFrame_Toggle_Frame.CornerRadius = UDim.new(0, 8)
-				
-				local Button = Instance.new("ImageButton", Toggle_Frame)
-				Button.Position = UDim2.new(-0.17, 0,-0.56, 0)
-				Button.Size = UDim2.new(0, 38,0, 26)
+				getgenv().PanelObjectTag.All_Func[tostring(options.Flag)].Title_Label = Title_Func
+
+				-- [UPDATED] ย่อสวิตช์ Toggle ให้ดูเล็กและแพงขึ้น
+				local Toggle_BG = Instance.new("Frame", BGFrame)
+				Toggle_BG.BackgroundColor3 = Color3.new(0.05, 0.01, 0.1)
+				Toggle_BG.Size = UDim2.new(0, 26, 0, 12)
+				Toggle_BG.Position = UDim2.new(0.82, 0, 0.3, 0)
+				Toggle_BG.BackgroundTransparency = 0.5
+				Instance.new("UICorner", Toggle_BG).CornerRadius = UDim.new(1, 0)
+
+				local ColorFrame_Toggle_Frame = Instance.new("Frame", Toggle_BG)
+				ColorFrame_Toggle_Frame.BackgroundColor3 = Color3.new(1, 1, 1)
+				ColorFrame_Toggle_Frame.Size = UDim2.new(0, 14, 0, 14) -- ใหญ่กว่า BG นิดนึงเพื่อให้ดูมีมิติ
+				ColorFrame_Toggle_Frame.Position = UDim2.new(-0.1, 0, -0.1, 0)
+				ColorFrame_Toggle_Frame.BackgroundColor3 = Color3.new(0.556863, 0.333333, 1) -- เปลี่ยนสีให้เป็นขาว
+				Instance.new("UICorner", ColorFrame_Toggle_Frame).CornerRadius = UDim.new(1, 0)
+
+				local Button = Instance.new("TextButton", BGFrame)
+				Button.Size = UDim2.new(1, 0, 1, 0)
 				Button.BackgroundTransparency = 1
-				Button.Image = ""
-				Button.Name = "Button"
-				
+				Button.Text = ""
+
 				local Toggle_Value = false
-				
+
 				local function MakeToggle(UI, input)
 					if input then
 						getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Tit)].Value = true
@@ -1527,31 +1490,31 @@ function Library:CreateWindow(Config)
 						MakeToggle(ColorFrame_Toggle_Frame, Toggle_Value)
 					end)
 				end)
-				
+
 				if options.Value then
 					MakeToggle(ColorFrame_Toggle_Frame, options.Value)				
 				end
-				
+
 				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Tit)].Refresh_Func = function(Value)
 					MakeToggle(ColorFrame_Toggle_Frame, Value)
 				end
-				
+
 				local Function = {}
 
 				function Function:SetTitle(TapName)
 					Title_Func.Text = TapName or "Unknow"
 				end
-				
+
 				function Function:SetValue(Value)
 					getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Tit)].Refresh_Func(Value)
 				end
 
 				return Function
-				
+
 			end
-			
+
 			function Create_Function:Comm(options)
-				
+
 				local Comment_Frame = Instance.new("Frame", Group_Frame)
 				Comment_Frame.Name = "Comment_Frame"
 				Comment_Frame.BackgroundTransparency = 1
@@ -1569,27 +1532,28 @@ function Library:CreateWindow(Config)
 				TextLabel.TextSize = 20
 				TextLabel.TextWrapped = true
 				Add_UITextSizeConstraint(TextLabel)
-				
+
 				local Function = {}
-				
+
 				function Function:SetTitle(TapName)
 					TextLabel.Text = TapName or "Unknow"
 				end
-				
+
 				function Function:Visible(Visible)
 					Comment_Frame.Visible = Visible
 				end
-				
+
 				return Function
 			end
-			
+
 			function Create_Function:CodeBox(options)
 				task.wait()
 
 				local Click_Frame = Instance.new("Frame", Group_Frame)
-				Click_Frame.Name = "CodeBox"
+				Click_Frame.Name = "CodeBox_Wrapper"
 				Click_Frame.BackgroundTransparency = 1
-				Click_Frame.Size = UDim2.new(0, 208, 0, 0) 
+				-- [UPDATED] เริ่มต้นที่ความสูง 35 แต่ปล่อยให้ขยายตามแกน Y อัตโนมัติ
+				Click_Frame.Size = UDim2.new(0, 208, 0, 35) 
 				Click_Frame.AutomaticSize = Enum.AutomaticSize.Y
 
 				local BGFrame = Instance.new("Frame", Click_Frame)
@@ -1597,63 +1561,64 @@ function Library:CreateWindow(Config)
 				BGFrame.BackgroundColor3 = Color3.new(1, 1, 1)
 				BGFrame.BackgroundTransparency = 0.9
 				BGFrame.Position = UDim2.new(0.019, 0, 0, 3)
-				local MinSize = Instance.new("UISizeConstraint", BGFrame)
-				MinSize.MinSize = Vector2.new(0, 35) 
-
 				BGFrame.Size = UDim2.new(0.96, 0, 0, 0)
+				-- [UPDATED] ใช้ AutomaticSize เพื่อให้พื้นหลังยืดตามเนื้อหาโค้ด
 				BGFrame.AutomaticSize = Enum.AutomaticSize.Y
+				Instance.new("UICorner", BGFrame).CornerRadius = UDim.new(0, 6)
 
-				Instance.new("UICorner", BGFrame).CornerRadius = UDim.new(0, 8)
+				-- ข้อจำกัดขนาดขั้นต่ำ (MinSize) เพื่อให้ดูเข้าพวกกับปุ่มอื่น
+				local MinSize = Instance.new("UISizeConstraint", BGFrame)
+				MinSize.MinSize = Vector2.new(0, 30) 
 
+				-- แถบสีม่วงด้านซ้าย (ยืดตามความสูงของโค้ด)
 				local ColorFrame = Instance.new("Frame", BGFrame)
 				ColorFrame.Name = "ColorFrame"
-				ColorFrame.BackgroundColor3 = Color3.new(0.560784, 0.305882, 1)
+				ColorFrame.BackgroundColor3 = Color3.new(0.56, 0.3, 1)
 				ColorFrame.Position = UDim2.new(0, 0, 0, 5)
-				ColorFrame.Size = UDim2.new(0, 5, 1, -9) 
-				Instance.new("UICorner", ColorFrame).CornerRadius = UDim.new(0, 8)
+				ColorFrame.Size = UDim2.new(0, 4, 1, -10) -- ใช้ Scale 1 เพื่อให้ยาวตาม BG
+				Instance.new("UICorner", ColorFrame).CornerRadius = UDim.new(0, 4)
 
 				local CodeBG = Instance.new("Frame", BGFrame)
 				CodeBG.Name = "CodeBG"
-				CodeBG.BackgroundColor3 = Color3.new(0.0509804, 0.00784314, 0.101961)
+				CodeBG.BackgroundColor3 = Color3.new(0.05, 0.01, 0.1)
 				CodeBG.BackgroundTransparency = 0.5
-				CodeBG.Size = UDim2.new(1, -10, 0, 0)
-				CodeBG.Position = UDim2.new(0, 10, 0, 8)
+				CodeBG.Position = UDim2.new(0, 10, 0, 5)
+				CodeBG.Size = UDim2.new(1, -15, 0, 0)
 				CodeBG.AutomaticSize = Enum.AutomaticSize.Y
-
-				Instance.new("UICorner", CodeBG).CornerRadius = UDim.new(0, 8)
+				Instance.new("UICorner", CodeBG).CornerRadius = UDim.new(0, 4)
 
 				local TextLabel = Instance.new("TextLabel", CodeBG)
-				TextLabel.Name = "TextLabel"
+				TextLabel.Name = "CodeText"
 				TextLabel.BackgroundTransparency = 1
 				TextLabel.Size = UDim2.new(1, -10, 0, 0)
-				TextLabel.Position = UDim2.new(0, 5, 0, 0)
-				TextLabel.Font = Font_Main
-				TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+				TextLabel.Position = UDim2.new(0, 5, 0, 5)
+				TextLabel.Font = Enum.Font.Code -- ใช้ Font แบบ Code เพื่อความสวยงาม
+				TextLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
 				TextLabel.TextSize = 12
 				TextLabel.TextXAlignment = Enum.TextXAlignment.Left
-				TextLabel.TextYAlignment = Enum.TextYAlignment.Center
-				TextLabel.TextWrapped = true
+				TextLabel.TextYAlignment = Enum.TextYAlignment.Top
+				TextLabel.TextWrapped = true -- ให้ตัวอักษรขึ้นบรรทัดใหม่เมื่อยาวเกิน
 				TextLabel.AutomaticSize = Enum.AutomaticSize.Y
-				
+
+				-- เพิ่ม Padding ด้านล่างเพื่อให้ดูไม่อึดอัด
 				local UIPadding = Instance.new("UIPadding", BGFrame)
-				UIPadding.PaddingBottom = UDim.new(0, 6)
-				UIPadding.PaddingRight = UDim.new(0, 5)
+				UIPadding.PaddingBottom = UDim.new(0, 5)
 
 				TextLabel.Text = options.Code or "Unknown"
 
 				local Function = {}
-				
+
 				function Function:SetCode(TapName)
 					TextLabel.Text = TapName or "Unknown"
 				end
 
 				return Function
 			end
-			
+
 			function Create_Function:ColorPicker(options)
-				
+
 				local Flag = tostring(options.Flag or options.Tit)
-				
+
 				getgenv().PanelObjectTag.All_Func[Flag] = {
 					Value = options.Default or Color3.fromRGB(255, 255, 255),
 					Refresh_Func = function() end,
@@ -1696,7 +1661,7 @@ function Library:CreateWindow(Config)
 				ColorDisplay.Size = UDim2.new(0, 35, 0, 18)
 				ColorDisplay.Position = UDim2.new(0.78, 0, 0.2, 0)
 				ColorDisplay.BackgroundColor3 = getgenv().PanelObjectTag.All_Func[Flag].Value
-				
+
 				Instance.new("UICorner", ColorDisplay).CornerRadius = UDim.new(0, 4)
 				local DisplayStroke = Instance.new("UIStroke", ColorDisplay)
 				DisplayStroke.Color = Color3.new(1,1,1)
@@ -1710,12 +1675,12 @@ function Library:CreateWindow(Config)
 				ColorPopup.Visible = false
 				ColorPopup.ZIndex = 10
 				ColorPopup.BackgroundTransparency = 0.1
-				
+
 				Instance.new("UICorner", ColorPopup).CornerRadius = UDim.new(0, 8)
 				local PopupStroke = Instance.new("UIStroke", ColorPopup)
 				PopupStroke.Color = Color3.new(0.5, 0.5, 0.5)
 				PopupStroke.Thickness = 1
-				
+
 				local UIScale_ColorPopup = Instance.new("UIScale", ColorPopup)
 				UIScale_ColorPopup.Name = "UIScale"
 				UIScale_ColorPopup.Scale = 1
@@ -1757,7 +1722,7 @@ function Library:CreateWindow(Config)
 						end)
 					end
 				end
-				
+
 				ColorPopup:SetAttribute("IsOpen", false)
 				-- ระบบเปิด/ปิด Popup และจัดการตำแหน่ง
 				Button.Activated:Connect(function()
@@ -1769,7 +1734,7 @@ function Library:CreateWindow(Config)
 
 					ColorPopup.Visible = isVisible
 					if isVisible then
-						
+
 						if getgenv().PanelObjectTag.Dropdown_Connection and getgenv().PanelObjectTag.Dropdown_Connection ~= ColorPopup then
 							pcall(function()
 								getgenv().PanelObjectTag.Dropdown_Connection:SetAttribute("IsOpen", false)
@@ -1778,7 +1743,7 @@ function Library:CreateWindow(Config)
 							getgenv().PanelObjectTag.Dropdown_Connection = nil
 						end
 						getgenv().PanelObjectTag.Dropdown_Connection = ColorPopup
-						
+
 						while isVisible do
 							if not isVisible then
 								break
@@ -1798,7 +1763,7 @@ function Library:CreateWindow(Config)
 						UpdateColor(Color3.new(Value.R, Value.G, Value.B), true)
 					end
 				end
-				
+
 				local Funcs = {}
 
 				function Funcs:SetTitle(Name)
@@ -1814,11 +1779,11 @@ function Library:CreateWindow(Config)
 				end
 
 				return Funcs
-				
+
 			end
-			
+
 			function Create_Function:Model_Viwer(options)
-				
+
 				local Click_Frame = Instance.new("Frame", Group_Frame)
 				Click_Frame.Size = UDim2.new(0, 208, 0, 180)
 				Click_Frame.BackgroundTransparency = 1
@@ -1859,7 +1824,7 @@ function Library:CreateWindow(Config)
 				ViewportCamera.Parent = ViewportFrame
 
 				local WorldModel, CurrentModel, SpinConn = Instance.new("WorldModel", ViewportFrame), nil, nil
-				
+
 				local function SetModel(model)
 					if not model then return end
 					if CurrentModel then CurrentModel:Destroy() end
@@ -1900,32 +1865,32 @@ function Library:CreateWindow(Config)
 				HandleSpin()
 
 				local Funcs = {}
-				
+
 				function Funcs:SetTitle(Name)
 					Title_Func.Text = Name
 				end
-				
+
 				function Funcs:SetNewModel(newModel) SetModel(newModel) end
-				
+
 				function Funcs:SetSpin(bool, speed)
 					options.Setting.Spining = bool
 					options.Setting.SpinSpeed = speed or options.Setting.SpinSpeed
 					HandleSpin()
 				end
-				
+
 				function Funcs:Visible(Visible)
 					Click_Frame.Visible = Visible
 				end
 
 				return Funcs
 			end
-			
+
 			return Create_Function
 		end
-		
+
 		return Group_Functions
 	end
-	
+
 	return Window_Tab
 end
 
