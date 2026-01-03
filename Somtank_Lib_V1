@@ -398,7 +398,6 @@ function Library:CreateWindow(Config)
 	DesButton.Activated:Connect(function()
 		SomtankLib:Destroy()
 		SomtankLib2:Destroy()
-		ScreenGui_MoveIcon:Destroy()
 
 		if DestroyCallback then
 			pcall(DestroyCallback)
