@@ -778,7 +778,7 @@ function Library:CreateWindow(Config)
 
 			function Create_Function:Input(options)
 
-				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Tit)] = {
+				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)] = {
 					Title_Label = nil,
 					Value = "",
 					Refresh_Func = function() end,
@@ -845,9 +845,9 @@ function Library:CreateWindow(Config)
 					pcall(function()
 						if enterPressed then
 							SaveConfig()
-							getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Tit)].Value = TextBox.Text
+							getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Value = TextBox.Text
 							if options.Callback then
-								options.Callback(TextBox.Text)								
+								options.Callback(TextBox.Text)
 							end
 							if TextBox.Text ~= "" then
 								TweenFrame(ColorFrame, {BackgroundColor3 = Color3.new(0.560784, 0.305882, 1)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
@@ -862,7 +862,7 @@ function Library:CreateWindow(Config)
 					TweenFrame(ColorFrame, {BackgroundColor3 = Color3.new(0.560784, 0.305882, 1)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 				end
 
-				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Tit)].Refresh_Func = function(Value)
+				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Refresh_Func = function(Value)
 					if Value == "" then
 						TextBox.Text = ""
 						TweenFrame(ColorFrame, {BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
@@ -887,8 +887,10 @@ function Library:CreateWindow(Config)
 			end
 
 			function Create_Function:Slide(options)
+				
+				local ENV_Name = options.Flag or options.Title
 
-				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Tit)] = {
+				getgenv().PanelObjectTag.All_Func[ENV_Name] = {
 					Title_Label = nil,
 					Value = options.Default_Value or 0, -- แก้ให้มีค่าเริ่มต้นทันที
 					Refresh_Func = function() end,
@@ -976,7 +978,7 @@ function Library:CreateWindow(Config)
 					return tonumber(string.format("%.2f", num))
 				end
 				local function updateSlide(value)
-					getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Tit)].Value = value
+					getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Value = value
 					TweenFrame(ColorButton, {Position = valueToPosition(value)}, 0.1)
 					Value_Label.Text = tostring(formatNumber(value))
 					if options.Callback then
@@ -1006,7 +1008,7 @@ function Library:CreateWindow(Config)
 						end)
 					end
 				end)
-				getgenv().PanelObjectTag.All_Func[options.Flag or options.Tit].Refresh_Func = function(Value)
+				getgenv().PanelObjectTag.All_Func[ENV_Name].Refresh_Func = function(Value)
 					updateSlide(Value)
 				end
 				local Function = {}
@@ -1023,8 +1025,10 @@ function Library:CreateWindow(Config)
 			end
 
 			function Create_Function:Drop(options)
+				
+				local ENV_Name = options.Flag or options.Title
 
-				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)] = {
+				getgenv().PanelObjectTag.All_Func[ENV_Name] = {
 					Title_Label = nil,
 					Value = {},
 					Refresh_Func = function() end,
@@ -1279,7 +1283,7 @@ function Library:CreateWindow(Config)
 				end)
 
 				local function SelectButton(DropButton, Title)
-					local selectedTable = getgenv().PanelObjectTag.All_Func[options.Flag or options.Tit].Value
+					local selectedTable = getgenv().PanelObjectTag.All_Func[ENV_Name].Value
 
 					-- [FIX] ถ้าไม่ใช่ Multi-select ให้ล้างค่าเก่าทิ้งให้หมดก่อน
 					if options.Multi == false then
@@ -1308,7 +1312,7 @@ function Library:CreateWindow(Config)
 				end
 
 				local function UnSelectButton(DropButton, Title)
-					local selectedTable = getgenv().PanelObjectTag.All_Func[options.Flag or options.Tit].Value
+					local selectedTable = getgenv().PanelObjectTag.All_Func[ENV_Name].Value
 
 					-- ลบออกจาก Table
 					for index, Value in ipairs(selectedTable) do
@@ -1374,14 +1378,14 @@ function Library:CreateWindow(Config)
 								SelectButton(DropButton, Title)
 							else
 								-- ถ้ากดยกเลิก ให้เช็คว่า AllowNone หรือไม่ หรือเหลือของมากกว่า 1 ชิ้น
-								local selectedTable = getgenv().PanelObjectTag.All_Func[options.Flag or options.Tit].Value
+								local selectedTable = getgenv().PanelObjectTag.All_Func[ENV_Name].Value
 								if options.AllowNone or #selectedTable > 1 then
 									UnSelectButton(DropButton, Title)
 								end
 							end
 
 							task.wait(0.05)
-							ReFreshShow(getgenv().PanelObjectTag.All_Func[options.Flag or options.Tit].Value)
+							ReFreshShow(getgenv().PanelObjectTag.All_Func[ENV_Name].Value)
 						end)
 
 						if options.Value then
@@ -1391,15 +1395,15 @@ function Library:CreateWindow(Config)
 									break
 								end
 							end
-							ReFreshShow(getgenv().PanelObjectTag.All_Func[options.Flag or options.Tit].Value)
+							ReFreshShow(getgenv().PanelObjectTag.All_Func[ENV_Name].Value)
 						end						
 
 					end
 				end
 
-				getgenv().PanelObjectTag.All_Func[options.Flag or options.Tit].Refresh_Func = function(Value)
+				getgenv().PanelObjectTag.All_Func[ENV_Name].Refresh_Func = function(Value)
 					if Value then
-						getgenv().PanelObjectTag.All_Func[options.Flag or options.Tit].Value = Value
+						getgenv().PanelObjectTag.All_Func[ENV_Name].Value = Value
 						for _, child in ipairs(Scrolling_Drop:GetChildren()) do
 							if child:IsA("Frame") then
 								local otherButton = child:FindFirstChild("DropButton")
@@ -1417,7 +1421,7 @@ function Library:CreateWindow(Config)
 								end
 							end
 						end
-						ReFreshShow(getgenv().PanelObjectTag.All_Func[options.Flag or options.Tit].Value)
+						ReFreshShow(getgenv().PanelObjectTag.All_Func[ENV_Name].Value)
 					end
 				end
 
@@ -1428,7 +1432,7 @@ function Library:CreateWindow(Config)
 				end
 
 				function Function:SetValue(Value)
-					getgenv().PanelObjectTag.All_Func[options.Flag or options.Tit].Refresh_Func(Value)
+					getgenv().PanelObjectTag.All_Func[ENV_Name].Refresh_Func(Value)
 				end
 
 				function Function:Visible(Visible)
@@ -1441,7 +1445,7 @@ function Library:CreateWindow(Config)
 
 			function Create_Function:Toggle(options)
 
-				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Tit)] = {
+				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)] = {
 					Title_Label = nil,
 					Value = false,
 					Refresh_Func = function() end,
@@ -1505,14 +1509,14 @@ function Library:CreateWindow(Config)
 
 				local function MakeToggle(UI, input)
 					if input then
-						getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Tit)].Value = true
+						getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Value = true
 						TweenFrame(ColorFrame, {BackgroundColor3 = Color3.new(0.556863, 0.333333, 1)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)	
 						TweenFrame(UI, {Position = UDim2.new(0.6, 0,-0.169, 0)}, 0.15, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 						if options and options.Callback then
 							options.Callback(true)
 						end
 					else
-						getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Tit)].Value = false
+						getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Value = false
 						TweenFrame(ColorFrame, {BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)	
 						TweenFrame(UI, {Position = UDim2.new(-0.019, 0,-0.169, 0)}, 0.15, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 						if options and options.Callback then
@@ -1533,7 +1537,7 @@ function Library:CreateWindow(Config)
 					MakeToggle(ColorFrame_Toggle_Frame, options.Value)				
 				end
 
-				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Tit)].Refresh_Func = function(Value)
+				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Refresh_Func = function(Value)
 					MakeToggle(ColorFrame_Toggle_Frame, Value)
 				end
 
@@ -1544,7 +1548,7 @@ function Library:CreateWindow(Config)
 				end
 
 				function Function:SetValue(Value)
-					getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Tit)].Refresh_Func(Value)
+					getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Refresh_Func(Value)
 				end
 
 				return Function
@@ -1657,7 +1661,7 @@ function Library:CreateWindow(Config)
 
 			function Create_Function:ColorPicker(options)
 
-				local Flag = tostring(options.Flag or options.Tit)
+				local Flag = tostring(options.Flag or options.Title)
 
 				getgenv().PanelObjectTag.All_Func[Flag] = {
 					Value = options.Default or Color3.fromRGB(255, 255, 255),
