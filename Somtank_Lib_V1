@@ -127,8 +127,8 @@ local Library = {}
 
 local function Add_UITextSizeConstraint(Parent)
 	local New_UITextSizeConstraint = Instance.new("UITextSizeConstraint", Parent)
-	New_UITextSizeConstraint.MaxTextSize = 20
-	New_UITextSizeConstraint.MinTextSize = 10
+	New_UITextSizeConstraint.MaxTextSize = 10
+	New_UITextSizeConstraint.MinTextSize = 5
 	return New_UITextSizeConstraint
 end
 
@@ -178,7 +178,8 @@ function Library:CreateWindow(Config)
 
 	local Window_Tab, DestroyCallback, HideCallback, OpenCallback = {}, function() end, function() end, function() end
 	-- Enum.Font.FredokaOne
-	local Font_Main = Enum.Font.Highway
+	local Font_Main = Config.Font or Enum.Font.Highway
+	local TextSize = Config.TextSize or 15
 
 	if Config.Folder == "" then
 		Config.Folder = "Somtank_Configs"
@@ -712,7 +713,8 @@ function Library:CreateWindow(Config)
 				Title_Func.Text = options.Title or "Click_Frame"
 				Title_Func.Font = Enum.Font.FredokaOne
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
-				Title_Func.TextSize = 16 -- ลดขนาดจาก 20 เพื่อความสมดุล
+				Title_Func.TextSize = TextSize
+				Title_Func.TextTruncate = Enum.TextTruncate.AtEnd
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
 				Add_UITextSizeConstraint(Title_Func)
 
@@ -788,7 +790,8 @@ function Library:CreateWindow(Config)
 				Title_Func.Text = options.Title or "Input"
 				Title_Func.Font = Enum.Font.FredokaOne
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
-				Title_Func.TextSize = 16
+				Title_Func.TextSize = TextSize
+				Title_Func.TextTruncate = Enum.TextTruncate.AtEnd
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
 				Add_UITextSizeConstraint(Title_Func)
 				getgenv().PanelObjectTag.All_Func[tostring(options.Flag)].Title_Label = Title_Func
@@ -807,7 +810,8 @@ function Library:CreateWindow(Config)
 				TextBox.BackgroundTransparency = 1
 				TextBox.Font = Enum.Font.FredokaOne
 				TextBox.TextColor3 = Color3.new(1, 1, 1)
-				TextBox.TextSize = 14
+				TextBox.TextSize = TextSize
+				TextBox.TextTruncate = Enum.TextTruncate.AtEnd
 				TextBox.Text = options.Value or ""
 				TextBox.PlaceholderText = options.Placeholder or "..."
 				TextBox.TextXAlignment = Enum.TextXAlignment.Center -- จัดกลางเพื่อให้ดู compact
@@ -894,7 +898,8 @@ function Library:CreateWindow(Config)
 				Title_Func.Text = options.Title or "Slider"
 				Title_Func.Font = Enum.Font.FredokaOne
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
-				Title_Func.TextSize = 14 -- ย่อตัวอักษรลงนิดหน่อย
+				Title_Func.TextSize = TextSize
+				Title_Func.TextTruncate = Enum.TextTruncate.AtEnd
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
 				Add_UITextSizeConstraint(Title_Func)
 
@@ -906,7 +911,8 @@ function Library:CreateWindow(Config)
 				Value_Label.Text = tostring(options.Value.Default)
 				Value_Label.Font = Enum.Font.FredokaOne
 				Value_Label.TextColor3 = Color3.new(1, 1, 1)
-				Value_Label.TextSize = 12
+				Value_Label.TextSize = TextSize
+				Value_Label.TextTruncate = Enum.TextTruncate.AtEnd
 				Value_Label.TextXAlignment = Enum.TextXAlignment.Right
 
 				-- [UPDATED] แถบเลื่อนแบบผอม (Slim Bar)
@@ -1027,7 +1033,8 @@ function Library:CreateWindow(Config)
 				Title_Func.Text = options.Title or "Dropdown"
 				Title_Func.Font = Enum.Font.FredokaOne
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
-				Title_Func.TextSize = 14 -- ย่อลงนิดหน่อยเพื่อให้พอดีแถว [cite: 9]
+				Title_Func.TextSize = TextSize
+				Title_Func.TextTruncate = Enum.TextTruncate.AtEnd
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
 				Add_UITextSizeConstraint(Title_Func)
 
@@ -1046,7 +1053,8 @@ function Library:CreateWindow(Config)
 				DropText.Text = "..."
 				DropText.Font = Enum.Font.FredokaOne
 				DropText.TextColor3 = Color3.new(1, 1, 1)
-				DropText.TextSize = 12
+				DropText.TextSize = TextSize
+				DropText.TextTruncate = Enum.TextTruncate.AtEnd
 				DropText.TextTruncate = Enum.TextTruncate.AtEnd -- ตัดคำถ้าชื่อยาวเกิน [cite: 24]
 
 				local Icon = Instance.new("ImageLabel", SelectDropFrame)
@@ -1163,7 +1171,8 @@ function Library:CreateWindow(Config)
 				SearchBox.Font = Font_Main
 				SearchBox.TextColor3 = Color3.new(1, 1, 1)
 				SearchBox.PlaceholderColor3 = Color3.new(1, 1, 1)
-				SearchBox.TextSize = 14
+				SearchBox.TextSize = TextSize
+				SearchBox.TextTruncate = Enum.TextTruncate.AtEnd
 				SearchBox.Text = ""
 				SearchBox.PlaceholderText = "..."
 				SearchBox.TextXAlignment = Enum.TextXAlignment.Left
@@ -1324,7 +1333,8 @@ function Library:CreateWindow(Config)
 						Title.Text = Name or "Unknow"
 						Title.Font = Font_Main
 						Title.TextColor3 = Color3.new(1, 1, 1)
-						Title.TextSize = 20
+						Title.TextSize = TextSize
+						Title.TextTruncate = Enum.TextTruncate.AtEnd
 						Title.Name = "Title"
 						Title.TextXAlignment = Enum.TextXAlignment.Left
 						Title.TextWrapped = true
@@ -1438,7 +1448,8 @@ function Library:CreateWindow(Config)
 				Title_Func.Text = options.Title or "Toggle"
 				Title_Func.Font = Enum.Font.FredokaOne
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
-				Title_Func.TextSize = 16
+				Title_Func.TextSize = TextSize
+				Title_Func.TextTruncate = Enum.TextTruncate.AtEnd
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
 				Add_UITextSizeConstraint(Title_Func)
 				getgenv().PanelObjectTag.All_Func[tostring(options.Flag)].Title_Label = Title_Func
@@ -1529,7 +1540,8 @@ function Library:CreateWindow(Config)
 				TextLabel.Font = Font_Main
 				TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 				TextLabel.TextXAlignment = Enum.TextXAlignment.Left
-				TextLabel.TextSize = 20
+				TextLabel.TextSize = TextSize
+				TextLabel.TextTruncate = Enum.TextTruncate.AtEnd
 				TextLabel.TextWrapped = true
 				Add_UITextSizeConstraint(TextLabel)
 
@@ -1594,7 +1606,8 @@ function Library:CreateWindow(Config)
 				TextLabel.Position = UDim2.new(0, 5, 0, 5)
 				TextLabel.Font = Enum.Font.Code -- ใช้ Font แบบ Code เพื่อความสวยงาม
 				TextLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
-				TextLabel.TextSize = 12
+				TextLabel.TextSize = TextSize
+				TextLabel.TextTruncate = Enum.TextTruncate.AtEnd
 				TextLabel.TextXAlignment = Enum.TextXAlignment.Left
 				TextLabel.TextYAlignment = Enum.TextYAlignment.Top
 				TextLabel.TextWrapped = true -- ให้ตัวอักษรขึ้นบรรทัดใหม่เมื่อยาวเกิน
@@ -1653,7 +1666,8 @@ function Library:CreateWindow(Config)
 				Title_Label.Text = options.Title or "Color Picker"
 				Title_Label.Font = Font_Main
 				Title_Label.TextColor3 = Color3.new(1, 1, 1)
-				Title_Label.TextSize = 16
+				Title_Label.TextSize = TextSize
+				Title_Label.TextTruncate = Enum.TextTruncate.AtEnd
 				Title_Label.TextXAlignment = Enum.TextXAlignment.Left
 
 				-- ช่องแสดงสีที่เลือก (ปุ่มสี)
@@ -1809,7 +1823,8 @@ function Library:CreateWindow(Config)
 				Title_Func.Text = options.Title or "3D View Port"
 				Title_Func.Font = Font_Main
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
-				Title_Func.TextSize = 16
+				Title_Func.TextSize = TextSize
+				Title_Func.TextTruncate = Enum.TextTruncate.AtEnd
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
 
 				local ViewportFrame = Instance.new("ViewportFrame", BGFrame)
