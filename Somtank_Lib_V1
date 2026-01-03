@@ -148,7 +148,6 @@ local function SetupResize(MainFrame, ScaleObject, ConnerButton)
 			end
 		end)		
 	end
-
 	ConnerButton.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 			dragging = true
@@ -219,6 +218,7 @@ function Library:CreateWindow(Config)
 	MainFrame.Size = UDim2.new(0, 599,0, 374)
 	MainFrame.ClipsDescendants = true
 	MainFrame.BackgroundTransparency = 0.07
+	MainFrame.Active = true
 
 	local UICorner_Main = Instance.new("UICorner")
 	UICorner_Main.CornerRadius = UDim.new(0, 8)
@@ -528,7 +528,6 @@ function Library:CreateWindow(Config)
 		PanelTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
 		PanelTitle.TextXAlignment = Enum.TextXAlignment.Left
 		PanelTitle.TextSize = TextSize
-		PanelTitle.TextScaled = true
 		PanelTitle.TextWrapped = true
 		Add_UITextSizeConstraint(PanelTitle)
 
@@ -961,6 +960,7 @@ function Library:CreateWindow(Config)
 				Slide_Button.Position = UDim2.new(0, 0, -1.5, 0)
 				Slide_Button.BackgroundTransparency = 1
 				Slide_Button.Image = ""
+				Slide_Button.Active = true
 
 				local dragging = false
 				local function positionToValue(x)
