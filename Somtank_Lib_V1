@@ -818,7 +818,7 @@ function Library:CreateWindow(Config)
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
 				Title_Func.TextTruncate = Enum.TextTruncate.AtEnd
 				Add_UITextSizeConstraint(Title_Func)
-				getgenv().PanelObjectTag.All_Func[tostring(options.Flag)].Title_Label = Title_Func
+				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Title_Label = Title_Func
 
 				-- กล่องใส่ข้อมูล (บรรทัดล่าง)
 				local InputBG = Instance.new("Frame", BGFrame)
@@ -1483,7 +1483,7 @@ function Library:CreateWindow(Config)
 				Title_Func.TextTruncate = Enum.TextTruncate.AtEnd
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
 				Add_UITextSizeConstraint(Title_Func)
-				getgenv().PanelObjectTag.All_Func[tostring(options.Flag)].Title_Label = Title_Func
+				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Title_Label = Title_Func
 
 				-- [UPDATED] ย่อสวิตช์ Toggle ให้ดูเล็กและแพงขึ้น
 				local Toggle_BG = Instance.new("Frame", BGFrame)
