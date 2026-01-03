@@ -6,7 +6,7 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
 getgenv().PanelObjectTag = {
-	All_UITextSizeConstraint = {},
+	All_TextLabel = {},
 	All_One_Or_Two_Func = {},
 	All_Func = {},
 	Loading_All_ConfIg_End_Som = false,
@@ -129,6 +129,7 @@ local function Add_UITextSizeConstraint(Parent)
 	local New_UITextSizeConstraint = Instance.new("UITextSizeConstraint", Parent)
 	New_UITextSizeConstraint.MaxTextSize = 10
 	New_UITextSizeConstraint.MinTextSize = 5
+	table.insert(getgenv().PanelObjectTag.All_TextLabel, Parent)
 	return New_UITextSizeConstraint
 end
 
@@ -476,7 +477,23 @@ function Library:CreateWindow(Config)
 			OpenCallback = func
 		end
 	end
-
+	
+	function Window_Tab:Window_TextSize(Value)
+		for _, TextLabel in ipairs(getgenv().PanelObjectTag.All_TextLabel) do
+			if TextLabel.ClassName == "TextLabel" then
+				TextLabel.TextSize = Value
+			end
+		end
+	end
+	
+	function Window_Tab:Window_Font(Value)
+		for _, TextLabel in ipairs(getgenv().PanelObjectTag.All_TextLabel) do
+			if TextLabel.ClassName == "TextLabel" then
+				TextLabel.Font = Value
+			end
+		end
+	end
+	
 	function Window_Tab:Tab(Tab_Set)
 
 		local Tab = Instance.new("Frame", ModeTaps)
@@ -612,7 +629,7 @@ function Library:CreateWindow(Config)
 
 			local Group_Frame = Instance.new("Frame", SetTo_Scrolling_Parent)
 			Group_Frame.Name = Group_Info.Title or "Unknow"
-			Group_Frame.BackgroundTransparency = 0.95
+			Group_Frame.BackgroundTransparency = 0.9
 			Group_Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 			Group_Frame.Size = UDim2.new(0, 208,0, 295)
 
@@ -764,8 +781,8 @@ function Library:CreateWindow(Config)
 				task.wait()
 
 				local Click_Frame = Instance.new("Frame", Group_Frame)
-				-- [UPDATED] ย่อความสูงเหลือ 35 เท่ากับ Click 
-				Click_Frame.Size = UDim2.new(0, 208, 0, 35) 
+				-- [UPDATED] ใช้ความสูง 65 เพื่อให้มีพื้นที่ 2 บรรทัดแบบสวยๆ
+				Click_Frame.Size = UDim2.new(0, 208, 0, 65) 
 				Click_Frame.BackgroundTransparency = 1
 				Click_Frame.Name = options.Title or "Input_Frame"
 
@@ -774,46 +791,48 @@ function Library:CreateWindow(Config)
 				BGFrame.Size = UDim2.new(0.96, 0, 0.9, 0)
 				BGFrame.Position = UDim2.new(0.019, 0, 0.05, 0)
 				BGFrame.BackgroundTransparency = 0.9
-				Instance.new("UICorner", BGFrame).CornerRadius = UDim.new(0, 6)
+				Instance.new("UICorner", BGFrame).CornerRadius = UDim.new(0, 8)
 
+				-- แถบสีด้านซ้าย (สูงตาม BG)
 				local ColorFrame = Instance.new("Frame", BGFrame)
 				ColorFrame.BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941)
-				ColorFrame.Size = UDim2.new(0, 4, 0, 20)
-				ColorFrame.Position = UDim2.new(0, 0, 0.18, 0)
+				ColorFrame.Size = UDim2.new(0, 4, 0, 45)
+				ColorFrame.Position = UDim2.new(0, 0, 0.12, 0)
 				Instance.new("UICorner", ColorFrame).CornerRadius = UDim.new(0, 4)
 
+				-- ชื่อ Input (บรรทัดบน)
 				local Title_Func = Instance.new("TextLabel", BGFrame)
-				Title_Func.Size = UDim2.new(0, 100, 0, 25) -- ปรับความกว้างให้เหลือที่ให้ช่อง Input 
+				Title_Func.Size = UDim2.new(0, 180, 0, 25)
 				Title_Func.Position = UDim2.new(0.065, 0, 0.05, 0)
 				Title_Func.BackgroundTransparency = 1
 				Title_Func.Text = options.Title or "Input"
 				Title_Func.Font = Enum.Font.FredokaOne
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
 				Title_Func.TextSize = TextSize
-				Title_Func.TextTruncate = Enum.TextTruncate.AtEnd
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
+				Title_Func.TextTruncate = Enum.TextTruncate.AtEnd
 				Add_UITextSizeConstraint(Title_Func)
 				getgenv().PanelObjectTag.All_Func[tostring(options.Flag)].Title_Label = Title_Func
 
-				-- [UPDATED] ย้ายกล่อง TextBox มาไว้ฝั่งขวาแทนการอยู่บรรทัดใหม่ 
+				-- กล่องใส่ข้อมูล (บรรทัดล่าง)
 				local InputBG = Instance.new("Frame", BGFrame)
 				InputBG.BackgroundColor3 = Color3.new(0.05, 0.01, 0.1)
-				InputBG.Size = UDim2.new(0, 80, 0, 20)
-				InputBG.Position = UDim2.new(0.55, 0, 0.18, 0)
+				InputBG.Size = UDim2.new(0, 180, 0, 22)
+				InputBG.Position = UDim2.new(0.065, 0, 0.52, 0)
 				InputBG.BackgroundTransparency = 0.5
-				Instance.new("UICorner", InputBG).CornerRadius = UDim.new(0, 4)
+				Instance.new("UICorner", InputBG).CornerRadius = UDim.new(0, 6)
 
 				local TextBox = Instance.new("TextBox", InputBG)
-				TextBox.Size = UDim2.new(0.9, 0, 0.9, 0)
-				TextBox.Position = UDim2.new(0.05, 0, 0.05, 0)
+				TextBox.Size = UDim2.new(1, -10, 1, 0)
+				TextBox.Position = UDim2.new(0, 5, 0, 0)
 				TextBox.BackgroundTransparency = 1
 				TextBox.Font = Enum.Font.FredokaOne
 				TextBox.TextColor3 = Color3.new(1, 1, 1)
+				TextBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
 				TextBox.TextSize = TextSize
-				TextBox.TextTruncate = Enum.TextTruncate.AtEnd
 				TextBox.Text = options.Value or ""
-				TextBox.PlaceholderText = options.Placeholder or "..."
-				TextBox.TextXAlignment = Enum.TextXAlignment.Center -- จัดกลางเพื่อให้ดู compact
+				TextBox.PlaceholderText = options.Placeholder or "Type here..."
+				TextBox.TextXAlignment = Enum.TextXAlignment.Left
 				TextBox.ClipsDescendants = true
 
 				TextBox.FocusLost:Connect(function(enterPressed)
@@ -872,8 +891,8 @@ function Library:CreateWindow(Config)
 				task.wait()
 
 				local Click_Frame = Instance.new("Frame", Group_Frame)
-				-- [UPDATED] ย่อความสูงเหลือ 35 units เท่ากับตัวอื่นๆ
-				Click_Frame.Size = UDim2.new(0, 208, 0, 35) 
+				-- [UPDATED] ใช้ความสูง 65 units เพื่อให้มี 2 บรรทัด
+				Click_Frame.Size = UDim2.new(0, 208, 0, 65) 
 				Click_Frame.BackgroundTransparency = 1
 				Click_Frame.Name = options.Title or "Slide_Frame"
 
@@ -882,55 +901,56 @@ function Library:CreateWindow(Config)
 				BGFrame.Size = UDim2.new(0.96, 0, 0.9, 0)
 				BGFrame.Position = UDim2.new(0.019, 0, 0.05, 0)
 				BGFrame.BackgroundTransparency = 0.9
-				Instance.new("UICorner", BGFrame).CornerRadius = UDim.new(0, 6)
+				Instance.new("UICorner", BGFrame).CornerRadius = UDim.new(0, 8)
 
+				-- แถบสีด้านซ้าย
 				local ColorFrame = Instance.new("Frame", BGFrame)
 				ColorFrame.BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941)
-				ColorFrame.Size = UDim2.new(0, 4, 0, 20)
-				ColorFrame.Position = UDim2.new(0, 0, 0.18, 0)
+				ColorFrame.Size = UDim2.new(0, 4, 0, 45)
+				ColorFrame.Position = UDim2.new(0, 0, 0.12, 0)
 				Instance.new("UICorner", ColorFrame).CornerRadius = UDim.new(0, 4)
 
+				-- ชื่อ Slider (บรรทัดบน)
 				local Title_Func = Instance.new("TextLabel", BGFrame)
-				Title_Func.Size = UDim2.new(0, 80, 0, 25) -- ปรับความกว้างให้สั้นลง
+				Title_Func.Size = UDim2.new(0, 140, 0, 25)
 				Title_Func.Position = UDim2.new(0.065, 0, 0.05, 0)
 				Title_Func.BackgroundTransparency = 1
 				Title_Func.Text = options.Title or "Slider"
 				Title_Func.Font = Enum.Font.FredokaOne
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
 				Title_Func.TextSize = TextSize
-				Title_Func.TextTruncate = Enum.TextTruncate.AtEnd
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
+				Title_Func.TextTruncate = Enum.TextTruncate.AtEnd
 				Add_UITextSizeConstraint(Title_Func)
 
-				-- [UPDATED] แสดงค่าตัวเลขไว้ข้างๆ แถบเลื่อน
+				-- ตัวเลขแสดงค่า (มุมขวาบน)
 				local Value_Label = Instance.new("TextLabel", BGFrame)
-				Value_Label.Size = UDim2.new(0, 30, 0, 25)
-				Value_Label.Position = UDim2.new(0.82, 0, 0.05, 0)
+				Value_Label.Size = UDim2.new(0, 40, 0, 25)
+				Value_Label.Position = UDim2.new(0.75, 0, 0.05, 0)
 				Value_Label.BackgroundTransparency = 1
 				Value_Label.Text = tostring(options.Value.Default)
 				Value_Label.Font = Enum.Font.FredokaOne
 				Value_Label.TextColor3 = Color3.new(1, 1, 1)
 				Value_Label.TextSize = TextSize
-				Value_Label.TextTruncate = Enum.TextTruncate.AtEnd
 				Value_Label.TextXAlignment = Enum.TextXAlignment.Right
 
-				-- [UPDATED] แถบเลื่อนแบบผอม (Slim Bar)
+				-- แถบเลื่อน (บรรทัดล่าง)
 				local MainSlideFrame = Instance.new("Frame", BGFrame)
 				MainSlideFrame.BackgroundColor3 = Color3.new(0.05, 0.01, 0.1)
-				MainSlideFrame.Size = UDim2.new(0, 75, 0, 4) -- ผอมลงเหลือ 4 units
-				MainSlideFrame.Position = UDim2.new(0.45, 0, 0.45, 0)
+				MainSlideFrame.Size = UDim2.new(0, 175, 0, 6) -- แถบหนาขึ้นนิดนึงให้กดง่าย
+				MainSlideFrame.Position = UDim2.new(0.08, 0, 0.65, 0)
 				MainSlideFrame.BackgroundTransparency = 0.5
 				Instance.new("UICorner", MainSlideFrame).CornerRadius = UDim.new(1, 0)
 
 				local ColorButton = Instance.new("Frame", MainSlideFrame)
 				ColorButton.BackgroundColor3 = Color3.new(0.56, 0.3, 1)
-				ColorButton.Size = UDim2.new(0, 10, 0, 10) -- จุดเลื่อนเล็กลง
-				ColorButton.Position = UDim2.new(0, 0, -0.75, 0)
+				ColorButton.Size = UDim2.new(0, 14, 0, 14) -- ปุ่มลากขนาดใหญ่ขึ้น
+				ColorButton.Position = UDim2.new(0, 0, -0.65, 0)
 				Instance.new("UICorner", ColorButton).CornerRadius = UDim.new(1, 0)
 
 				local Slide_Button = Instance.new("ImageButton", MainSlideFrame)
-				Slide_Button.Size = UDim2.new(1.2, 0, 5, 0) -- ขยายพื้นที่คลิกให้ใหญ่กว่าที่เห็นเพื่อให้กดง่าย
-				Slide_Button.Position = UDim2.new(-0.1, 0, -2, 0)
+				Slide_Button.Size = UDim2.new(1, 0, 4, 0)
+				Slide_Button.Position = UDim2.new(0, 0, -1.5, 0)
 				Slide_Button.BackgroundTransparency = 1
 				Slide_Button.Image = ""
 
@@ -1007,8 +1027,8 @@ function Library:CreateWindow(Config)
 				task.wait()
 
 				local Click_Frame = Instance.new("Frame", Group_Frame)
-				-- [UPDATED] ย่อความสูงเหลือ 35 units 
-				Click_Frame.Size = UDim2.new(0, 208, 0, 35) 
+				-- [UPDATED] ใช้ความสูง 65 units เพื่อให้มี 2 บรรทัด (ชื่อบน - ช่องเลือกล่าง)
+				Click_Frame.Size = UDim2.new(0, 208, 0, 65) 
 				Click_Frame.BackgroundTransparency = 1
 				Click_Frame.Name = options.Title or "Drop_Frame"
 
@@ -1017,50 +1037,52 @@ function Library:CreateWindow(Config)
 				BGFrame.Size = UDim2.new(0.96, 0, 0.9, 0)
 				BGFrame.Position = UDim2.new(0.019, 0, 0.05, 0)
 				BGFrame.BackgroundTransparency = 0.9
-				Instance.new("UICorner", BGFrame).CornerRadius = UDim.new(0, 6)
+				Instance.new("UICorner", BGFrame).CornerRadius = UDim.new(0, 8)
 
+				-- แถบสีด้านซ้าย
 				local ColorFrame = Instance.new("Frame", BGFrame)
 				ColorFrame.BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941)
-				ColorFrame.Size = UDim2.new(0, 4, 0, 20)
-				ColorFrame.Position = UDim2.new(0, 0, 0.18, 0)
+				ColorFrame.Size = UDim2.new(0, 4, 0, 45)
+				ColorFrame.Position = UDim2.new(0, 0, 0.12, 0)
 				Instance.new("UICorner", ColorFrame).CornerRadius = UDim.new(0, 4)
 
+				-- ชื่อ Dropdown (บรรทัดบน)
 				local Title_Func = Instance.new("TextLabel", BGFrame)
-				Title_Func.Size = UDim2.new(0, 100, 0, 25)
+				Title_Func.Size = UDim2.new(0, 180, 0, 25)
 				Title_Func.Position = UDim2.new(0.065, 0, 0.05, 0)
 				Title_Func.BackgroundTransparency = 1
 				Title_Func.Text = options.Title or "Dropdown"
 				Title_Func.Font = Enum.Font.FredokaOne
 				Title_Func.TextColor3 = Color3.new(1, 1, 1)
 				Title_Func.TextSize = TextSize
-				Title_Func.TextTruncate = Enum.TextTruncate.AtEnd
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
+				Title_Func.TextTruncate = Enum.TextTruncate.AtEnd
 				Add_UITextSizeConstraint(Title_Func)
 
-				-- [UPDATED] ช่องแสดงผลตัวเลือกที่เลือกไว้ (วางไว้ฝั่งขวา)
+				-- ช่องแสดงผล (บรรทัดล่าง)
 				local SelectDropFrame = Instance.new("Frame", BGFrame)
 				SelectDropFrame.BackgroundColor3 = Color3.new(0.05, 0.01, 0.1)
-				SelectDropFrame.Size = UDim2.new(0, 80, 0, 20)
-				SelectDropFrame.Position = UDim2.new(0.55, 0, 0.18, 0)
+				SelectDropFrame.Size = UDim2.new(0, 180, 0, 22)
+				SelectDropFrame.Position = UDim2.new(0.065, 0, 0.52, 0)
 				SelectDropFrame.BackgroundTransparency = 0.5
-				Instance.new("UICorner", SelectDropFrame).CornerRadius = UDim.new(0, 4)
+				Instance.new("UICorner", SelectDropFrame).CornerRadius = UDim.new(0, 6)
 
 				local DropText = Instance.new("TextLabel", SelectDropFrame)
-				DropText.Size = UDim2.new(0.85, 0, 1, 0)
-				DropText.Position = UDim2.new(0.05, 0, 0, 0)
+				DropText.Size = UDim2.new(1, -25, 1, 0)
+				DropText.Position = UDim2.new(0, 5, 0, 0)
 				DropText.BackgroundTransparency = 1
 				DropText.Text = "..."
 				DropText.Font = Enum.Font.FredokaOne
 				DropText.TextColor3 = Color3.new(1, 1, 1)
 				DropText.TextSize = TextSize
+				DropText.TextXAlignment = Enum.TextXAlignment.Left
 				DropText.TextTruncate = Enum.TextTruncate.AtEnd
-				DropText.TextTruncate = Enum.TextTruncate.AtEnd -- ตัดคำถ้าชื่อยาวเกิน [cite: 24]
 
 				local Icon = Instance.new("ImageLabel", SelectDropFrame)
-				Icon.Size = UDim2.new(0, 12, 0, 12)
-				Icon.Position = UDim2.new(0.85, 0, 0.2, 0)
+				Icon.Size = UDim2.new(0, 14, 0, 14)
+				Icon.Position = UDim2.new(1, -20, 0.18, 0)
 				Icon.BackgroundTransparency = 1
-				Icon.Image = "rbxassetid://16844850109" -- ไอคอนลูกศรลง [cite: 18, 25]
+				Icon.Image = "rbxassetid://16844850109" -- ลูกศรลง [cite: 25]
 
 				local Button = Instance.new("TextButton", BGFrame)
 				Button.Size = UDim2.new(1, 0, 1, 0)
