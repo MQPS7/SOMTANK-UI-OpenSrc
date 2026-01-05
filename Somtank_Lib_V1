@@ -212,11 +212,12 @@ function Library:CreateWindow(Config)
 	UIScale_Main.Scale = 1
 
 	getgenv().MainUIScale_Som = UIScale_Main
-		
+	
 	getgenv().PanelObjectTag.All_Func["Somtank_UI_Setting_Lib"].Refresh_Func = function(Value)
 		if Value == nil then
 			Value = 1
 		end
+		getgenv().PanelObjectTag.All_Func["Somtank_UI_Setting_Lib"].Value = tonumber(Value)
 		pcall(function()
 			UIScale_Main.Scale = tonumber(Value)
 			for _, UIScale in ipairs(getgenv().PanelObjectTag.UIScale) do
