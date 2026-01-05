@@ -130,11 +130,6 @@ local function Add_UITextSizeConstraint(Parent)
 	return New_UITextSizeConstraint
 end
 
-getgenv().PanelObjectTag.All_Func["Somtank_UI_Setting_Lib"] = {
-	Value = "",
-	Refresh_Func = function() end,
-}		
-
 local function SetupResize(MainFrame, ScaleObject, ConnerButton)
 	local dragging, dragStartPos, startScale, minScale, maxScale = false, nil, ScaleObject.Scale, 0.5, 1.5
 
@@ -142,7 +137,6 @@ local function SetupResize(MainFrame, ScaleObject, ConnerButton)
 		local delta = input.Position - dragStartPos
 		local newScale = startScale + (delta.X + delta.Y) / 500
 		ScaleObject.Scale = math.clamp(newScale, minScale, maxScale)
-		getgenv().PanelObjectTag.All_Func["Somtank_UI_Setting_Lib"].Value = tonumber(ScaleObject.Scale)
 		pcall(function()
 			for _, UIScale in ipairs(getgenv().PanelObjectTag.UIScale) do
 				if UIScale:IsA("UIScale") then
@@ -209,25 +203,10 @@ function Library:CreateWindow(Config)
 
 	local UIScale_Main = Instance.new("UIScale", SomtankLib)
 	UIScale_Main.Name = "UIScale"
-	UIScale_Main.Scale = 1
+	UIScale_Main.Scale = 0.7
 
 	getgenv().MainUIScale_Som = UIScale_Main
 	
-	getgenv().PanelObjectTag.All_Func["Somtank_UI_Setting_Lib"].Refresh_Func = function(Value)
-		if Value == nil then
-			Value = 1
-		end
-		getgenv().PanelObjectTag.All_Func["Somtank_UI_Setting_Lib"].Value = tonumber(Value)
-		pcall(function()
-			UIScale_Main.Scale = tonumber(Value)
-			for _, UIScale in ipairs(getgenv().PanelObjectTag.UIScale) do
-				if UIScale:IsA("UIScale") then
-					UIScale.Scale = tonumber(Value)
-				end
-			end
-		end)
-	end
-
 	-- 2. Main Frame (Window)
 	local MainFrame = Instance.new("Frame")
 	MainFrame.Name = "MainFrame"
