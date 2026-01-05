@@ -17,7 +17,7 @@ getgenv().PanelObjectTag = {
 }
 
 local GetIcons = loadstring(game:HttpGet('https://raw.githubusercontent.com/HJSIWN/SomtankLib/refs/heads/main/Icon.lua'))()
-if GetIcons then print("✅ Icon loaded!") else print("❌ Icon failed to load!") end
+-- if GetIcons then print("✅ Icon loaded!") else print("❌ Icon failed to load!") end
 local function SetIcon(Name, Parent, Color31, ZIndex)
 	if GetIcons and GetIcons.Image and Name then
 		local success, icon = pcall(function()
@@ -102,7 +102,6 @@ local function getCurrentConfigTable()
 	for flag, data in pairs(getgenv().PanelObjectTag.All_Func) do
 		local val = data.Value
 		if typeof(val) == "Color3" then
-			-- แปลง Color3 เป็น Table เพื่อให้เซฟลง JSON ได้
 			config[flag] = {R = val.R, G = val.G, B = val.B}
 		else
 			config[flag] = val
@@ -111,10 +110,9 @@ local function getCurrentConfigTable()
 	return config
 end
 
-function SaveConfig(name)
+function SaveConfig()
 	if not getgenv().PanelObjectTag.Loading_All_ConfIg_End_Som then return end
-	local name = name or defaultFileName
-	local path = getFilePath(name)
+	local path = getFilePath(defaultFileName)
 	local success, content = pcall(function()
 		return HttpService:JSONEncode(getCurrentConfigTable())
 	end)
@@ -124,7 +122,6 @@ function SaveConfig(name)
 end
 
 local Library = {}
-
 local function Add_UITextSizeConstraint(Parent)
 	local New_UITextSizeConstraint = Instance.new("UITextSizeConstraint", Parent)
 	New_UITextSizeConstraint.MaxTextSize = 55
@@ -133,6 +130,11 @@ local function Add_UITextSizeConstraint(Parent)
 	return New_UITextSizeConstraint
 end
 
+getgenv().PanelObjectTag.All_Func["Somtank_UI_Setting_Lib"] = {
+	Value = "",
+	Refresh_Func = function() end,
+}		
+
 local function SetupResize(MainFrame, ScaleObject, ConnerButton)
 	local dragging, dragStartPos, startScale, minScale, maxScale = false, nil, ScaleObject.Scale, 0.5, 1.5
 
@@ -140,13 +142,14 @@ local function SetupResize(MainFrame, ScaleObject, ConnerButton)
 		local delta = input.Position - dragStartPos
 		local newScale = startScale + (delta.X + delta.Y) / 500
 		ScaleObject.Scale = math.clamp(newScale, minScale, maxScale)
+		getgenv().PanelObjectTag.All_Func["Somtank_UI_Setting_Lib"].Value = tonumber(ScaleObject.Scale)
 		pcall(function()
 			for _, UIScale in ipairs(getgenv().PanelObjectTag.UIScale) do
 				if UIScale:IsA("UIScale") then
 					UIScale.Scale = ScaleObject.Scale
 				end
 			end
-		end)		
+		end)
 	end
 	ConnerButton.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -168,6 +171,7 @@ local function SetupResize(MainFrame, ScaleObject, ConnerButton)
 				ConnerButton.ImageTransparency = 1
 				ConnerButton.Position = UDim2.new(1, -ConnerButton.Size.X.Offset, 1, -ConnerButton.Size.Y.Offset)
 				ResetAllSizeGroup()
+				SaveConfig()
 			end
 		end
 	end)
@@ -208,6 +212,20 @@ function Library:CreateWindow(Config)
 	UIScale_Main.Scale = 1
 
 	getgenv().MainUIScale_Som = UIScale_Main
+		
+	getgenv().PanelObjectTag.All_Func["Somtank_UI_Setting_Lib"].Refresh_Func = function(Value)
+		if Value == nil then
+			Value = 1
+		end
+		pcall(function()
+			UIScale_Main.Scale = tonumber(Value)
+			for _, UIScale in ipairs(getgenv().PanelObjectTag.UIScale) do
+				if UIScale:IsA("UIScale") then
+					UIScale.Scale = tonumber(Value)
+				end
+			end
+		end)
+	end
 
 	-- 2. Main Frame (Window)
 	local MainFrame = Instance.new("Frame")
@@ -382,6 +400,15 @@ function Library:CreateWindow(Config)
 	PanelDescription.TextScaled = true
 	PanelDescription.TextTransparency = 0.3
 
+	local Conner_Panel = Instance.new("ImageLabel", MainFrame)
+	Conner_Panel.Name = "Conner_Panel"
+	Conner_Panel.BackgroundTransparency = 1
+	Conner_Panel.Size = UDim2.new(0, 19,0, 22)
+	Conner_Panel.Position = UDim2.new(0.968, 0,0.941, 3)
+	Conner_Panel.ImageColor3 = Color3.new(0.709804, 0.47451, 1)
+	Conner_Panel.Image = "rbxassetid://6118439008"
+	Instance.new("UIAspectRatioConstraint", Conner_Panel)	
+	
 	local Logo_Panel = Instance.new("ImageLabel", MainFrame)
 	Logo_Panel.Name = "Icon"
 	Logo_Panel.BackgroundTransparency = 1
@@ -393,7 +420,7 @@ function Library:CreateWindow(Config)
 	local ConnerButton = Instance.new("ImageButton", MainFrame)
 	ConnerButton.Name = "ConnerButton"
 	ConnerButton.BackgroundTransparency = 1
-	ConnerButton.Size = UDim2.new(0, 35,0, 42)
+	ConnerButton.Size = UDim2.new(0, 18,0, 18)
 	ConnerButton.Position = UDim2.new(0.972, 0,0.955, 0)
 	ConnerButton.Image = ""
 	Instance.new("UIAspectRatioConstraint", ConnerButton)
@@ -461,7 +488,7 @@ function Library:CreateWindow(Config)
 			end
 		end
 	end
-
+		
 	function Window_Tab:OnDestroy(func)
 		if typeof(func) == "function" then
 			DestroyCallback = func
@@ -700,6 +727,10 @@ function Library:CreateWindow(Config)
 			end
 
 			function Create_Function:Click(options)
+				
+				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)] = {
+					Title_Label = nil
+				}
 
 				task.wait()
 
@@ -738,7 +769,8 @@ function Library:CreateWindow(Config)
 				Title_Func.TextTruncate = Enum.TextTruncate.AtEnd
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
 				Add_UITextSizeConstraint(Title_Func)
-
+				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Title_Label = Title_Func
+				
 				local Button = Instance.new("ImageButton", BGFrame)
 				-- [UPDATED] ย่อไอคอนมือให้เล็กลง
 				Button.Position = UDim2.new(0.85, 0, 0.15, 0)
@@ -868,7 +900,7 @@ function Library:CreateWindow(Config)
 					else
 						TextBox.Text = Value
 						TweenFrame(ColorFrame, {BackgroundColor3 = Color3.new(0.560784, 0.305882, 1)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
-					end					
+					end
 				end
 
 				local Function = {}
@@ -929,7 +961,8 @@ function Library:CreateWindow(Config)
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
 				Title_Func.TextTruncate = Enum.TextTruncate.AtEnd
 				Add_UITextSizeConstraint(Title_Func)
-
+				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Title_Label = Title_Func
+				
 				-- ตัวเลขแสดงค่า (มุมขวาบน)
 				local Value_Label = Instance.new("TextLabel", BGFrame)
 				Value_Label.Size = UDim2.new(0, 40, 0, 25)
@@ -1067,7 +1100,8 @@ function Library:CreateWindow(Config)
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
 				Title_Func.TextTruncate = Enum.TextTruncate.AtEnd
 				Add_UITextSizeConstraint(Title_Func)
-
+				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Title_Label = Title_Func
+				
 				-- ช่องแสดงผล (บรรทัดล่าง)
 				local SelectDropFrame = Instance.new("Frame", BGFrame)
 				SelectDropFrame.BackgroundColor3 = Color3.new(0.05, 0.01, 0.1)
@@ -1276,7 +1310,6 @@ function Library:CreateWindow(Config)
 
 				local function UnSelectButton(DropButton, Title)
 					local selectedTable = getgenv().PanelObjectTag.All_Func[ENV_Name].Value
-
 					-- ลบออกจาก Table
 					for index, Value in ipairs(selectedTable) do
 						if Value == tostring(Title.Text) then
@@ -1284,7 +1317,6 @@ function Library:CreateWindow(Config)
 							break
 						end
 					end
-
 					DropButton:SetAttribute("IsSelected", false)
 					TweenFrame(DropButton, {ImageColor3 = Color3.new(0.227451, 0.176471, 0.317647)}, 0.2)
 				end
@@ -1368,7 +1400,7 @@ function Library:CreateWindow(Config)
 								end
 							end
 							ReFreshShow(getgenv().PanelObjectTag.All_Func[ENV_Name].Value)
-						end						
+						end
 
 					end
 				end
@@ -1596,7 +1628,7 @@ function Library:CreateWindow(Config)
 				TextLabel.TextTruncate = Enum.TextTruncate.AtEnd
 				TextLabel.TextWrapped = true
 				Add_UITextSizeConstraint(TextLabel)
-
+				
 				local Function = {}
 
 				function Function:SetTitle(TapName)
@@ -1721,7 +1753,8 @@ function Library:CreateWindow(Config)
 				Title_Label.TextSize = TextSize
 				Title_Label.TextTruncate = Enum.TextTruncate.AtEnd
 				Title_Label.TextXAlignment = Enum.TextXAlignment.Left
-
+				Add_UITextSizeConstraint(Title_Label)
+				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Title_Label = Title_Label
 				-- ช่องแสดงสีที่เลือก (ปุ่มสี)
 				local ColorDisplay = Instance.new("Frame", Button)
 				ColorDisplay.Size = UDim2.new(0, 35, 0, 18)
@@ -1878,7 +1911,9 @@ function Library:CreateWindow(Config)
 				Title_Func.TextSize = TextSize
 				Title_Func.TextTruncate = Enum.TextTruncate.AtEnd
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
-
+				Add_UITextSizeConstraint(Title_Func)
+				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Title_Label = Title_Func
+				
 				local ViewportFrame = Instance.new("ViewportFrame", BGFrame)
 				ViewportFrame.Size = UDim2.new(0.9, 0, 0.75, 0)
 				ViewportFrame.Position = UDim2.new(0.05, 0, 0.2, 0)
