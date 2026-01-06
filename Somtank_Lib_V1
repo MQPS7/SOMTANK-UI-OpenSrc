@@ -492,7 +492,7 @@ function Library:CreateWindow(Config)
 
 		spawn(function()
 			for i=1,3 do
-				local DotNew, UIARCNew = Instance.new("Frame", LoadingPointMain), Instance.new("UIAspectRatioConstraint")
+				local DotNew, UIARCNew, CountDownLoad = Instance.new("Frame", LoadingPointMain), Instance.new("UIAspectRatioConstraint"), 0
 				DotNew.Name = "LoadingBG1"
 				DotNew.Size = UDim2.new(0, 10,0, 10)
 				DotNew.BackgroundColor3 = Color3.fromRGB(172, 112, 255)
@@ -508,8 +508,9 @@ function Library:CreateWindow(Config)
 				spawn(function()
 					task.wait(3)
 					repeat
-						task.wait(0.5)
-					until not getgenv().PanelObjectTag.Loading_All_ConfIg_End_Som
+						CountDownLoad = CountDownLoad + 1
+						task.wait(1)
+					until not getgenv().PanelObjectTag.Loading_All_ConfIg_End_Som or CountDownLoad > 2
 					tween:Cancel()
 					task.wait(1)
 					if LoadingBG1 and not LoadingBG1:GetAttribute("FadeOut") then
