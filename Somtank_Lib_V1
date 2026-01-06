@@ -178,9 +178,8 @@ function Library:CreateWindow(Config)
 	
 	-- Enum.Font.FredokaOne
 	
-	local Font_Main = Config.Font or Enum.Font.Highway
-	local TextSize = Config.TextSize or 17
-
+	local Font_Main, TextSize = Config.Font or Enum.Font.Highway, Config.TextSize or 17
+	
 	if Config.Folder == "" then
 		Config.Folder = "Somtank_Configs"
 	end	
@@ -408,24 +407,138 @@ function Library:CreateWindow(Config)
 	DesButton.Activated:Connect(function()
 		SomtankLib:Destroy()
 		SomtankLib2:Destroy()
-
 		if DestroyCallback then
 			pcall(DestroyCallback)
 		end
-
 		getgenv().PanelObjectTag.Loading_All_ConfIg_End_Som = false		
 	end)
 
 	EyeButton.Activated:Connect(function()
 		MainFrame.Visible = not MainFrame.Visible
-
 		if HideCallback and not MainFrame.Visible then
 			pcall(HideCallback)
 		end
-
 	end)
 
 	SetupResize(MainFrame, UIScale_Main, ConnerButton)
+	
+	-- [[   Start Loading   ]] --
+	
+	pcall(function()
+		local LoadingBG1, AllLoadindFrame = Instance.new("Frame", MainFrame), {}
+		LoadingBG1.Name = "LoadingBG1"
+		LoadingBG1.BackgroundTransparency = 0.1
+		LoadingBG1.Size = UDim2.new(0, 599,0, 374)
+		LoadingBG1.BackgroundColor3 = Color3.fromRGB(40, 23, 76)	
+		Instance.new("UICorner", LoadingBG1).CornerRadius = UDim.new(0, 8)
+		LoadingBG1:SetAttribute("FadeOut", false)
+		table.insert(AllLoadindFrame, LoadingBG1)
+
+		local LoadingBG2 = Instance.new("Frame", LoadingBG1)
+		LoadingBG2.Name = "LoadingBG2"
+		LoadingBG2.BackgroundTransparency = 0.9
+		LoadingBG2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		LoadingBG2.Size = UDim2.new(0, 283,0, 177)	
+		LoadingBG2.Position = UDim2.new(0.265, 0,0.336, 0)	
+		Instance.new("UICorner", LoadingBG2).CornerRadius = UDim.new(0, 8)
+		table.insert(AllLoadindFrame, LoadingBG2)
+
+		local LoadingPointMain = Instance.new("Frame", LoadingBG2)
+		LoadingPointMain.Name = "LoadingPointMain"
+		LoadingPointMain.BackgroundTransparency = 1
+		LoadingPointMain.Size = UDim2.new(0, 144,0, 21)	
+		LoadingPointMain.Position = UDim2.new(0.237, 0,0.793, 0)
+		table.insert(AllLoadindFrame, LoadingPointMain)
+
+		local UIListLayout_LoadingFrame = Instance.new("UIListLayout", LoadingPointMain)
+		UIListLayout_LoadingFrame.FillDirection = Enum.FillDirection.Horizontal
+		UIListLayout_LoadingFrame.Padding = UDim.new(0, 5)
+		UIListLayout_LoadingFrame.HorizontalAlignment = Enum.HorizontalAlignment.Center
+		UIListLayout_LoadingFrame.SortOrder = Enum.SortOrder.LayoutOrder
+		UIListLayout_LoadingFrame.VerticalAlignment = Enum.VerticalAlignment.Bottom
+
+		local Logo_Loading = Instance.new("ImageLabel", LoadingBG2)
+		Logo_Loading.Name = "Logo_Loading"
+		Logo_Loading.BackgroundTransparency = 1
+		Logo_Loading.Size = UDim2.new(0, 101,0, 101)
+		Logo_Loading.Position = UDim2.new(0.318, 0,-0.328, 3)
+		Logo_Loading.Image = "rbxassetid://108281745434228"
+		Instance.new("UIAspectRatioConstraint", Logo_Loading)
+		table.insert(AllLoadindFrame, Logo_Loading)
+
+		local Title_Loading = Instance.new("TextLabel", LoadingBG2)
+		Title_Loading.Name = "Title_Panel"
+		Title_Loading.BackgroundTransparency = 1
+		Title_Loading.Size = UDim2.new(0, 256,0, 35)
+		Title_Loading.Position = UDim2.new(0.045, 0,0.289, 3)
+		Title_Loading.Text = Config.Loading_Title or "Title_Loading"
+		Title_Loading.Font = Font_Main
+		Title_Loading.TextColor3 = Color3.fromRGB(255, 255, 255)
+		Title_Loading.TextSize = 20
+		Title_Loading.TextScaled = true
+		table.insert(AllLoadindFrame, Title_Loading)
+
+		local Des_Loading = Instance.new("TextLabel", LoadingBG2)
+		Des_Loading.Name = "Title_Panel"
+		Des_Loading.BackgroundTransparency = 1
+		Des_Loading.Size = UDim2.new(0, 252,0, 23)
+		Des_Loading.Position = UDim2.new(0.049, 0,0.54, 3)
+		Des_Loading.Text = Config.Loading_Desc or "Des_Loading"
+		Des_Loading.Font = Font_Main
+		Des_Loading.TextColor3 = Color3.fromRGB(255, 255, 255)
+		Des_Loading.TextSize = 20
+		Des_Loading.TextScaled = true
+		table.insert(AllLoadindFrame, Des_Loading)
+
+		spawn(function()
+			for i=1,3 do
+				local DotNew, UIARCNew = Instance.new("Frame", LoadingPointMain), Instance.new("UIAspectRatioConstraint")
+				DotNew.Name = "LoadingBG1"
+				DotNew.Size = UDim2.new(0, 10,0, 10)
+				DotNew.BackgroundColor3 = Color3.fromRGB(172, 112, 255)
+				DotNew.Name = "LoadingPoint"..i
+				Instance.new("UICorner", DotNew).CornerRadius = UDim.new(0, 8)
+				UIARCNew.AspectRatio = 0.5
+				UIARCNew.Parent = DotNew
+				table.insert(AllLoadindFrame, DotNew)			
+				local tween = TweenService:Create(UIARCNew,
+					TweenInfo.new(0.5,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut,-1,true),
+					{AspectRatio = 1})
+				tween:Play()
+				spawn(function()
+					task.wait(3)
+					repeat
+						task.wait(0.5)
+					until not getgenv().PanelObjectTag.Loading_All_ConfIg_End_Som
+					tween:Cancel()
+					task.wait(1)
+					if LoadingBG1 and not LoadingBG1:GetAttribute("FadeOut") then
+						LoadingBG1:SetAttribute("FadeOut", true)					
+						pcall(function()
+							for _, v in pairs(AllLoadindFrame) do
+								if v:IsA("GuiObject") then
+									local goal = {}
+									if v.BackgroundTransparency < 1 then goal.BackgroundTransparency = 1 end
+									if v:IsA("TextLabel") or v:IsA("TextButton") or v:IsA("TextBox") then
+										goal.TextTransparency = 1
+										local stroke = v:FindFirstChildOfClass("UIStroke")
+										if stroke then TweenService:Create(stroke, TweenInfo.new(0.5), {Transparency = 1}):Play() end
+									end
+									if v:IsA("ImageLabel") or v:IsA("ImageButton") then goal.ImageTransparency = 1 end
+									TweenService:Create(v, TweenInfo.new(0.5), goal):Play()
+								end
+							end
+						end)
+					end
+					task.wait(1)
+					if LoadingBG1 then
+						LoadingBG1:Destroy()
+					end
+				end)			
+				task.wait(0.4)
+			end
+		end)
+	end)
 
 	local function SelectTap(TabName)
 		if Modes_Box[TabName] and ModeTaps[TabName] then
@@ -651,11 +764,6 @@ function Library:CreateWindow(Config)
 			local UIListLayout_Group_Frame = Instance.new("UIListLayout", Group_Frame)
 			UIListLayout_Group_Frame.SortOrder = Enum.SortOrder.LayoutOrder
 			UIListLayout_Group_Frame.Padding = UDim.new(0, 0)
-
-			local UIStroke_Group_Frame = Instance.new("UIStroke", Group_Frame)
-			UIStroke_Group_Frame.Color = Color3.fromRGB(217, 190, 255)
-			UIStroke_Group_Frame.Thickness = 1
-			UIStroke_Group_Frame.Transparency = 0.68
 
 			local Title_Frame = Instance.new("Frame", Group_Frame)
 			Title_Frame.Name = "Title_Frame"
