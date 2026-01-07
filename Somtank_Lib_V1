@@ -130,6 +130,11 @@ local function Add_UITextSizeConstraint(Parent)
 	return New_UITextSizeConstraint
 end
 
+getgenv().PanelObjectTag.All_Func["library_size"] = {
+	Value = 0,
+	Refresh_Func = function(Value) end,
+}
+
 local function SetupResize(MainFrame, ScaleObject, ConnerButton)
 	local dragging, dragStartPos, startScale, minScale, maxScale = false, nil, ScaleObject.Scale, 0.5, 1.5
 
@@ -143,8 +148,10 @@ local function SetupResize(MainFrame, ScaleObject, ConnerButton)
 					UIScale.Scale = ScaleObject.Scale
 				end
 			end
+			getgenv().PanelObjectTag.All_Func["library_size"].Value = tonumber(ScaleObject.Scale)
 		end)
 	end
+	
 	ConnerButton.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 			dragging = true
@@ -176,8 +183,6 @@ function Library:CreateWindow(Config)
 
 	local Window_Tab, DestroyCallback, HideCallback, OpenCallback = {}, function() end, function() end, function() end
 	
-	-- Enum.Font.FredokaOne
-	
 	local Font_Main, TextSize = Config.Font or Enum.Font.Highway, Config.TextSize or 17
 	
 	if Config.Folder == "" then
@@ -206,6 +211,18 @@ function Library:CreateWindow(Config)
 
 	getgenv().MainUIScale_Som = UIScale_Main
 	
+	getgenv().PanelObjectTag.All_Func["library_size"].Refresh_Func = function(Value)
+		pcall(function()
+			getgenv().PanelObjectTag.All_Func["library_size"].Value = tonumber(Value)
+			UIScale_Main.Scale = tonumber(Value)
+			for _, UIScale in ipairs(getgenv().PanelObjectTag.UIScale) do
+				if UIScale:IsA("UIScale") then
+					UIScale.Scale = UIScale_Main.Scale
+				end
+			end
+		end)
+	end
+	
 	-- 2. Main Frame (Window)
 	local MainFrame = Instance.new("Frame")
 	MainFrame.Name = "MainFrame"
@@ -232,11 +249,9 @@ function Library:CreateWindow(Config)
 			if Icon_Position == MoveIcon.Position then
 				OpenMainFrame = not OpenMainFrame
 				MainFrame.Visible = OpenMainFrame
-
 				if OpenCallback and MainFrame.Visible then
 					pcall(OpenCallback)
 				end
-
 			end
 		end)
 	end)
@@ -314,7 +329,6 @@ function Library:CreateWindow(Config)
 
 	local UICorner_UserImageLabel = Instance.new("UICorner", UserImageLabel)
 	UICorner_UserImageLabel.CornerRadius = UDim.new(0, 8)
-
 	Instance.new("UIAspectRatioConstraint", UserImageLabel)
 
 	local TextLabel_UserFrame = Instance.new("TextLabel", UserFrame)
@@ -334,7 +348,7 @@ function Library:CreateWindow(Config)
 	DesButton.Name = "DeButton"
 	DesButton.BackgroundTransparency = 1
 	DesButton.Size = UDim2.new(0, 32,0, 31)
-	DesButton.Position = UDim2.new(0.937, 0,0.016, 0)
+	DesButton.Position = UDim2.new(0.935, 0,0.011, 0)
 	DesButton.Text = "X"
 	DesButton.Font = Font_Main
 	DesButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -346,7 +360,7 @@ function Library:CreateWindow(Config)
 	EyeButton.Name = "EyeButton"
 	EyeButton.BackgroundTransparency = 1
 	EyeButton.Size = UDim2.new(0, 32,0, 31)
-	EyeButton.Position = UDim2.new(0.873, 0,0.013, 0)
+	EyeButton.Position = UDim2.new(0.876, 0,0.013, 0)
 	EyeButton.Text = "-"
 	EyeButton.Font = Font_Main
 	EyeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -425,6 +439,7 @@ function Library:CreateWindow(Config)
 	-- [[   Start Loading   ]] --
 	
 	pcall(function()
+		
 		local LoadingBG1, AllLoadindFrame = Instance.new("Frame", MainFrame), {}
 		LoadingBG1.Name = "LoadingBG1"
 		LoadingBG1.BackgroundTransparency = 0.1
@@ -477,7 +492,7 @@ function Library:CreateWindow(Config)
 		Title_Loading.TextSize = 20
 		Title_Loading.TextScaled = true
 		table.insert(AllLoadindFrame, Title_Loading)
-
+		
 		local Des_Loading = Instance.new("TextLabel", LoadingBG2)
 		Des_Loading.Name = "Title_Panel"
 		Des_Loading.BackgroundTransparency = 1
@@ -513,9 +528,9 @@ function Library:CreateWindow(Config)
 					until not getgenv().PanelObjectTag.Loading_All_ConfIg_End_Som or CountDownLoad > 2
 					tween:Cancel()
 					task.wait(1)
-					if LoadingBG1 and not LoadingBG1:GetAttribute("FadeOut") then
-						LoadingBG1:SetAttribute("FadeOut", true)					
-						pcall(function()
+					pcall(function()
+						if LoadingBG1 and not LoadingBG1:GetAttribute("FadeOut") then
+							LoadingBG1:SetAttribute("FadeOut", true)	
 							for _, v in pairs(AllLoadindFrame) do
 								if v:IsA("GuiObject") then
 									local goal = {}
@@ -529,16 +544,17 @@ function Library:CreateWindow(Config)
 									TweenService:Create(v, TweenInfo.new(0.5), goal):Play()
 								end
 							end
-						end)
-					end
-					task.wait(1)
-					if LoadingBG1 then
-						LoadingBG1:Destroy()
-					end
+						end
+						task.wait(1)
+						if LoadingBG1 then
+							LoadingBG1:Destroy()
+						end
+					end)
 				end)			
 				task.wait(0.4)
 			end
 		end)
+		
 	end)
 
 	local function SelectTap(TabName)
@@ -602,7 +618,6 @@ function Library:CreateWindow(Config)
 	end
 	
 	function Window_Tab:Window_TextSize(Value)
-		print(" * Window_TextSize")
 		for _, TextLabel in ipairs(getgenv().PanelObjectTag.All_TextLabel) do
 			pcall(function()
 				TextLabel.TextSize = Value
@@ -612,13 +627,18 @@ function Library:CreateWindow(Config)
 	end
 	
 	function Window_Tab:Window_Font(Value)
-		print(" * Window_Font")
 		for _, TextLabel in ipairs(getgenv().PanelObjectTag.All_TextLabel) do
 			pcall(function()
 				TextLabel.Font = Value
 				print("Set Font ", TextLabel.Parent.Name)
 			end)
 		end
+	end
+	
+	function Window_Tab:Window_BackgroundTransparency(Value)
+		pcall(function()
+			MainFrame.BackgroundTransparency = Value or 0.07
+		end)
 	end
 	
 	function Window_Tab:Tab(Tab_Set)
@@ -1981,6 +2001,10 @@ function Library:CreateWindow(Config)
 			end
 
 			function Create_Function:Model_Viwer(options)
+				
+				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)] = {
+					Title_Label = ""
+				}
 
 				local Click_Frame = Instance.new("Frame", Group_Frame)
 				Click_Frame.Size = UDim2.new(0, 208, 0, 180)
