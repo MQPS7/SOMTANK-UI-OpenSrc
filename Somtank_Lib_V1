@@ -130,11 +130,6 @@ local function Add_UITextSizeConstraint(Parent)
 	return New_UITextSizeConstraint
 end
 
-getgenv().PanelObjectTag.All_Func["library_size"] = {
-	Value = 0,
-	Refresh_Func = function(Value) end,
-}
-
 local function SetupResize(MainFrame, ScaleObject, ConnerButton)
 	local dragging, dragStartPos, startScale, minScale, maxScale = false, nil, ScaleObject.Scale, 0.5, 1.5
 
@@ -148,7 +143,6 @@ local function SetupResize(MainFrame, ScaleObject, ConnerButton)
 					UIScale.Scale = ScaleObject.Scale
 				end
 			end
-			getgenv().PanelObjectTag.All_Func["library_size"].Value = tonumber(ScaleObject.Scale)
 		end)
 	end
 	
@@ -210,19 +204,7 @@ function Library:CreateWindow(Config)
 	UIScale_Main.Scale = 0.7
 
 	getgenv().MainUIScale_Som = UIScale_Main
-	
-	getgenv().PanelObjectTag.All_Func["library_size"].Refresh_Func = function(Value)
-		pcall(function()
-			getgenv().PanelObjectTag.All_Func["library_size"].Value = tonumber(Value)
-			UIScale_Main.Scale = tonumber(Value)
-			for _, UIScale in ipairs(getgenv().PanelObjectTag.UIScale) do
-				if UIScale:IsA("UIScale") then
-					UIScale.Scale = UIScale_Main.Scale
-				end
-			end
-		end)
-	end
-	
+		
 	-- 2. Main Frame (Window)
 	local MainFrame = Instance.new("Frame")
 	MainFrame.Name = "MainFrame"
