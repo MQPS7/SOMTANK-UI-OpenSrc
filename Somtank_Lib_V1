@@ -16,17 +16,18 @@ getgenv().PanelObjectTag = {
 	TapSelectNow = nil,
 }
 
-local GetIcons = loadstring(game:HttpGet('https://raw.githubusercontent.com/HJSIWN/SomtankLib/refs/heads/main/Icon.lua'))()
+local GetIcons =
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/HJSIWN/SomtankLib/refs/heads/main/Icon.lua"))()
 -- if GetIcons then print("✅ Icon loaded!") else print("❌ Icon failed to load!") end
 local function SetIcon(Name, Parent, Color31, ZIndex)
 	if GetIcons and GetIcons.Image and Name then
 		local success, icon = pcall(function()
-			return GetIcons.Image({Icon = Name})
+			return GetIcons.Image({ Icon = Name })
 		end)
 		if success and icon and icon.IconFrame then
 			icon.IconFrame.Parent = Parent or nil
-			icon.IconFrame.Size = UDim2.new(1,0,1,0)
-			icon.IconFrame.Position = UDim2.new(0,0,0,0)
+			icon.IconFrame.Size = UDim2.new(1, 0, 1, 0)
+			icon.IconFrame.Position = UDim2.new(0, 0, 0, 0)
 			icon.IconFrame.ImageColor3 = Color3.new(0.658824, 0.6, 1)
 			icon.IconFrame.ZIndex = ZIndex
 			return
@@ -37,13 +38,15 @@ end
 local function update_handleAutoResize(frame, layout)
 	-- หาค่า UIScale ที่มีผลต่อ Frame นี้ (ปกติจะอยู่ที่ SomtankLib หรือ MainFrame)
 	local currentScale = 1
-	local uiScale = frame:FindFirstAncestorOfClass("UIScale") 
+	local uiScale = frame:FindFirstAncestorOfClass("UIScale")
 	if not uiScale then
 		-- ถ้าหาใน Ancestor ไม่เจอ ให้ลองหาในระดับ Lib หลัก
 		local mainScreen = frame:FindFirstAncestor("SomtankLib")
 		uiScale = mainScreen and mainScreen:FindFirstChildOfClass("UIScale")
 	end
-	if uiScale then currentScale = uiScale.Scale end
+	if uiScale then
+		currentScale = uiScale.Scale
+	end
 	local contentSize = layout.AbsoluteContentSize
 	-- สูตรสำคัญ: ขนาดที่จะตั้งค่า = ขนาดที่วัดได้บนจอ / Scale ปัจจุบัน
 	-- ใช้ LaTeX: $Size.Y.Offset = \frac{AbsoluteContentSize.Y}{Scale}$
@@ -61,7 +64,7 @@ local function handleAutoResize(frame)
 		end)
 		update_handleAutoResize(frame, layout)
 		-- เก็บรายชื่อ Group ไว้ใน Table เพื่อสั่ง Reset พร้อมกันตอน Resize จบ
-		table.insert(getgenv().PanelObjectTag.All_Group, frame) 
+		table.insert(getgenv().PanelObjectTag.All_Group, frame)
 	end
 end
 
@@ -69,7 +72,8 @@ end
 local function ResetAllSizeGroup()
 	for _, Frame_Group in ipairs(getgenv().PanelObjectTag.All_Group) do
 		if Frame_Group and Frame_Group.Parent then
-			local layout = Frame_Group:FindFirstChildOfClass("UIListLayout") or Frame_Group:FindFirstChildOfClass("UIGridLayout")
+			local layout = Frame_Group:FindFirstChildOfClass("UIListLayout")
+				or Frame_Group:FindFirstChildOfClass("UIGridLayout")
 			if layout then
 				update_handleAutoResize(Frame_Group, layout)
 			end
@@ -81,7 +85,7 @@ local function TweenFrame(frame, goalProperties, tweenTime, easingStyle, easingD
 	tweenTime = tweenTime or 0.5
 	easingStyle = easingStyle or Enum.EasingStyle.Quad
 	easingDirection = easingDirection or Enum.EasingDirection.Out
-	local tweenInfo = TweenInfo.new(tweenTime,easingStyle,easingDirection)
+	local tweenInfo = TweenInfo.new(tweenTime, easingStyle, easingDirection)
 	local tween = TweenService:Create(frame, tweenInfo, goalProperties)
 	tween:Play()
 	return tween
@@ -102,7 +106,7 @@ local function getCurrentConfigTable()
 	for flag, data in pairs(getgenv().PanelObjectTag.All_Func) do
 		local val = data.Value
 		if typeof(val) == "Color3" then
-			config[flag] = {R = val.R, G = val.G, B = val.B}
+			config[flag] = { R = val.R, G = val.G, B = val.B }
 		else
 			config[flag] = val
 		end
@@ -111,7 +115,9 @@ local function getCurrentConfigTable()
 end
 
 function SaveConfig()
-	if not getgenv().PanelObjectTag.Loading_All_ConfIg_End_Som then return end
+	if not getgenv().PanelObjectTag.Loading_All_ConfIg_End_Som then
+		return
+	end
 	local path = getFilePath(defaultFileName)
 	local success, content = pcall(function()
 		return HttpService:JSONEncode(getCurrentConfigTable())
@@ -131,7 +137,8 @@ local function Add_UITextSizeConstraint(Parent)
 end
 
 local function SetupResize(MainFrame, ScaleObject, ConnerButton)
-	local dragging, dragStartPos, startScale, minScale, maxScale = false, nil, ScaleObject.Scale, 0.5, 1.5
+	local dragging, dragStartPos, startScale, minScale, maxScale, SaveLocation_DragMainFrame =
+		false, nil, ScaleObject.Scale, 0.5, 1.5
 
 	local function update(input)
 		local delta = input.Position - dragStartPos
@@ -145,9 +152,12 @@ local function SetupResize(MainFrame, ScaleObject, ConnerButton)
 			end
 		end)
 	end
-	
+
 	ConnerButton.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		if
+			input.UserInputType == Enum.UserInputType.MouseButton1
+			or input.UserInputType == Enum.UserInputType.Touch
+		then
 			dragging = true
 			dragStartPos = input.Position
 			startScale = ScaleObject.Scale
@@ -155,12 +165,21 @@ local function SetupResize(MainFrame, ScaleObject, ConnerButton)
 		end
 	end)
 	UserInputService.InputChanged:Connect(function(input)
-		if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+		if
+			dragging
+			and (
+				input.UserInputType == Enum.UserInputType.MouseMovement
+				or input.UserInputType == Enum.UserInputType.Touch
+			)
+		then
 			update(input)
 		end
 	end)
 	UserInputService.InputEnded:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		if
+			input.UserInputType == Enum.UserInputType.MouseButton1
+			or input.UserInputType == Enum.UserInputType.Touch
+		then
 			if dragging then
 				dragging = false
 				ConnerButton.ImageTransparency = 1
@@ -170,23 +189,22 @@ local function SetupResize(MainFrame, ScaleObject, ConnerButton)
 			end
 		end
 	end)
-
 end
 
 function Library:CreateWindow(Config)
-
 	local Window_Tab, DestroyCallback, HideCallback, OpenCallback = {}, function() end, function() end, function() end
-	
+
 	local Font_Main, TextSize = Config.Font or Enum.Font.Highway, Config.TextSize or 17
-	
+
 	if Config.Folder == "" then
 		Config.Folder = "Somtank_Configs"
-	end	
+	end
 	if Config.ConfigName == "" then
 		Config.ConfigName = "Somtank_Config_Example"
-	end	
-	
-	ConfigFolderName, defaultFileName = Config.Folder or "Somtank_Configs", Config.ConfigName or "Somtank_Config_Example"
+	end
+
+	ConfigFolderName, defaultFileName =
+		Config.Folder or "Somtank_Configs", Config.ConfigName or "Somtank_Config_Example"
 
 	-- 1. Main ScreenGui
 	local SomtankLib = Instance.new("ScreenGui")
@@ -204,14 +222,14 @@ function Library:CreateWindow(Config)
 	UIScale_Main.Scale = 0.7
 
 	getgenv().MainUIScale_Som = UIScale_Main
-		
+
 	-- 2. Main Frame (Window)
 	local MainFrame = Instance.new("Frame")
 	MainFrame.Name = "MainFrame"
 	MainFrame.Parent = SomtankLib
 	MainFrame.BackgroundColor3 = Color3.fromRGB(40, 23, 76)
-	MainFrame.Position = UDim2.new(0.15, 0,0.127, 0)
-	MainFrame.Size = UDim2.new(0, 599,0, 374)
+	MainFrame.Position = UDim2.new(0.15, 0, 0.127, 0)
+	MainFrame.Size = UDim2.new(0, 599, 0, 374)
 	MainFrame.ClipsDescendants = true
 	MainFrame.BackgroundTransparency = 0.07
 	MainFrame.Active = true
@@ -223,9 +241,68 @@ function Library:CreateWindow(Config)
 	pcall(function()
 		dragging, dragStart, startPos, OpenMainFrame = false, nil, nil, false
 
-		MakeDraggableButton = function(button: ImageButton, MoveFrame) button.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then	dragging = true;dragStart = input.Position;	Icon_Position = button.Position;startPos = MoveFrame.Position end end);	UserInputService.InputChanged:Connect(function(input) if dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then local delta = input.Position - dragStart;MoveFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) end end);	UserInputService.InputEnded:Connect(function(input)	if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end	end); end
-		MakeImageButton = function(Parent, Size, Posi, BGtran, Color, Imtran, imageID)	local NewFrame = Instance.new("ImageButton", Parent);Instance.new("UICorner", NewFrame);	NewFrame.Position = Posi;NewFrame.Size = Size;NewFrame.BackgroundTransparency = BGtran;NewFrame.Image = imageID or "";	NewFrame.ImageTransparency = Imtran;NewFrame.BackgroundColor3 = Color;NewFrame.ImageColor3 = Color;NewFrame.ZIndex = 2;	return NewFrame end
-		MoveIcon = MakeImageButton(SomtankLib2, UDim2.new(0, 51,0, 51), UDim2.new(0.100, 0,0.447, 0), 1, Color3.new(1, 1, 1), 0, "rbxassetid://84408196679900");Instance.new("UIAspectRatioConstraint", MoveIcon);MakeDraggableButton(MoveIcon, MoveIcon)
+		MakeDraggableButton = function(button: ImageButton, MoveFrame)
+			button.InputBegan:Connect(function(input)
+				if
+					input.UserInputType == Enum.UserInputType.Touch
+					or input.UserInputType == Enum.UserInputType.MouseButton1
+				then
+					dragging = true
+					dragStart = input.Position
+					Icon_Position = button.Position
+					startPos = MoveFrame.Position
+				end
+			end)
+			UserInputService.InputChanged:Connect(function(input)
+				if
+					dragging
+					and (
+						input.UserInputType == Enum.UserInputType.Touch
+						or input.UserInputType == Enum.UserInputType.MouseMovement
+					)
+				then
+					local delta = input.Position - dragStart
+					MoveFrame.Position = UDim2.new(
+						startPos.X.Scale,
+						startPos.X.Offset + delta.X,
+						startPos.Y.Scale,
+						startPos.Y.Offset + delta.Y
+					)
+				end
+			end)
+			UserInputService.InputEnded:Connect(function(input)
+				if
+					input.UserInputType == Enum.UserInputType.Touch
+					or input.UserInputType == Enum.UserInputType.MouseButton1
+				then
+					dragging = false
+				end
+			end)
+		end
+		MakeImageButton = function(Parent, Size, Posi, BGtran, Color, Imtran, imageID)
+			local NewFrame = Instance.new("ImageButton", Parent)
+			Instance.new("UICorner", NewFrame)
+			NewFrame.Position = Posi
+			NewFrame.Size = Size
+			NewFrame.BackgroundTransparency = BGtran
+			NewFrame.Image = imageID or ""
+			NewFrame.ImageTransparency = Imtran
+			NewFrame.BackgroundColor3 = Color
+			NewFrame.ImageColor3 = Color
+			NewFrame.ZIndex = 2
+			return NewFrame
+		end
+		MoveIcon = MakeImageButton(
+			SomtankLib2,
+			UDim2.new(0, 51, 0, 51),
+			UDim2.new(0.100, 0, 0.447, 0),
+			1,
+			Color3.new(1, 1, 1),
+			0,
+			"rbxassetid://84408196679900"
+		)
+		Instance.new("UIAspectRatioConstraint", MoveIcon)
+		MakeDraggableButton(MoveIcon, MoveIcon)
 
 		MoveIcon.Activated:Connect(function()
 			if Icon_Position == MoveIcon.Position then
@@ -242,25 +319,43 @@ function Library:CreateWindow(Config)
 		local dragging = false
 		local dragStart, startPos, dragConnection, inputConnection
 		MainFrame.InputBegan:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			if
+				input.UserInputType == Enum.UserInputType.MouseButton1
+				or input.UserInputType == Enum.UserInputType.Touch
+			then
 				dragging = true
 				dragStart = input.Position
 				startPos = MainFrame.Position
 				dragConnection = UserInputService.InputChanged:Connect(function(moveInput)
-					if dragging and (moveInput.UserInputType == Enum.UserInputType.MouseMovement or moveInput.UserInputType == Enum.UserInputType.Touch) then
+					if
+						dragging
+						and (
+							moveInput.UserInputType == Enum.UserInputType.MouseMovement
+							or moveInput.UserInputType == Enum.UserInputType.Touch
+						)
+					then
 						local currentScale = 1
 						if UIScale_Main then
 							currentScale = UIScale_Main.Scale
 						end
 						local delta = moveInput.Position - dragStart
-						MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + (delta.X / currentScale),startPos.Y.Scale, startPos.Y.Offset + (delta.Y / currentScale))
+						MainFrame.Position = UDim2.new(
+							startPos.X.Scale,
+							startPos.X.Offset + (delta.X / currentScale),
+							startPos.Y.Scale,
+							startPos.Y.Offset + (delta.Y / currentScale)
+						)
 					end
 				end)
 				inputConnection = input.Changed:Connect(function()
 					if input.UserInputState == Enum.UserInputState.End then
 						dragging = false
-						if dragConnection then dragConnection:Disconnect() end
-						if inputConnection then inputConnection:Disconnect() end
+						if dragConnection then
+							dragConnection:Disconnect()
+						end
+						if inputConnection then
+							inputConnection:Disconnect()
+						end
 					end
 				end)
 			end
@@ -271,15 +366,15 @@ function Library:CreateWindow(Config)
 	local Modes_Box = Instance.new("Frame", MainFrame)
 	Modes_Box.Name = "Modes_Box"
 	Modes_Box.BackgroundTransparency = 1
-	Modes_Box.Size = UDim2.new(0, 421,0, 326)
-	Modes_Box.Position = UDim2.new(0.29, 0,0.112, 0)
+	Modes_Box.Size = UDim2.new(0, 421, 0, 326)
+	Modes_Box.Position = UDim2.new(0.29, 0, 0.112, 0)
 
 	-- 4. Sidebar Modes (Left)
 	local ModeTaps = Instance.new("ScrollingFrame", MainFrame)
 	ModeTaps.Name = "ModeTaps"
 	ModeTaps.BackgroundTransparency = 1
-	ModeTaps.Size = UDim2.new(0, 165,0, 278)
-	ModeTaps.Position = UDim2.new(0.007, 0,0.112, 0)
+	ModeTaps.Size = UDim2.new(0, 165, 0, 278)
+	ModeTaps.Position = UDim2.new(0.007, 0, 0.112, 0)
 	ModeTaps.BottomImage = ""
 	ModeTaps.MidImage = ""
 	ModeTaps.TopImage = ""
@@ -296,8 +391,8 @@ function Library:CreateWindow(Config)
 	UserFrame.Name = "UserFrame"
 	UserFrame.Parent = MainFrame
 	UserFrame.BackgroundTransparency = 0.9
-	UserFrame.Size = UDim2.new(0, 165,0, 42)
-	UserFrame.Position = UDim2.new(0.007, 0,0.872, 0)
+	UserFrame.Size = UDim2.new(0, 165, 0, 42)
+	UserFrame.Position = UDim2.new(0.007, 0, 0.872, 0)
 
 	local UICorner_UserFrame = Instance.new("UICorner", UserFrame)
 	UICorner_UserFrame.CornerRadius = UDim.new(0, 8)
@@ -305,9 +400,13 @@ function Library:CreateWindow(Config)
 	local UserImageLabel = Instance.new("ImageLabel", UserFrame)
 	UserImageLabel.Name = "Icon"
 	UserImageLabel.BackgroundTransparency = 1
-	UserImageLabel.Size = UDim2.new(0, 39,0, 36)
-	UserImageLabel.Position = UDim2.new(0, 3,-0.001, 3)
-	UserImageLabel.Image = Players:GetUserThumbnailAsync(LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48) or "rbxassetid://9659905343"
+	UserImageLabel.Size = UDim2.new(0, 39, 0, 36)
+	UserImageLabel.Position = UDim2.new(0, 3, -0.001, 3)
+	UserImageLabel.Image = Players:GetUserThumbnailAsync(
+		LocalPlayer.UserId,
+		Enum.ThumbnailType.HeadShot,
+		Enum.ThumbnailSize.Size48x48
+	) or "rbxassetid://9659905343"
 
 	local UICorner_UserImageLabel = Instance.new("UICorner", UserImageLabel)
 	UICorner_UserImageLabel.CornerRadius = UDim.new(0, 8)
@@ -316,8 +415,8 @@ function Library:CreateWindow(Config)
 	local TextLabel_UserFrame = Instance.new("TextLabel", UserFrame)
 	TextLabel_UserFrame.Name = "UserName_Label"
 	TextLabel_UserFrame.BackgroundTransparency = 1
-	TextLabel_UserFrame.Size = UDim2.new(0, 116,0, 36)
-	TextLabel_UserFrame.Position = UDim2.new(0.255, 3,0.071, 0)
+	TextLabel_UserFrame.Size = UDim2.new(0, 116, 0, 36)
+	TextLabel_UserFrame.Position = UDim2.new(0.255, 3, 0.071, 0)
 	TextLabel_UserFrame.Text = LocalPlayer.Name or LocalPlayer.DisplayName or "Unknow User!"
 	TextLabel_UserFrame.Font = Font_Main
 	TextLabel_UserFrame.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -329,8 +428,8 @@ function Library:CreateWindow(Config)
 	local DesButton = Instance.new("TextButton", MainFrame)
 	DesButton.Name = "DeButton"
 	DesButton.BackgroundTransparency = 1
-	DesButton.Size = UDim2.new(0, 32,0, 31)
-	DesButton.Position = UDim2.new(0.935, 0,0.011, 0)
+	DesButton.Size = UDim2.new(0, 32, 0, 31)
+	DesButton.Position = UDim2.new(0.935, 0, 0.011, 0)
 	DesButton.Text = "X"
 	DesButton.Font = Font_Main
 	DesButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -341,8 +440,8 @@ function Library:CreateWindow(Config)
 	local EyeButton = Instance.new("TextButton", MainFrame)
 	EyeButton.Name = "EyeButton"
 	EyeButton.BackgroundTransparency = 1
-	EyeButton.Size = UDim2.new(0, 32,0, 31)
-	EyeButton.Position = UDim2.new(0.876, 0,0.013, 0)
+	EyeButton.Size = UDim2.new(0, 32, 0, 31)
+	EyeButton.Position = UDim2.new(0.876, 0, 0.013, 0)
 	EyeButton.Text = "-"
 	EyeButton.Font = Font_Main
 	EyeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -353,8 +452,8 @@ function Library:CreateWindow(Config)
 	local PanelTitle = Instance.new("TextLabel", MainFrame)
 	PanelTitle.Name = "Title_Panel"
 	PanelTitle.BackgroundTransparency = 1
-	PanelTitle.Size = UDim2.new(0, 335,0, 23)
-	PanelTitle.Position = UDim2.new(0.078, 0,-0, 3)
+	PanelTitle.Size = UDim2.new(0, 335, 0, 23)
+	PanelTitle.Position = UDim2.new(0.078, 0, -0, 3)
 	PanelTitle.Text = Config.Title or "Exploits Menu"
 	PanelTitle.Font = Font_Main
 	PanelTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -365,8 +464,8 @@ function Library:CreateWindow(Config)
 	local PanelDescription = Instance.new("TextLabel", MainFrame)
 	PanelDescription.Name = "Des_Panel"
 	PanelDescription.BackgroundTransparency = 1
-	PanelDescription.Size = UDim2.new(0, 335,0, 14)
-	PanelDescription.Position = UDim2.new(0.078, 0,0.058, 3)
+	PanelDescription.Size = UDim2.new(0, 335, 0, 14)
+	PanelDescription.Position = UDim2.new(0.078, 0, 0.058, 3)
 	PanelDescription.Text = Config.Description or "version - 0.1"
 	PanelDescription.Font = Font_Main
 	PanelDescription.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -378,25 +477,25 @@ function Library:CreateWindow(Config)
 	local Conner_Panel = Instance.new("ImageLabel", MainFrame)
 	Conner_Panel.Name = "Conner_Panel"
 	Conner_Panel.BackgroundTransparency = 1
-	Conner_Panel.Size = UDim2.new(0, 19,0, 22)
-	Conner_Panel.Position = UDim2.new(0.968, 0,0.941, 3)
+	Conner_Panel.Size = UDim2.new(0, 19, 0, 22)
+	Conner_Panel.Position = UDim2.new(0.968, 0, 0.941, 3)
 	Conner_Panel.ImageColor3 = Color3.new(0.709804, 0.47451, 1)
 	Conner_Panel.Image = "rbxassetid://6118439008"
-	Instance.new("UIAspectRatioConstraint", Conner_Panel)	
-	
+	Instance.new("UIAspectRatioConstraint", Conner_Panel)
+
 	local Logo_Panel = Instance.new("ImageLabel", MainFrame)
 	Logo_Panel.Name = "Icon"
 	Logo_Panel.BackgroundTransparency = 1
-	Logo_Panel.Size = UDim2.new(0, 39,0, 36)
-	Logo_Panel.Position = UDim2.new(0.006, 0,-0.001, 3)
+	Logo_Panel.Size = UDim2.new(0, 39, 0, 36)
+	Logo_Panel.Position = UDim2.new(0.006, 0, -0.001, 3)
 	Logo_Panel.Image = "rbxassetid://108281745434228"
 	Instance.new("UIAspectRatioConstraint", Logo_Panel)
 
 	local ConnerButton = Instance.new("ImageButton", MainFrame)
 	ConnerButton.Name = "ConnerButton"
 	ConnerButton.BackgroundTransparency = 1
-	ConnerButton.Size = UDim2.new(0, 18,0, 18)
-	ConnerButton.Position = UDim2.new(0.972, 0,0.955, 0)
+	ConnerButton.Size = UDim2.new(0, 18, 0, 18)
+	ConnerButton.Position = UDim2.new(0.972, 0, 0.955, 0)
 	ConnerButton.Image = ""
 	Instance.new("UIAspectRatioConstraint", ConnerButton)
 
@@ -406,7 +505,7 @@ function Library:CreateWindow(Config)
 		if DestroyCallback then
 			pcall(DestroyCallback)
 		end
-		getgenv().PanelObjectTag.Loading_All_ConfIg_End_Som = false		
+		getgenv().PanelObjectTag.Loading_All_ConfIg_End_Som = false
 	end)
 
 	EyeButton.Activated:Connect(function()
@@ -417,16 +516,15 @@ function Library:CreateWindow(Config)
 	end)
 
 	SetupResize(MainFrame, UIScale_Main, ConnerButton)
-	
+
 	-- [[   Start Loading   ]] --
-	
+
 	pcall(function()
-		
 		local LoadingBG1, AllLoadindFrame = Instance.new("Frame", MainFrame), {}
 		LoadingBG1.Name = "LoadingBG1"
 		LoadingBG1.BackgroundTransparency = 0.1
-		LoadingBG1.Size = UDim2.new(0, 599,0, 374)
-		LoadingBG1.BackgroundColor3 = Color3.fromRGB(40, 23, 76)	
+		LoadingBG1.Size = UDim2.new(0, 599, 0, 374)
+		LoadingBG1.BackgroundColor3 = Color3.fromRGB(40, 23, 76)
 		Instance.new("UICorner", LoadingBG1).CornerRadius = UDim.new(0, 8)
 		LoadingBG1:SetAttribute("FadeOut", false)
 		table.insert(AllLoadindFrame, LoadingBG1)
@@ -435,16 +533,16 @@ function Library:CreateWindow(Config)
 		LoadingBG2.Name = "LoadingBG2"
 		LoadingBG2.BackgroundTransparency = 0.9
 		LoadingBG2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		LoadingBG2.Size = UDim2.new(0, 283,0, 177)	
-		LoadingBG2.Position = UDim2.new(0.265, 0,0.336, 0)	
+		LoadingBG2.Size = UDim2.new(0, 283, 0, 177)
+		LoadingBG2.Position = UDim2.new(0.265, 0, 0.336, 0)
 		Instance.new("UICorner", LoadingBG2).CornerRadius = UDim.new(0, 8)
 		table.insert(AllLoadindFrame, LoadingBG2)
 
 		local LoadingPointMain = Instance.new("Frame", LoadingBG2)
 		LoadingPointMain.Name = "LoadingPointMain"
 		LoadingPointMain.BackgroundTransparency = 1
-		LoadingPointMain.Size = UDim2.new(0, 144,0, 21)	
-		LoadingPointMain.Position = UDim2.new(0.237, 0,0.793, 0)
+		LoadingPointMain.Size = UDim2.new(0, 144, 0, 21)
+		LoadingPointMain.Position = UDim2.new(0.237, 0, 0.793, 0)
 		table.insert(AllLoadindFrame, LoadingPointMain)
 
 		local UIListLayout_LoadingFrame = Instance.new("UIListLayout", LoadingPointMain)
@@ -457,8 +555,8 @@ function Library:CreateWindow(Config)
 		local Logo_Loading = Instance.new("ImageLabel", LoadingBG2)
 		Logo_Loading.Name = "Logo_Loading"
 		Logo_Loading.BackgroundTransparency = 1
-		Logo_Loading.Size = UDim2.new(0, 101,0, 101)
-		Logo_Loading.Position = UDim2.new(0.318, 0,-0.328, 3)
+		Logo_Loading.Size = UDim2.new(0, 101, 0, 101)
+		Logo_Loading.Position = UDim2.new(0.318, 0, -0.328, 3)
 		Logo_Loading.Image = "rbxassetid://108281745434228"
 		Instance.new("UIAspectRatioConstraint", Logo_Loading)
 		table.insert(AllLoadindFrame, Logo_Loading)
@@ -466,20 +564,20 @@ function Library:CreateWindow(Config)
 		local Title_Loading = Instance.new("TextLabel", LoadingBG2)
 		Title_Loading.Name = "Title_Panel"
 		Title_Loading.BackgroundTransparency = 1
-		Title_Loading.Size = UDim2.new(0, 256,0, 35)
-		Title_Loading.Position = UDim2.new(0.045, 0,0.289, 3)
+		Title_Loading.Size = UDim2.new(0, 256, 0, 35)
+		Title_Loading.Position = UDim2.new(0.045, 0, 0.289, 3)
 		Title_Loading.Text = Config.Loading_Title or "Title_Loading"
 		Title_Loading.Font = Font_Main
 		Title_Loading.TextColor3 = Color3.fromRGB(255, 255, 255)
 		Title_Loading.TextSize = 20
 		Title_Loading.TextScaled = true
 		table.insert(AllLoadindFrame, Title_Loading)
-		
+
 		local Des_Loading = Instance.new("TextLabel", LoadingBG2)
 		Des_Loading.Name = "Title_Panel"
 		Des_Loading.BackgroundTransparency = 1
-		Des_Loading.Size = UDim2.new(0, 252,0, 23)
-		Des_Loading.Position = UDim2.new(0.049, 0,0.54, 3)
+		Des_Loading.Size = UDim2.new(0, 252, 0, 23)
+		Des_Loading.Position = UDim2.new(0.049, 0, 0.54, 3)
 		Des_Loading.Text = Config.Loading_Desc or "Des_Loading"
 		Des_Loading.Font = Font_Main
 		Des_Loading.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -488,19 +586,22 @@ function Library:CreateWindow(Config)
 		table.insert(AllLoadindFrame, Des_Loading)
 
 		spawn(function()
-			for i=1,3 do
-				local DotNew, UIARCNew, CountDownLoad = Instance.new("Frame", LoadingPointMain), Instance.new("UIAspectRatioConstraint"), 0
+			for i = 1, 3 do
+				local DotNew, UIARCNew, CountDownLoad =
+					Instance.new("Frame", LoadingPointMain), Instance.new("UIAspectRatioConstraint"), 0
 				DotNew.Name = "LoadingBG1"
-				DotNew.Size = UDim2.new(0, 10,0, 10)
+				DotNew.Size = UDim2.new(0, 10, 0, 10)
 				DotNew.BackgroundColor3 = Color3.fromRGB(172, 112, 255)
-				DotNew.Name = "LoadingPoint"..i
+				DotNew.Name = "LoadingPoint" .. i
 				Instance.new("UICorner", DotNew).CornerRadius = UDim.new(0, 8)
 				UIARCNew.AspectRatio = 0.5
 				UIARCNew.Parent = DotNew
-				table.insert(AllLoadindFrame, DotNew)			
-				local tween = TweenService:Create(UIARCNew,
-					TweenInfo.new(0.5,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut,-1,true),
-					{AspectRatio = 1})
+				table.insert(AllLoadindFrame, DotNew)
+				local tween = TweenService:Create(
+					UIARCNew,
+					TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+					{ AspectRatio = 1 }
+				)
 				tween:Play()
 				spawn(function()
 					task.wait(3)
@@ -512,17 +613,23 @@ function Library:CreateWindow(Config)
 					task.wait(1)
 					pcall(function()
 						if LoadingBG1 and not LoadingBG1:GetAttribute("FadeOut") then
-							LoadingBG1:SetAttribute("FadeOut", true)	
+							LoadingBG1:SetAttribute("FadeOut", true)
 							for _, v in pairs(AllLoadindFrame) do
 								if v:IsA("GuiObject") then
 									local goal = {}
-									if v.BackgroundTransparency < 1 then goal.BackgroundTransparency = 1 end
+									if v.BackgroundTransparency < 1 then
+										goal.BackgroundTransparency = 1
+									end
 									if v:IsA("TextLabel") or v:IsA("TextButton") or v:IsA("TextBox") then
 										goal.TextTransparency = 1
 										local stroke = v:FindFirstChildOfClass("UIStroke")
-										if stroke then TweenService:Create(stroke, TweenInfo.new(0.5), {Transparency = 1}):Play() end
+										if stroke then
+											TweenService:Create(stroke, TweenInfo.new(0.5), { Transparency = 1 }):Play()
+										end
 									end
-									if v:IsA("ImageLabel") or v:IsA("ImageButton") then goal.ImageTransparency = 1 end
+									if v:IsA("ImageLabel") or v:IsA("ImageButton") then
+										goal.ImageTransparency = 1
+									end
 									TweenService:Create(v, TweenInfo.new(0.5), goal):Play()
 								end
 							end
@@ -532,11 +639,10 @@ function Library:CreateWindow(Config)
 							LoadingBG1:Destroy()
 						end
 					end)
-				end)			
+				end)
 				task.wait(0.4)
 			end
 		end)
-		
 	end)
 
 	local function SelectTap(TabName)
@@ -548,11 +654,23 @@ function Library:CreateWindow(Config)
 			end
 			for _, Frame in pairs(ModeTaps:GetChildren()) do
 				if Frame.ClassName ~= "UIListLayout" and Frame.ColorFrame then
-					TweenFrame(Frame.ColorFrame, {BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+					TweenFrame(
+						Frame.ColorFrame,
+						{ BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941) },
+						0.2,
+						Enum.EasingStyle.Sine,
+						Enum.EasingDirection.Out
+					)
 				end
 			end
-			if ModeTaps[TabName].ColorFrame and ModeTaps[TabName].ColorFrame.ClassName == "Frame" then				
-				TweenFrame(ModeTaps[TabName].ColorFrame, {BackgroundColor3 = Color3.new(0.556863, 0.333333, 1)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+			if ModeTaps[TabName].ColorFrame and ModeTaps[TabName].ColorFrame.ClassName == "Frame" then
+				TweenFrame(
+					ModeTaps[TabName].ColorFrame,
+					{ BackgroundColor3 = Color3.new(0.556863, 0.333333, 1) },
+					0.2,
+					Enum.EasingStyle.Sine,
+					Enum.EasingDirection.Out
+				)
 			end
 			Modes_Box[TabName].Visible = true
 		end
@@ -563,7 +681,7 @@ function Library:CreateWindow(Config)
 		getgenv().PanelObjectTag.Loading_All_ConfIg_End_Som = true
 		local path = getFilePath(defaultFileName)
 		if not isfile(path) then
-			return 
+			return
 		end
 		local content = readfile(path)
 		local success, data = pcall(function()
@@ -580,7 +698,7 @@ function Library:CreateWindow(Config)
 			end
 		end
 	end
-		
+
 	function Window_Tab:OnDestroy(func)
 		if typeof(func) == "function" then
 			DestroyCallback = func
@@ -598,7 +716,7 @@ function Library:CreateWindow(Config)
 			OpenCallback = func
 		end
 	end
-	
+
 	function Window_Tab:Window_TextSize(Value)
 		for _, TextLabel in ipairs(getgenv().PanelObjectTag.All_TextLabel) do
 			pcall(function()
@@ -607,7 +725,7 @@ function Library:CreateWindow(Config)
 			end)
 		end
 	end
-	
+
 	function Window_Tab:Window_Font(Value)
 		for _, TextLabel in ipairs(getgenv().PanelObjectTag.All_TextLabel) do
 			pcall(function()
@@ -616,20 +734,19 @@ function Library:CreateWindow(Config)
 			end)
 		end
 	end
-	
+
 	function Window_Tab:Window_BackgroundTransparency(Value)
 		pcall(function()
 			MainFrame.BackgroundTransparency = Value or 0.07
 		end)
 	end
-	
-	function Window_Tab:Tab(Tab_Set)
 
+	function Window_Tab:Tab(Tab_Set)
 		local Tab = Instance.new("Frame", ModeTaps)
 		Tab.Name = Tab_Set.Title
 		Tab.BackgroundTransparency = 0.95
 		Tab.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		Tab.Size = UDim2.new(0, 165,0, 39)
+		Tab.Size = UDim2.new(0, 165, 0, 39)
 
 		local UICorner_Tab = Instance.new("UICorner", Tab)
 		UICorner_Tab.CornerRadius = UDim.new(0, 8)
@@ -637,8 +754,8 @@ function Library:CreateWindow(Config)
 		local ColorFrame = Instance.new("Frame", Tab)
 		ColorFrame.Name = "ColorFrame"
 		ColorFrame.BackgroundColor3 = Color3.fromRGB(83, 71, 95)
-		ColorFrame.Size = UDim2.new(0, 5,0, 21)
-		ColorFrame.Position = UDim2.new(0, 0,0.231, 0)
+		ColorFrame.Size = UDim2.new(0, 5, 0, 21)
+		ColorFrame.Position = UDim2.new(0, 0, 0.231, 0)
 
 		local UICorner_ColorFrame = Instance.new("UICorner", ColorFrame)
 		UICorner_ColorFrame.CornerRadius = UDim.new(0, 8)
@@ -655,27 +772,26 @@ function Library:CreateWindow(Config)
 		Add_UITextSizeConstraint(PanelTitle)
 
 		if Tab_Set and Tab_Set.Icon then
-
 			local Logo_Tab = Instance.new("ImageLabel", Tab)
 			Logo_Tab.Name = "Tap_Icon"
 			Logo_Tab.BackgroundTransparency = 1
-			Logo_Tab.Size = UDim2.new(0, 36,0, 31)
-			Logo_Tab.Position = UDim2.new(0.055, 3,0.024, 3)
+			Logo_Tab.Size = UDim2.new(0, 36, 0, 31)
+			Logo_Tab.Position = UDim2.new(0.055, 3, 0.024, 3)
 			Logo_Tab.Image = ""
 			Instance.new("UIAspectRatioConstraint", Logo_Tab)
 			SetIcon(Tab_Set.Icon, Logo_Tab, Color3.new(1, 1, 1), 1)
 
-			PanelTitle.Size = UDim2.new(0, 110,0, 30)
-			PanelTitle.Position = UDim2.new(0.305, 0,0.103, 0)
+			PanelTitle.Size = UDim2.new(0, 110, 0, 30)
+			PanelTitle.Position = UDim2.new(0.305, 0, 0.103, 0)
 		else
-			PanelTitle.Size = UDim2.new(0, 145,0, 30)
-			PanelTitle.Position = UDim2.new(0.1, 0,0.103, 0)
+			PanelTitle.Size = UDim2.new(0, 145, 0, 30)
+			PanelTitle.Position = UDim2.new(0.1, 0, 0.103, 0)
 		end
 
 		local Button_Tap = Instance.new("ImageButton", Tab)
 		Button_Tap.Name = "Button_Tap"
 		Button_Tap.BackgroundTransparency = 1
-		Button_Tap.Size = UDim2.new(1, 0,1, 0)
+		Button_Tap.Size = UDim2.new(1, 0, 1, 0)
 
 		Button_Tap.Activated:Connect(function()
 			SelectTap(Tab_Set.Title)
@@ -692,7 +808,9 @@ function Library:CreateWindow(Config)
 		end)
 
 		function Window_Tab:SelectTap(TapName)
-			if not TapName then TapName = "Unknow" end
+			if not TapName then
+				TapName = "Unknow"
+			end
 			if ModeTaps[TapName] and Modes_Box[TapName] then
 				SelectTap(TapName)
 				getgenv().PanelObjectTag.TapSelectNow = Button_Tap
@@ -702,13 +820,13 @@ function Library:CreateWindow(Config)
 		local Mode_Main = Instance.new("Frame", Modes_Box)
 		Mode_Main.Name = Tab_Set.Title or "Unknow"
 		Mode_Main.BackgroundTransparency = 1
-		Mode_Main.Size = UDim2.new(1, 0,1, 0)
+		Mode_Main.Size = UDim2.new(1, 0, 1, 0)
 		Mode_Main.Visible = false
 
 		local Scrolling_Func1 = Instance.new("ScrollingFrame", Mode_Main)
 		Scrolling_Func1.Name = "Scrolling_Func1"
 		Scrolling_Func1.BackgroundTransparency = 1
-		Scrolling_Func1.Size = UDim2.new(0, 209,0, 326)
+		Scrolling_Func1.Size = UDim2.new(0, 209, 0, 326)
 		Scrolling_Func1.BottomImage = ""
 		Scrolling_Func1.MidImage = ""
 		Scrolling_Func1.TopImage = ""
@@ -725,8 +843,8 @@ function Library:CreateWindow(Config)
 		local Scrolling_Func2 = Instance.new("ScrollingFrame", Mode_Main)
 		Scrolling_Func2.Name = "Scrolling_Func1"
 		Scrolling_Func2.BackgroundTransparency = 1
-		Scrolling_Func2.Size = UDim2.new(0, 209,0, 326)
-		Scrolling_Func2.Position = UDim2.new(0.503, 0,0, 0)
+		Scrolling_Func2.Size = UDim2.new(0, 209, 0, 326)
+		Scrolling_Func2.Position = UDim2.new(0.503, 0, 0, 0)
 		Scrolling_Func2.BottomImage = ""
 		Scrolling_Func2.MidImage = ""
 		Scrolling_Func2.TopImage = ""
@@ -759,7 +877,7 @@ function Library:CreateWindow(Config)
 			Group_Frame.Name = Group_Info.Title or "Unknow"
 			Group_Frame.BackgroundTransparency = 0.9
 			Group_Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-			Group_Frame.Size = UDim2.new(0, 208,0, 295)
+			Group_Frame.Size = UDim2.new(0, 208, 0, 295)
 
 			local UICorner_Group_Frame = Instance.new("UICorner", Group_Frame)
 			UICorner_Group_Frame.CornerRadius = UDim.new(0, 8)
@@ -771,7 +889,7 @@ function Library:CreateWindow(Config)
 			local Title_Frame = Instance.new("Frame", Group_Frame)
 			Title_Frame.Name = "Title_Frame"
 			Title_Frame.BackgroundTransparency = 1
-			Title_Frame.Size = UDim2.new(0, 208,0, 39)
+			Title_Frame.Size = UDim2.new(0, 208, 0, 39)
 
 			local TitleTap = Instance.new("TextLabel", Title_Frame)
 			TitleTap.Name = "TitleTap"
@@ -785,24 +903,20 @@ function Library:CreateWindow(Config)
 			Add_UITextSizeConstraint(TitleTap)
 
 			if Group_Info and Group_Info.Icon then
-
 				local IconTap = Instance.new("ImageLabel", Title_Frame)
 				IconTap.Name = "Icon"
 				IconTap.BackgroundTransparency = 1
-				IconTap.Size = UDim2.new(0, 36,0, 31)
-				IconTap.Position = UDim2.new(0.024, 3,0.002, 3)
+				IconTap.Size = UDim2.new(0, 36, 0, 31)
+				IconTap.Position = UDim2.new(0.024, 3, 0.002, 3)
 				IconTap.Image = Group_Info.Icon or "rbxassetid://98100463355335"
 				Instance.new("UIAspectRatioConstraint", IconTap)
 				SetIcon(Group_Info.Icon, IconTap, Color3.new(1, 1, 1), 1)
 
-				TitleTap.Size = UDim2.new(0, 157,0, 29)
-				TitleTap.Position = UDim2.new(0.223, 0,0.128, 0)
-				
+				TitleTap.Size = UDim2.new(0, 157, 0, 29)
+				TitleTap.Position = UDim2.new(0.223, 0, 0.128, 0)
 			else
-				
-				TitleTap.Size = UDim2.new(0, 192,0, 29)
-				TitleTap.Position = UDim2.new(0.05, 0,0.128, 0)
-				
+				TitleTap.Size = UDim2.new(0, 192, 0, 29)
+				TitleTap.Position = UDim2.new(0.05, 0, 0.128, 0)
 			end
 
 			handleAutoResize(Group_Frame)
@@ -818,16 +932,15 @@ function Library:CreateWindow(Config)
 			end
 
 			function Create_Function:Click(options)
-				
 				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)] = {
-					Title_Label = nil
+					Title_Label = nil,
 				}
 
 				task.wait()
 
 				local Click_Frame = Instance.new("Frame", Group_Frame)
 				-- [UPDATED] ย่อความสูงลงเหลือ 35 (จากเดิม 48)
-				Click_Frame.Size = UDim2.new(0, 208, 0, 35) 
+				Click_Frame.Size = UDim2.new(0, 208, 0, 35)
 				Click_Frame.BackgroundTransparency = 1
 				Click_Frame.Name = options.Title or "Click_Frame"
 
@@ -843,7 +956,7 @@ function Library:CreateWindow(Config)
 				local ColorFrame = Instance.new("Frame", BGFrame)
 				ColorFrame.BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941)
 				-- [UPDATED] ย่อขนาดแถบสีข้างให้สัมพันธ์กับความสูงใหม่
-				ColorFrame.Size = UDim2.new(0, 4, 0, 20) 
+				ColorFrame.Size = UDim2.new(0, 4, 0, 20)
 				ColorFrame.Position = UDim2.new(0, 0, 0.18, 0)
 				ColorFrame.Name = "ColorFrame"
 				Instance.new("UICorner", ColorFrame).CornerRadius = UDim.new(0, 4)
@@ -861,17 +974,17 @@ function Library:CreateWindow(Config)
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
 				Add_UITextSizeConstraint(Title_Func)
 				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Title_Label = Title_Func
-				
+
 				local ButtonFake = Instance.new("ImageButton", BGFrame)
 				-- [UPDATED] ย่อไอคอนมือให้เล็กลง
 				ButtonFake.Position = UDim2.new(0.85, 0, 0.15, 0)
-				ButtonFake.Size = UDim2.new(0, 20, 0, 20)	
+				ButtonFake.Size = UDim2.new(0, 20, 0, 20)
 				ButtonFake.BackgroundTransparency = 1
 				ButtonFake.ImageColor3 = Color3.new(1, 1, 1)
 				ButtonFake.Image = "rbxassetid://9728118892"
 				ButtonFake.Name = "ButtonFake"
 				ButtonFake.Active = false
-				
+
 				local Button = Instance.new("ImageButton", BGFrame)
 				Button.Size = UDim2.new(1, 0, 1, 0)
 				Button.BackgroundTransparency = 1
@@ -887,9 +1000,21 @@ function Library:CreateWindow(Config)
 							options.Callback()
 						end
 						task.spawn(function()
-							TweenFrame(ColorFrame, {BackgroundColor3 = Color3.new(0.560784, 0.305882, 1)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+							TweenFrame(
+								ColorFrame,
+								{ BackgroundColor3 = Color3.new(0.560784, 0.305882, 1) },
+								0.2,
+								Enum.EasingStyle.Sine,
+								Enum.EasingDirection.Out
+							)
 							task.wait(0.25)
-							TweenFrame(ColorFrame, {BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+							TweenFrame(
+								ColorFrame,
+								{ BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941) },
+								0.2,
+								Enum.EasingStyle.Sine,
+								Enum.EasingDirection.Out
+							)
 						end)
 					end)
 				end)
@@ -905,11 +1030,9 @@ function Library:CreateWindow(Config)
 				end
 
 				return Function
-
 			end
 
 			function Create_Function:Input(options)
-
 				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)] = {
 					Title_Label = nil,
 					Value = "",
@@ -920,7 +1043,7 @@ function Library:CreateWindow(Config)
 
 				local Click_Frame = Instance.new("Frame", Group_Frame)
 				-- [UPDATED] ใช้ความสูง 65 เพื่อให้มีพื้นที่ 2 บรรทัดแบบสวยๆ
-				Click_Frame.Size = UDim2.new(0, 208, 0, 65) 
+				Click_Frame.Size = UDim2.new(0, 208, 0, 65)
 				Click_Frame.BackgroundTransparency = 1
 				Click_Frame.Name = options.Title or "Input_Frame"
 
@@ -977,30 +1100,63 @@ function Library:CreateWindow(Config)
 					pcall(function()
 						if enterPressed then
 							SaveConfig()
-							getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Value = TextBox.Text
+							getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Value =
+								TextBox.Text
 							if options.Callback then
 								options.Callback(TextBox.Text)
 							end
 							if TextBox.Text ~= "" then
-								TweenFrame(ColorFrame, {BackgroundColor3 = Color3.new(0.560784, 0.305882, 1)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+								TweenFrame(
+									ColorFrame,
+									{ BackgroundColor3 = Color3.new(0.560784, 0.305882, 1) },
+									0.2,
+									Enum.EasingStyle.Sine,
+									Enum.EasingDirection.Out
+								)
 							else
-								TweenFrame(ColorFrame, {BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+								TweenFrame(
+									ColorFrame,
+									{ BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941) },
+									0.2,
+									Enum.EasingStyle.Sine,
+									Enum.EasingDirection.Out
+								)
 							end
 						end
 					end)
 				end)
 
 				if options.Value then
-					TweenFrame(ColorFrame, {BackgroundColor3 = Color3.new(0.560784, 0.305882, 1)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+					TweenFrame(
+						ColorFrame,
+						{ BackgroundColor3 = Color3.new(0.560784, 0.305882, 1) },
+						0.2,
+						Enum.EasingStyle.Sine,
+						Enum.EasingDirection.Out
+					)
 				end
 
-				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Refresh_Func = function(Value)
+				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Refresh_Func = function(
+					Value
+				)
 					if Value == "" then
 						TextBox.Text = ""
-						TweenFrame(ColorFrame, {BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+						TweenFrame(
+							ColorFrame,
+							{ BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941) },
+							0.2,
+							Enum.EasingStyle.Sine,
+							Enum.EasingDirection.Out
+						)
 					else
 						TextBox.Text = Value
-						TweenFrame(ColorFrame, {BackgroundColor3 = Color3.new(0.560784, 0.305882, 1)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+						TweenFrame(
+							ColorFrame,
+							{ BackgroundColor3 = Color3.new(0.560784, 0.305882, 1) },
+							0.2,
+							Enum.EasingStyle.Sine,
+							Enum.EasingDirection.Out
+						)
 					end
 				end
 
@@ -1015,11 +1171,9 @@ function Library:CreateWindow(Config)
 				end
 
 				return Function
-
 			end
 
 			function Create_Function:Slide(options)
-				
 				local ENV_Name = options.Flag or options.Title
 
 				getgenv().PanelObjectTag.All_Func[ENV_Name] = {
@@ -1032,7 +1186,7 @@ function Library:CreateWindow(Config)
 
 				local Click_Frame = Instance.new("Frame", Group_Frame)
 				-- [UPDATED] ใช้ความสูง 65 units เพื่อให้มี 2 บรรทัด
-				Click_Frame.Size = UDim2.new(0, 208, 0, 65) 
+				Click_Frame.Size = UDim2.new(0, 208, 0, 65)
 				Click_Frame.BackgroundTransparency = 1
 				Click_Frame.Name = options.Title or "Slide_Frame"
 
@@ -1063,7 +1217,7 @@ function Library:CreateWindow(Config)
 				Title_Func.TextTruncate = Enum.TextTruncate.AtEnd
 				Add_UITextSizeConstraint(Title_Func)
 				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Title_Label = Title_Func
-				
+
 				-- ตัวเลขแสดงค่า (มุมขวาบน)
 				local Value_Label = Instance.new("TextLabel", BGFrame)
 				Value_Label.Size = UDim2.new(0, 40, 0, 25)
@@ -1100,7 +1254,7 @@ function Library:CreateWindow(Config)
 				local function positionToValue(x)
 					local currentBarSize = MainSlideFrame.AbsoluteSize.X
 					local ratio = math.clamp(x / currentBarSize, 0, 1)
-					local rawValue = options.Value.Min + (options.Value.Max - options.Value.Min) * ratio                    
+					local rawValue = options.Value.Min + (options.Value.Max - options.Value.Min) * ratio
 					local steppedValue = math.floor(rawValue / options.Value.Step + 0.5) * options.Value.Step
 					return math.clamp(steppedValue, options.Value.Min, options.Value.Max)
 				end
@@ -1113,31 +1267,48 @@ function Library:CreateWindow(Config)
 				end
 				local function updateSlide(value)
 					getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Value = value
-					TweenFrame(ColorButton, {Position = valueToPosition(value)}, 0.1)
+					TweenFrame(ColorButton, { Position = valueToPosition(value) }, 0.1)
 					Value_Label.Text = tostring(formatNumber(value))
 					if options.Callback then
 						options.Callback(value)
 					end
-					local targetColor = (options.Value.Default == value) and Color3.new(0.235294, 0.156863, 0.352941) or Color3.new(0.560784, 0.305882, 1)
-					TweenFrame(ColorFrame, {BackgroundColor3 = targetColor}, 0.2)
+					local targetColor = (options.Value.Default == value) and Color3.new(0.235294, 0.156863, 0.352941)
+						or Color3.new(0.560784, 0.305882, 1)
+					TweenFrame(ColorFrame, { BackgroundColor3 = targetColor }, 0.2)
 					SaveConfig()
 				end
 				updateSlide(options.Value.Default)
 				local moveConn, endConn
 				Slide_Button.InputBegan:Connect(function(input)
-					if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+					if
+						input.UserInputType == Enum.UserInputType.MouseButton1
+						or input.UserInputType == Enum.UserInputType.Touch
+					then
 						dragging = true
 						moveConn = UserInputService.InputChanged:Connect(function(moveInput)
-							if dragging and (moveInput.UserInputType == Enum.UserInputType.MouseMovement or moveInput.UserInputType == Enum.UserInputType.Touch) then
+							if
+								dragging
+								and (
+									moveInput.UserInputType == Enum.UserInputType.MouseMovement
+									or moveInput.UserInputType == Enum.UserInputType.Touch
+								)
+							then
 								local relX = moveInput.Position.X - MainSlideFrame.AbsolutePosition.X
 								updateSlide(positionToValue(relX))
 							end
 						end)
 						endConn = UserInputService.InputEnded:Connect(function(endInput)
-							if endInput.UserInputType == Enum.UserInputType.MouseButton1 or endInput.UserInputType == Enum.UserInputType.Touch then
+							if
+								endInput.UserInputType == Enum.UserInputType.MouseButton1
+								or endInput.UserInputType == Enum.UserInputType.Touch
+							then
 								dragging = false
-								if moveConn then moveConn:Disconnect() end
-								if endConn then endConn:Disconnect() end
+								if moveConn then
+									moveConn:Disconnect()
+								end
+								if endConn then
+									endConn:Disconnect()
+								end
 							end
 						end)
 					end
@@ -1147,9 +1318,13 @@ function Library:CreateWindow(Config)
 				end
 				local Function = {}
 
-				function Function:SetTitle(TapName) Title_Func.Text = TapName or "Unknow" end
+				function Function:SetTitle(TapName)
+					Title_Func.Text = TapName or "Unknow"
+				end
 
-				function Function:SetValue(Value) updateSlide(Value) end
+				function Function:SetValue(Value)
+					updateSlide(Value)
+				end
 
 				function Function:Visible(Visible)
 					Click_Frame.Visible = Visible
@@ -1159,7 +1334,6 @@ function Library:CreateWindow(Config)
 			end
 
 			function Create_Function:Drop(options)
-				
 				local ENV_Name, GetItem = options.Flag or options.Title, options.GetItem or nil
 				getgenv().PanelObjectTag.All_Func[ENV_Name] = {
 					Title_Label = nil,
@@ -1171,7 +1345,7 @@ function Library:CreateWindow(Config)
 
 				local Click_Frame = Instance.new("Frame", Group_Frame)
 				-- [UPDATED] ใช้ความสูง 65 units เพื่อให้มี 2 บรรทัด (ชื่อบน - ช่องเลือกล่าง)
-				Click_Frame.Size = UDim2.new(0, 208, 0, 65) 
+				Click_Frame.Size = UDim2.new(0, 208, 0, 65)
 				Click_Frame.BackgroundTransparency = 1
 				Click_Frame.Name = options.Title or "Drop_Frame"
 
@@ -1202,7 +1376,7 @@ function Library:CreateWindow(Config)
 				Title_Func.TextTruncate = Enum.TextTruncate.AtEnd
 				Add_UITextSizeConstraint(Title_Func)
 				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Title_Label = Title_Func
-				
+
 				-- ช่องแสดงผล (บรรทัดล่าง)
 				local SelectDropFrame = Instance.new("Frame", BGFrame)
 				SelectDropFrame.BackgroundColor3 = Color3.new(0.05, 0.01, 0.1)
@@ -1245,7 +1419,7 @@ function Library:CreateWindow(Config)
 				Drop_Down_Frame.BackgroundColor3 = Color3.new(0.301961, 0.2, 0.478431)
 				Drop_Down_Frame.Size = UDim2.new(0, 181, 0, 163)
 				Drop_Down_Frame.BackgroundTransparency = 0.1
-				Drop_Down_Frame.Name = options.Title or "Drop_Down_Frame"..tostring(math.random(11111,99999))
+				Drop_Down_Frame.Name = options.Title or "Drop_Down_Frame" .. tostring(math.random(11111, 99999))
 				Drop_Down_Frame.Visible = false
 				Instance.new("UICorner", Drop_Down_Frame).CornerRadius = UDim.new(0, 8)
 
@@ -1258,13 +1432,21 @@ function Library:CreateWindow(Config)
 
 				local UIListLayout_Drop = Instance.new("UIListLayout", Drop_Down_Frame)
 				UIListLayout_Drop.SortOrder = Enum.SortOrder.LayoutOrder
-				UIListLayout_Drop.Padding = UDim.new(0, 3)				
+				UIListLayout_Drop.Padding = UDim.new(0, 3)
 				Instance.new("UIStroke", Drop_Down_Frame).Color = Color3.new(0.517647, 0.431373, 0.776471)
 
-				local function CloseDropDown(Drop_Down_FrameC)					
-					Drop_Down_FrameC.Position = UDim2.fromOffset(SelectDropFrame.AbsolutePosition.X, SelectDropFrame.AbsolutePosition.Y + SelectDropFrame.Size.Y.Offset)
+				local function CloseDropDown(Drop_Down_FrameC)
+					Drop_Down_FrameC.Position = UDim2.fromOffset(
+						SelectDropFrame.AbsolutePosition.X,
+						SelectDropFrame.AbsolutePosition.Y + SelectDropFrame.Size.Y.Offset
+					)
 					Drop_Down_FrameC.Visible = true
-					local Tween = TweenFrame(Drop_Down_FrameC, {Position = UDim2.fromOffset(SelectDropFrame.AbsolutePosition.X, SelectDropFrame.AbsolutePosition.Y + 500)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.In)
+					local Tween = TweenFrame(Drop_Down_FrameC, {
+						Position = UDim2.fromOffset(
+							SelectDropFrame.AbsolutePosition.X,
+							SelectDropFrame.AbsolutePosition.Y + 500
+						),
+					}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.In)
 					Tween.Completed:Connect(function()
 						task.wait(0.1)
 						Drop_Down_FrameC.Visible = false
@@ -1282,8 +1464,8 @@ function Library:CreateWindow(Config)
 				UICorner_Search_Frame.CornerRadius = UDim.new(0, 8)
 
 				local Search_Icon = Instance.new("ImageButton", Search_Frame)
-				Search_Icon.Size = UDim2.new(0, 16,0, 20)
-				Search_Icon.Position = UDim2.new(0.878, 0,0.213, 0)
+				Search_Icon.Size = UDim2.new(0, 16, 0, 20)
+				Search_Icon.Position = UDim2.new(0.878, 0, 0.213, 0)
 				Search_Icon.BackgroundTransparency = 1
 				Search_Icon.ImageColor3 = Color3.new(1, 1, 1)
 				Search_Icon.Image = "rbxassetid://93748616033191"
@@ -1293,8 +1475,8 @@ function Library:CreateWindow(Config)
 
 				local SearchBox = Instance.new("TextBox", Search_Frame)
 				SearchBox.BackgroundColor3 = Color3.new(0.0509804, 0.00784314, 0.101961)
-				SearchBox.Size = UDim2.new(0, 147,0, 21)
-				SearchBox.Position = UDim2.new(0, 5,0, 4)
+				SearchBox.Size = UDim2.new(0, 147, 0, 21)
+				SearchBox.Position = UDim2.new(0, 5, 0, 4)
 				SearchBox.BackgroundTransparency = 1
 				SearchBox.Name = "SearchBox"
 				SearchBox.Font = Font_Main
@@ -1311,7 +1493,7 @@ function Library:CreateWindow(Config)
 				local Scrolling_Drop = Instance.new("ScrollingFrame", Drop_Down_Frame)
 				Scrolling_Drop.Name = "Scrolling_Drop"
 				Scrolling_Drop.BackgroundTransparency = 1
-				Scrolling_Drop.Size = UDim2.new(0, 181,0, 133)
+				Scrolling_Drop.Size = UDim2.new(0, 181, 0, 133)
 				Scrolling_Drop.BottomImage = ""
 				Scrolling_Drop.MidImage = ""
 				Scrolling_Drop.TopImage = ""
@@ -1322,15 +1504,27 @@ function Library:CreateWindow(Config)
 				local UIListLayout_Scrolling_Drop = Instance.new("UIListLayout", Scrolling_Drop)
 				UIListLayout_Scrolling_Drop.SortOrder = Enum.SortOrder.LayoutOrder
 				UIListLayout_Scrolling_Drop.Padding = UDim.new(0, 3)
-				UIListLayout_Scrolling_Drop.Name = tostring(math.random(1111111,9999999)) or "asdas453das45dasdwf bfdg"
+				UIListLayout_Scrolling_Drop.Name = tostring(math.random(1111111, 9999999)) or "asdas453das45dasdwf bfdg"
 
 				local function ReFreshShow(Selected_Table)
 					if #Selected_Table == 0 then
 						DropText.Text = "..."
-						TweenFrame(ColorFrame, {BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+						TweenFrame(
+							ColorFrame,
+							{ BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941) },
+							0.2,
+							Enum.EasingStyle.Sine,
+							Enum.EasingDirection.Out
+						)
 					else
 						DropText.Text = tostring(table.concat(Selected_Table, ", "))
-						TweenFrame(ColorFrame, {BackgroundColor3 = Color3.new(0.560784, 0.305882, 1)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+						TweenFrame(
+							ColorFrame,
+							{ BackgroundColor3 = Color3.new(0.560784, 0.305882, 1) },
+							0.2,
+							Enum.EasingStyle.Sine,
+							Enum.EasingDirection.Out
+						)
 					end
 					options.Callback(Selected_Table)
 					SaveConfig()
@@ -1390,7 +1584,11 @@ function Library:CreateWindow(Config)
 						for _, child in ipairs(Scrolling_Drop:GetChildren()) do
 							if child:IsA("Frame") and child:FindFirstChild("DropButton") then
 								child.DropButton:SetAttribute("IsSelected", false)
-								TweenFrame(child.DropButton, {ImageColor3 = Color3.new(0.227451, 0.176471, 0.317647)}, 0.2)
+								TweenFrame(
+									child.DropButton,
+									{ ImageColor3 = Color3.new(0.227451, 0.176471, 0.317647) },
+									0.2
+								)
 							end
 						end
 					end
@@ -1398,7 +1596,10 @@ function Library:CreateWindow(Config)
 					-- ตรวจสอบความซ้ำซ้อนก่อนเพิ่ม
 					local found = false
 					for _, val in ipairs(selectedTable) do
-						if val == tostring(Title.Text) then found = true break end
+						if val == tostring(Title.Text) then
+							found = true
+							break
+						end
 					end
 
 					if not found then
@@ -1406,7 +1607,7 @@ function Library:CreateWindow(Config)
 					end
 
 					DropButton:SetAttribute("IsSelected", true)
-					TweenFrame(DropButton, {ImageColor3 = Color3.new(0.560784, 0.305882, 1)}, 0.2)
+					TweenFrame(DropButton, { ImageColor3 = Color3.new(0.560784, 0.305882, 1) }, 0.2)
 				end
 
 				local function UnSelectButton(DropButton, Title)
@@ -1419,25 +1620,24 @@ function Library:CreateWindow(Config)
 						end
 					end
 					DropButton:SetAttribute("IsSelected", false)
-					TweenFrame(DropButton, {ImageColor3 = Color3.new(0.227451, 0.176471, 0.317647)}, 0.2)
+					TweenFrame(DropButton, { ImageColor3 = Color3.new(0.227451, 0.176471, 0.317647) }, 0.2)
 				end
-				
+
 				local function UpdateButtonSelection(ValueForMake, ValueSelected)
 					if typeof(ValueForMake) == "function" then
 						ValueForMake = ValueForMake()
 					end
-					
+
 					for _, Item in ipairs(Scrolling_Drop:GetChildren()) do
 						if Item:GetAttribute("IsDrop") then
 							Item:Destroy()
 						end
 					end
-					
-					for _, Name in ipairs(ValueForMake) do
 
+					for _, Name in ipairs(ValueForMake) do
 						local DropChild = Instance.new("Frame", Scrolling_Drop)
 						DropChild.BackgroundColor3 = Color3.new(1, 1, 1)
-						DropChild.Size = UDim2.new(0, 181,0, 28)
+						DropChild.Size = UDim2.new(0, 181, 0, 28)
 						DropChild.BackgroundTransparency = 0.9
 						DropChild.Name = Name or "Unknow"
 						DropChild:SetAttribute("IsDrop", true)
@@ -1446,8 +1646,8 @@ function Library:CreateWindow(Config)
 						UICorner_DropChild.CornerRadius = UDim.new(0, 8)
 
 						local DropButton = Instance.new("ImageButton", DropChild)
-						DropButton.Size = UDim2.new(0, 22,0, 22)
-						DropButton.Position = UDim2.new(0.866, 0,0.133, 0)
+						DropButton.Size = UDim2.new(0, 22, 0, 22)
+						DropButton.Position = UDim2.new(0.866, 0, 0.133, 0)
 						DropButton.BackgroundTransparency = 1
 						DropButton.ImageColor3 = Color3.new(0.227451, 0.176471, 0.317647)
 						DropButton.Image = "rbxassetid://15307205005"
@@ -1458,15 +1658,15 @@ function Library:CreateWindow(Config)
 						UICorner_DropButton.CornerRadius = UDim.new(0, 8)
 
 						local RealDropButton = Instance.new("ImageButton", DropChild)
-						RealDropButton.Size = UDim2.new(1, 0,1, 0)
+						RealDropButton.Size = UDim2.new(1, 0, 1, 0)
 						RealDropButton.BackgroundTransparency = 1
 						RealDropButton.Image = ""
 						RealDropButton.Name = "RealButton"
 						RealDropButton.ZIndex = 5
 
 						local Title = Instance.new("TextLabel", DropChild)
-						Title.Size = UDim2.new(0, 148,0, 21)
-						Title.Position = UDim2.new(0.03, 0,0.107, 0)
+						Title.Size = UDim2.new(0, 148, 0, 21)
+						Title.Position = UDim2.new(0.03, 0, 0.107, 0)
 						Title.BackgroundTransparency = 1
 						Title.Text = Name or "Unknow"
 						Title.Font = Font_Main
@@ -1502,15 +1702,14 @@ function Library:CreateWindow(Config)
 							end
 							ReFreshShow(getgenv().PanelObjectTag.All_Func[ENV_Name].Value)
 						end
-
 					end
 				end
-				
+
 				local DropForShowNow = options.Values or options.GetItem or {}
 				if options and DropForShowNow and options.Value then
 					UpdateButtonSelection(DropForShowNow, options.Value)
 				end
-				
+
 				Drop_Down_Frame:SetAttribute("IsOpen", false)
 				Button.Activated:Connect(function()
 					if GetItem then
@@ -1524,18 +1723,32 @@ function Library:CreateWindow(Config)
 					end)
 					Drop_Down_Frame:SetAttribute("IsOpen", not Drop_Down_Frame:GetAttribute("IsOpen"))
 					if Drop_Down_Frame:GetAttribute("IsOpen") then
-						if getgenv().PanelObjectTag.Dropdown_Connection and getgenv().PanelObjectTag.Dropdown_Connection ~= Drop_Down_Frame then
+						if
+							getgenv().PanelObjectTag.Dropdown_Connection
+							and getgenv().PanelObjectTag.Dropdown_Connection ~= Drop_Down_Frame
+						then
 							pcall(function()
 								getgenv().PanelObjectTag.Dropdown_Connection:SetAttribute("IsOpen", false)
 								getgenv().PanelObjectTag.Dropdown_Connection.Visible = false
-								getgenv().PanelObjectTag.Dropdown_Connection.Position = UDim2.fromOffset(SelectDropFrame.AbsolutePosition.X, SelectDropFrame.AbsolutePosition.Y + SelectDropFrame.Size.Y.Offset)
+								getgenv().PanelObjectTag.Dropdown_Connection.Position = UDim2.fromOffset(
+									SelectDropFrame.AbsolutePosition.X,
+									SelectDropFrame.AbsolutePosition.Y + SelectDropFrame.Size.Y.Offset
+								)
 							end)
 							getgenv().PanelObjectTag.Dropdown_Connection = nil
 						end
 						getgenv().PanelObjectTag.Dropdown_Connection = Drop_Down_Frame
-						Drop_Down_Frame.Position = UDim2.fromOffset(SelectDropFrame.AbsolutePosition.X, SelectDropFrame.AbsolutePosition.Y + 500)
+						Drop_Down_Frame.Position = UDim2.fromOffset(
+							SelectDropFrame.AbsolutePosition.X,
+							SelectDropFrame.AbsolutePosition.Y + 500
+						)
 						Drop_Down_Frame.Visible = true
-						local Tween = TweenFrame(Drop_Down_Frame, {Position = UDim2.fromOffset(SelectDropFrame.AbsolutePosition.X, SelectDropFrame.AbsolutePosition.Y + SelectDropFrame.Size.Y.Offset)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+						local Tween = TweenFrame(Drop_Down_Frame, {
+							Position = UDim2.fromOffset(
+								SelectDropFrame.AbsolutePosition.X,
+								SelectDropFrame.AbsolutePosition.Y + SelectDropFrame.Size.Y.Offset
+							),
+						}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 						Tween.Completed:Connect(function()
 							Button.Active = true
 							while Drop_Down_Frame:GetAttribute("IsOpen") do
@@ -1543,7 +1756,10 @@ function Library:CreateWindow(Config)
 									break
 								end
 								task.wait(0.01)
-								Drop_Down_Frame.Position = UDim2.fromOffset(SelectDropFrame.AbsolutePosition.X, SelectDropFrame.AbsolutePosition.Y + SelectDropFrame.Size.Y.Offset)
+								Drop_Down_Frame.Position = UDim2.fromOffset(
+									SelectDropFrame.AbsolutePosition.X,
+									SelectDropFrame.AbsolutePosition.Y + SelectDropFrame.Size.Y.Offset
+								)
 							end
 						end)
 					else
@@ -1552,27 +1768,34 @@ function Library:CreateWindow(Config)
 				end)
 
 				getgenv().PanelObjectTag.All_Func[ENV_Name].Refresh_Func = function(Value)
-					if Value then
+					-- 1. อัปเดตค่าในตัวแปรหลักทันที
+					if type(Value) == "table" then
 						getgenv().PanelObjectTag.All_Func[ENV_Name].Value = Value
-						for _, child in ipairs(Scrolling_Drop:GetChildren()) do
-							if child:IsA("Frame") then
-								local otherButton = child:FindFirstChild("DropButton")
-								if otherButton then
-									otherButton.ImageColor3 = Color3.new(0.227451, 0.176471, 0.317647)
-								end
-							end
-						end
-						for _, child in ipairs(Scrolling_Drop:GetChildren()) do
-							if child:IsA("Frame") then
-								for _, Name_Seleted in ipairs(Value) do
-									if Name_Seleted == child.Name then
-										SelectButton(child.DropButton, child.Title)
-									end
-								end
-							end
-						end
-						ReFreshShow(getgenv().PanelObjectTag.All_Func[ENV_Name].Value)
+					else
+						getgenv().PanelObjectTag.All_Func[ENV_Name].Value = { tostring(Value) } -- กันเหนียวเผื่อส่งมาเป็น String
 					end
+					local CurrentList = getgenv().PanelObjectTag.All_Func[ENV_Name].Value
+					-- 2. วนลูปเช็คปุ่มทุกตัวใน Scroll
+					for _, child in ipairs(Scrolling_Drop:GetChildren()) do
+						if child:IsA("Frame") and child:FindFirstChild("DropButton") then
+							-- เช็คว่าชื่อปุ่มนี้ มีอยู่ในรายการที่ส่งมาไหม?
+							local isSelected = table.find(CurrentList, child.Name)
+							-- ปรับสถานะ Attribute (สำคัญมาก ไม่งั้นกดครั้งต่อไปจะบัค)
+							child.DropButton:SetAttribute("IsSelected", isSelected and true or false)
+							-- ปรับสีปุ่ม
+							if isSelected then
+								TweenFrame(child.DropButton, { ImageColor3 = Color3.new(0.560784, 0.305882, 1) }, 0.2)
+							else
+								TweenFrame(
+									child.DropButton,
+									{ ImageColor3 = Color3.new(0.227451, 0.176471, 0.317647) },
+									0.2
+								)
+							end
+						end
+					end
+					-- 3. อัปเดตข้อความหน้า Dropdown
+					ReFreshShow(CurrentList)
 				end
 
 				local Function = {}
@@ -1582,9 +1805,14 @@ function Library:CreateWindow(Config)
 				end
 
 				function Function:SetValue(Value)
-					getgenv().PanelObjectTag.All_Func[ENV_Name].Refresh_Func(Value)
+					local targetObj = getgenv().PanelObjectTag.All_Func[ENV_Name]
+					if targetObj and targetObj.Refresh_Func then
+						targetObj.Refresh_Func(Value)
+					else
+						warn("❌ Dropdown SetValue Error: Flag not found -> " .. tostring(ENV_Name))
+					end
 				end
-				
+
 				function Function:Refresh(Value)
 					UpdateButtonSelection(Value)
 				end
@@ -1592,13 +1820,11 @@ function Library:CreateWindow(Config)
 				function Function:Visible(Visible)
 					Click_Frame.Visible = Visible
 				end
-				
-				return Function
 
+				return Function
 			end
 
 			function Create_Function:Toggle(options)
-
 				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)] = {
 					Title_Label = nil,
 					Value = false,
@@ -1609,7 +1835,7 @@ function Library:CreateWindow(Config)
 
 				local Click_Frame = Instance.new("Frame", Group_Frame)
 				-- [UPDATED] ย่อความสูงเหลือ 35 units
-				Click_Frame.Size = UDim2.new(0, 208, 0, 35) 
+				Click_Frame.Size = UDim2.new(0, 208, 0, 35)
 				Click_Frame.BackgroundTransparency = 1
 				Click_Frame.Name = options.Title or "Toggle_Frame"
 
@@ -1664,15 +1890,39 @@ function Library:CreateWindow(Config)
 				local function MakeToggle(UI, input)
 					if input then
 						getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Value = true
-						TweenFrame(ColorFrame, {BackgroundColor3 = Color3.new(0.556863, 0.333333, 1)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)	
-						TweenFrame(UI, {Position = UDim2.new(0.6, 0,-0.169, 0)}, 0.15, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+						TweenFrame(
+							ColorFrame,
+							{ BackgroundColor3 = Color3.new(0.556863, 0.333333, 1) },
+							0.2,
+							Enum.EasingStyle.Sine,
+							Enum.EasingDirection.Out
+						)
+						TweenFrame(
+							UI,
+							{ Position = UDim2.new(0.6, 0, -0.169, 0) },
+							0.15,
+							Enum.EasingStyle.Sine,
+							Enum.EasingDirection.Out
+						)
 						if options and options.Callback then
 							options.Callback(true)
 						end
 					else
 						getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Value = false
-						TweenFrame(ColorFrame, {BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941)}, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)	
-						TweenFrame(UI, {Position = UDim2.new(-0.019, 0,-0.169, 0)}, 0.15, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+						TweenFrame(
+							ColorFrame,
+							{ BackgroundColor3 = Color3.new(0.235294, 0.156863, 0.352941) },
+							0.2,
+							Enum.EasingStyle.Sine,
+							Enum.EasingDirection.Out
+						)
+						TweenFrame(
+							UI,
+							{ Position = UDim2.new(-0.019, 0, -0.169, 0) },
+							0.15,
+							Enum.EasingStyle.Sine,
+							Enum.EasingDirection.Out
+						)
 						if options and options.Callback then
 							options.Callback(false)
 						end
@@ -1688,10 +1938,12 @@ function Library:CreateWindow(Config)
 				end)
 
 				if options.Value then
-					MakeToggle(ColorFrame_Toggle_Frame, options.Value)				
+					MakeToggle(ColorFrame_Toggle_Frame, options.Value)
 				end
 
-				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Refresh_Func = function(Value)
+				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Refresh_Func = function(
+					Value
+				)
 					MakeToggle(ColorFrame_Toggle_Frame, Value)
 				end
 
@@ -1706,20 +1958,18 @@ function Library:CreateWindow(Config)
 				end
 
 				return Function
-
 			end
 
 			function Create_Function:Comm(options)
-
 				local Comment_Frame = Instance.new("Frame", Group_Frame)
 				Comment_Frame.Name = "Comment_Frame"
 				Comment_Frame.BackgroundTransparency = 1
-				Comment_Frame.Size = UDim2.new(0, 208,0, 25)
+				Comment_Frame.Size = UDim2.new(0, 208, 0, 25)
 
 				local TextLabel = Instance.new("TextLabel", Comment_Frame)
 				TextLabel.Name = "TextLabel"
-				TextLabel.Size = UDim2.new(0, 192,0, 17)
-				TextLabel.Position = UDim2.new(0.037, 0,0.128, 0)
+				TextLabel.Size = UDim2.new(0, 192, 0, 17)
+				TextLabel.Position = UDim2.new(0.037, 0, 0.128, 0)
 				TextLabel.BackgroundTransparency = 1
 				TextLabel.Text = options.Title or "Unknow"
 				TextLabel.Font = Font_Main
@@ -1729,7 +1979,7 @@ function Library:CreateWindow(Config)
 				TextLabel.TextTruncate = Enum.TextTruncate.AtEnd
 				TextLabel.TextWrapped = true
 				Add_UITextSizeConstraint(TextLabel)
-				
+
 				local Function = {}
 
 				function Function:SetTitle(TapName)
@@ -1750,7 +2000,7 @@ function Library:CreateWindow(Config)
 				Click_Frame.Name = "CodeBox_Wrapper"
 				Click_Frame.BackgroundTransparency = 1
 				-- [UPDATED] เริ่มต้นที่ความสูง 35 แต่ปล่อยให้ขยายตามแกน Y อัตโนมัติ
-				Click_Frame.Size = UDim2.new(0, 208, 0, 35) 
+				Click_Frame.Size = UDim2.new(0, 208, 0, 35)
 				Click_Frame.AutomaticSize = Enum.AutomaticSize.Y
 
 				local BGFrame = Instance.new("Frame", Click_Frame)
@@ -1765,7 +2015,7 @@ function Library:CreateWindow(Config)
 
 				-- ข้อจำกัดขนาดขั้นต่ำ (MinSize) เพื่อให้ดูเข้าพวกกับปุ่มอื่น
 				local MinSize = Instance.new("UISizeConstraint", BGFrame)
-				MinSize.MinSize = Vector2.new(0, 30) 
+				MinSize.MinSize = Vector2.new(0, 30)
 
 				-- แถบสีม่วงด้านซ้าย (ยืดตามความสูงของโค้ด)
 				local ColorFrame = Instance.new("Frame", BGFrame)
@@ -1814,7 +2064,6 @@ function Library:CreateWindow(Config)
 			end
 
 			function Create_Function:ColorPicker(options)
-
 				local Flag = tostring(options.Flag or options.Title)
 
 				getgenv().PanelObjectTag.All_Func[Flag] = {
@@ -1864,7 +2113,7 @@ function Library:CreateWindow(Config)
 
 				Instance.new("UICorner", ColorDisplay).CornerRadius = UDim.new(0, 4)
 				local DisplayStroke = Instance.new("UIStroke", ColorDisplay)
-				DisplayStroke.Color = Color3.new(1,1,1)
+				DisplayStroke.Color = Color3.new(1, 1, 1)
 				DisplayStroke.Thickness = 1
 				DisplayStroke.Transparency = 0.8
 
@@ -1887,11 +2136,11 @@ function Library:CreateWindow(Config)
 				table.insert(getgenv().PanelObjectTag.UIScale, UIScale_ColorPopup)
 
 				local GridContainer = Instance.new("ScrollingFrame", ColorPopup)
-				GridContainer.Size = UDim2.new(0, 171,0, 100)
-				GridContainer.Position = UDim2.new(0.023, 0,0.035, 0)
+				GridContainer.Size = UDim2.new(0, 171, 0, 100)
+				GridContainer.Position = UDim2.new(0.023, 0, 0.035, 0)
 				GridContainer.BackgroundTransparency = 1
 				GridContainer.ScrollBarThickness = 0
-				GridContainer.CanvasSize = UDim2.new(0,0,0,0)
+				GridContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
 				GridContainer.AutomaticCanvasSize = Enum.AutomaticSize.Y
 
 				local UIGridLayout = Instance.new("UIGridLayout", GridContainer)
@@ -1902,13 +2151,17 @@ function Library:CreateWindow(Config)
 				local function UpdateColor(color, noSave)
 					getgenv().PanelObjectTag.All_Func[Flag].Value = color
 					ColorDisplay.BackgroundColor3 = color
-					if options.Callback then options.Callback(color) end
-					if not noSave then SaveConfig() end
+					if options.Callback then
+						options.Callback(color)
+					end
+					if not noSave then
+						SaveConfig()
+					end
 				end
 
 				-- วนลูปสร้างช่องสีใน Popup
-				local Hues = {0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1}
-				local Brightness = {1, 0.7, 0.4}
+				local Hues = { 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1 }
+				local Brightness = { 1, 0.7, 0.4 }
 				for _, b in ipairs(Brightness) do
 					for _, h in ipairs(Hues) do
 						local TargetColor = Color3.fromHSV(h, 0.8, b)
@@ -1929,13 +2182,17 @@ function Library:CreateWindow(Config)
 					local isVisible = not ColorPopup.Visible
 					-- ปิดอันอื่นก่อนถ้ามี (Centralized Cleanup)
 					for _, v in pairs(SomtankLib2:GetChildren()) do
-						if v:IsA("Frame") then v.Visible = false end
+						if v:IsA("Frame") then
+							v.Visible = false
+						end
 					end
 
 					ColorPopup.Visible = isVisible
 					if isVisible then
-
-						if getgenv().PanelObjectTag.Dropdown_Connection and getgenv().PanelObjectTag.Dropdown_Connection ~= ColorPopup then
+						if
+							getgenv().PanelObjectTag.Dropdown_Connection
+							and getgenv().PanelObjectTag.Dropdown_Connection ~= ColorPopup
+						then
 							pcall(function()
 								getgenv().PanelObjectTag.Dropdown_Connection:SetAttribute("IsOpen", false)
 								getgenv().PanelObjectTag.Dropdown_Connection.Visible = false
@@ -1979,13 +2236,11 @@ function Library:CreateWindow(Config)
 				end
 
 				return Funcs
-
 			end
 
 			function Create_Function:Model_Viwer(options)
-				
 				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)] = {
-					Title_Label = ""
+					Title_Label = "",
 				}
 
 				local Click_Frame = Instance.new("Frame", Group_Frame)
@@ -2018,7 +2273,7 @@ function Library:CreateWindow(Config)
 				Title_Func.TextXAlignment = Enum.TextXAlignment.Left
 				Add_UITextSizeConstraint(Title_Func)
 				getgenv().PanelObjectTag.All_Func[tostring(options.Flag or options.Title)].Title_Label = Title_Func
-				
+
 				local ViewportFrame = Instance.new("ViewportFrame", BGFrame)
 				ViewportFrame.Size = UDim2.new(0.9, 0, 0.75, 0)
 				ViewportFrame.Position = UDim2.new(0.05, 0, 0.2, 0)
@@ -2033,8 +2288,12 @@ function Library:CreateWindow(Config)
 				local WorldModel, CurrentModel, SpinConn = Instance.new("WorldModel", ViewportFrame), nil, nil
 
 				local function SetModel(model)
-					if not model then return end
-					if CurrentModel then CurrentModel:Destroy() end
+					if not model then
+						return
+					end
+					if CurrentModel then
+						CurrentModel:Destroy()
+					end
 					-- สร้าง Model ใหม่ใน WorldModel และดึงข้อมูลชิ้นส่วนมา
 					CurrentModel = Instance.new("Model", WorldModel) -- แก้ไข: ไม่ใช้ local ซ้ำ
 					local success, err = pcall(function()
@@ -2049,11 +2308,16 @@ function Library:CreateWindow(Config)
 					-- จัดระเบียบ Model ให้อยู่จุด 0,0,0
 					local boundingBoxCFrame, modelSize = CurrentModel:GetBoundingBox()
 					CurrentModel:PivotTo(CFrame.new(Vector3.new(0, 0, 0)))
-					ViewportCamera.CFrame = CFrame.new(Vector3.new(0, 1, modelSize.Magnitude * (options.Setting.ZoomFactor or 1)), Vector3.new(0, 0, 0))
+					ViewportCamera.CFrame = CFrame.new(
+						Vector3.new(0, 1, modelSize.Magnitude * (options.Setting.ZoomFactor or 1)),
+						Vector3.new(0, 0, 0)
+					)
 				end
 
 				local function HandleSpin()
-					if SpinConn then SpinConn:Disconnect() end
+					if SpinConn then
+						SpinConn:Disconnect()
+					end
 					if options.Setting and options.Setting.Spining then
 						local angle = 0
 						SpinConn = RunService.Heartbeat:Connect(function(dt)
@@ -2077,7 +2341,9 @@ function Library:CreateWindow(Config)
 					Title_Func.Text = Name
 				end
 
-				function Funcs:SetNewModel(newModel) SetModel(newModel) end
+				function Funcs:SetNewModel(newModel)
+					SetModel(newModel)
+				end
 
 				function Funcs:SetSpin(bool, speed)
 					options.Setting.Spining = bool
