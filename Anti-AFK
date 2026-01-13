@@ -1,0 +1,88 @@
+
+
+local Players = game:GetService("Players")
+local RS = game:GetService("RunService")
+local VU = game:GetService("VirtualUser")
+local GuiService = game:GetService("GuiService")
+local lp = Players.LocalPlayer
+
+-- [[ 1. ANTI-KICK SYSTEM (META-HOOK) ]] --
+-- ป้องกันเกมสั่ง Kick เราออก (ต้องใช้ Executor ที่รองรับ hookmetamethod)
+if hookmetamethod then
+    local old; old = hookmetamethod(game, "__namecall", function(self, ...)
+        local method = getnamecallmethod()
+        if not checkcaller() then
+            if (method == "Kick" or method == "kick") and self == lp then
+                warn("[Anti-AFK] 🛡️ Blocked Kick Attempt from Game!")
+                return nil -- บล็อกคำสั่ง Kick
+            elseif method == "IsFocused" or method == "GetFocused" then
+                return true -- หลอกเกมว่าเรายังโฟกัสหน้าจออยู่
+            end
+        end
+        return old(self, ...)
+    end)
+end
+
+-- [[ 2. VIRTUAL INPUT SIMULATION ]] --
+-- จำลองการกดปุ่มและขยับเมาส์
+task.spawn(function()
+    while task.wait(math.random(60, 120)) do -- ทำทุกๆ 1-2 นาที
+        pcall(function()
+            VU:CaptureController()
+            VU:SetKeyDown("W")
+            task.wait(0.1)
+            VU:SetKeyUp("W")
+            -- ขยับเมาส์นิดหน่อย
+            VU:MouseMove(Vector2.new(math.random(10, 50), math.random(10, 50)))
+        end)
+    end
+end)
+
+-- [[ 3. PHYSICAL GHOST MOVEMENT ]] --
+-- ขยับตัวละครเล็กน้อยมาก (CFrame) เพื่อให้ Server เห็นว่ามีการเคลื่อนที่
+task.spawn(function()
+    while task.wait(math.random(15, 30)) do
+        pcall(function()
+            local root = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+            if root then
+                -- ขยับขึ้นนิดนึงแล้วลงที่เดิม (ตาเปล่าแทบมองไม่เห็น)
+                root.CFrame = root.CFrame * CFrame.new(0, 0.05, 0)
+                task.wait(0.1)
+                root.CFrame = root.CFrame * CFrame.new(0, -0.05, 0)
+            end
+        end)
+    end
+end)
+
+-- [[ 4. ROBLOX UI CLEANER ]] --
+-- คอยลบหน้าต่างเตือน "You have been disconnected for being idle" ของ Roblox (ถ้ามันเด้งขึ้นมา)
+task.spawn(function()
+    while task.wait(2) do
+        pcall(function()
+            for _, gui in pairs(lp.PlayerGui:GetDescendants()) do
+                if gui:IsA("TextLabel") and (gui.Text:lower():find("20 minutes") or gui.Text:lower():find("idle")) then
+                    if gui.Parent then gui.Parent:Destroy() end
+                    print("[Anti-AFK] 🗑️ Auto-removed Roblox Idle Warning")
+                end
+            end
+        end)
+    end
+end)
+
+-- [[ 5. STANDARD ANTI-IDLE ]] --
+-- ตัดการเชื่อมต่อสัญญาณ Idled ของ Roblox
+if getconnections then
+    for _, v in pairs(getconnections(lp.Idled)) do
+        v:Disable()
+    end
+else
+    -- Fallback สำหรับ Executor บางตัว
+    lp.Idled:Connect(function()
+        VU:CaptureController()
+        VU:ClickButton2(Vector2.new())
+    end)
+end
+
+-- แจ้งเตือนใน F9 Console ว่าทำงานแล้ว
+warn("👻 JASON'S GHOST ANTI-AFK: ENABLED (Check F9 Console)")
+print("✅ Script is running in background. No UI will be shown.")
